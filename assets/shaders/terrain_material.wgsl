@@ -6,12 +6,9 @@
 }
 
 struct TerrainMaterial {
-    palette: array<vec4<u32>, 128>,
-    chunk_blocks: array<vec4<u32>, ((66 * 66 * 66 / 4 + 3) / 4)>,
-    chunk_pos: vec3<i32>,
-    chunk_lod: i32,
-    min_chunk_height: i32,
-};
+    chunk_position: vec3<f32>,
+    lod_multiplier: u32,
+}
 
 @group(2) @binding(100)
 var<uniform> terrain_material: TerrainMaterial;
@@ -31,7 +28,26 @@ fn fragment(
     var pbr_input = pbr_input_from_standard_material(in, is_front);
 
     // we can optionally modify the input before lighting and alpha_discard is applied
-    pbr_input.material.base_color.b = pbr_input.material.base_color.r;
+    // pbr_input.material.base_color.b = pbr_input.material.base_color.r;
+
+    var voxel_size = 0.25f;
+    var chunk_size = 64u;
+
+    var in_block_pos = in.world_position.xyz - terrain_material.chunk_position - (in.world_normal * voxel_size * 0.2);
+
+    var block_pos = floor(in_block_pos / voxel_size);
+
+    var block_chunk_size = chunk_size * terrain_material.lod_multiplier;
+
+    var block_index = u32(block_pos.x) + u32(block_pos.y) * block_chunk_size + u32(block_pos.z) * block_chunk_size * block_chunk_size;
+
+    var random1 = pcg(block_index);
+    var random2 = pcg(random1);
+    var random3 = pcg(random2);
+
+    var rand_block_color = vec3<f32>(f32(random1)/ 2147483647.5f - 1f, f32(random2)/ 2147483647.5f - 1f, f32(random3)/ 2147483647.5f - 1f);
+
+    pbr_input.material.base_color += vec4<f32>(rand_block_color * 0.02 - 0.01, 1);
 
     // alpha discard
     pbr_input.material.base_color = alpha_discard(pbr_input.material, pbr_input.material.base_color);
@@ -49,38 +65,41 @@ fn fragment(
 
     // we can optionally modify the final result here
 
-    var voxel_size = 0.25;
-    var chunk_size = f32(64 * terrain_material.chunk_lod) * voxel_size;
+    // var voxel_size = 0.25;
+    // var chunk_size = f32(64 * terrain_material.chunk_lod) * voxel_size;
 
-    var adjusted_world_pos = (in.world_position.xyz + voxel_size * f32(terrain_material.chunk_lod - 1) - (in.world_normal.xyz * (voxel_size * f32(terrain_material.chunk_lod)) * voxel_size)) - vec3<f32>(0, f32(terrain_material.min_chunk_height) * voxel_size * f32(terrain_material.chunk_lod), 0); 
+    // var adjusted_world_pos = (in.world_position.xyz + voxel_size * f32(terrain_material.chunk_lod - 1) - (in.world_normal.xyz * (voxel_size * f32(terrain_material.chunk_lod)) * voxel_size)) - vec3<f32>(0, f32(terrain_material.min_chunk_height) * voxel_size * f32(terrain_material.chunk_lod), 0); 
 
-    var chunk_pos_no_height = terrain_material.chunk_pos * vec3<i32>(1, 0, 1);
+    // var chunk_pos_no_height = terrain_material.chunk_pos * vec3<i32>(1, 0, 1);
 
-    var voxel_pos = vec3<u32>((adjusted_world_pos / chunk_size - (vec3<f32>(chunk_pos_no_height) / f32(terrain_material.chunk_lod))) * 64);
+    // var voxel_pos = vec3<u32>((adjusted_world_pos / chunk_size - (vec3<f32>(chunk_pos_no_height) / f32(terrain_material.chunk_lod))) * 64);
 
-    var blocks_index = voxel_pos.x + voxel_pos.y * 66 + voxel_pos.z * 66 * 66;
-    var outer_index = blocks_index / 16;
-    var inner_index = blocks_index % 16;
-    var number = terrain_material.chunk_blocks[outer_index][inner_index / 4];
-    var number_mask: u32 = 0xffu << (inner_index % 4 * 8);
-    var palette_index = (number & number_mask) >> (inner_index % 4 * 8);
-    var palette_color = terrain_material.palette[palette_index / 4][palette_index % 4];
+    // var blocks_index = voxel_pos.x + voxel_pos.y * 66 + voxel_pos.z * 66 * 66;
+    // var outer_index = blocks_index / 16;
+    // var inner_index = blocks_index % 16;
+    // var number = terrain_material.chunk_blocks[outer_index][inner_index / 4];
+    // var number_mask: u32 = 0xffu << (inner_index % 4 * 8);
+    // var palette_index = (number & number_mask) >> (inner_index % 4 * 8);
+    // var palette_color = terrain_material.palette[palette_index / 4][palette_index % 4];
 
-    var red: f32 = f32((palette_color & 0xff0000u) >> 16) / 255;
-    var green: f32 = f32((palette_color & 0xff00u) >> 8) / 255;
-    var blue: f32 = f32((palette_color & 0xffu)) / 255;
+    // var red: f32 = f32((palette_color & 0xff0000u) >> 16) / 255;
+    // var green: f32 = f32((palette_color & 0xff00u) >> 8) / 255;
+    // var blue: f32 = f32((palette_color & 0xffu)) / 255;
 
-    var random1 = pcg(blocks_index);
-    var random2 = pcg(random1);
-    var random3 = pcg(random2);
+    // var random1 = pcg(blocks_index);
+    // var random2 = pcg(random1);
+    // var random3 = pcg(random2);
 
-    red = red + (f32(random1) / 2147483647.5f - 1f) * 0.02;
-    green = green + (f32(random2) / 2147483647.5f - 1f) * 0.02;
-    blue = blue + (f32(random3) / 2147483647.5f - 1f) * 0.02;
+    // red = red + (f32(random1) / 2147483647.5f - 1f) * 0.02;
+    // green = green + (f32(random2) / 2147483647.5f - 1f) * 0.02;
+    // blue = blue + (f32(random3) / 2147483647.5f - 1f) * 0.02;
 
-    out.color = out.color * vec4<f32>(red, green, blue, 1f);
+    // out.color = out.color * vec4<f32>(red, green, blue, 1f);
 
     //out.color = vec4<f32>(voxel_pos.xyzz) / 64;
 
+    // out.color = vec4<f32>(rand_block_color, 1);
+
     return out;
 }
+
