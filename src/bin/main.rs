@@ -5,7 +5,6 @@ use bevy::{
         wireframe::{WireframeConfig, WireframePlugin},
     },
     prelude::*,
-    window::PresentMode,
 };
 use bevy_inspector_egui::{bevy_egui::EguiPlugin, quick::WorldInspectorPlugin};
 use bevy_panorbit_camera::PanOrbitCameraPlugin;
@@ -30,7 +29,7 @@ fn main() {
                     .set(WindowPlugin {
                         primary_window: Some(Window {
                             title: "Spellhaven".into(),
-                            present_mode: PresentMode::Immediate,
+                            // present_mode: PresentMode::Immediate,
                             ..default()
                         }),
                         ..default()

@@ -231,26 +231,38 @@ impl GenerationCacheItem<CountryPosition> for PathData {
                 cache_store.clone(),
             );
 
-        let path_finding_lod = ChunkLod::OneTwentyEight;
+        let path_finding_lod = ChunkLod::Sixtyfourth;
 
-        let y_start_pos = if key.y % 2 == 0 && key.x % 2 == 0 { current_structure_cache.city_location } else { top_structure_cache.city_location };
-        let y_end_pos = if key.y % 2 == 0 && key.x % 2 == 0 { top_structure_cache.city_location } else { current_structure_cache.city_location };
+        let flip = (key.y + key.x) % 2 == 0;
 
-        let x_start_pos = if key.y % 2 == 0 && key.x % 2 == 0 { current_structure_cache.city_location } else { right_structure_cache.city_location };
-        let x_end_pos = if key.y % 2 == 0 && key.x % 2 == 0 { right_structure_cache.city_location } else { current_structure_cache.city_location };
+        let current_location = current_structure_cache.city_location;
+        let top_location = top_structure_cache.city_location;
+        let right_location = right_structure_cache.city_location;
+
+        let (y_start, y_end) = if flip {
+            (top_location, current_location)
+        } else {
+            (current_location, top_location)
+        };
+
+        let (x_start, x_end) = if flip {
+            (right_location, current_location)
+        } else {
+            (current_location, right_location)
+        };
 
         Self {
             paths: vec![
                 PathData::generate_path(
-                    y_start_pos,
-                    y_end_pos,
+                    y_start,
+                    y_end,
                     [*key, *top_country_pos],
                     path_finding_lod,
                     generation_options,
                 ),
                 PathData::generate_path(
-                    x_start_pos,
-                    x_end_pos,
+                    x_start,
+                    x_end,
                     [*key, *right_country_pos],
                     path_finding_lod,
                     generation_options,
@@ -401,7 +413,10 @@ impl PathData {
                         state: next,
                         direction,
                     });
-                    previous.insert((next, direction), (current, current_direction));
+                    previous.insert(
+                        (next, direction),
+                        (current, current_direction),
+                    );
                 }
             }
         }
@@ -410,15 +425,22 @@ impl PathData {
 
         info!("DONE: {}s", elapsed.as_secs_f32());
 
-        if let Some((_, (parent, parent_direction))) = previous.iter().find(|((pos, ..), ..)| *pos == end_pos) {
-            let mut points = vec![end_pos * path_finding_lod.multiplier_i32(), *parent * path_finding_lod.multiplier_i32()];
+        if let Some((_, (parent, parent_direction))) =
+            previous.iter().find(|((pos, ..), ..)| *pos == end_pos)
+        {
+            let mut points = vec![
+                end_pos * path_finding_lod.multiplier_i32(),
+                *parent * path_finding_lod.multiplier_i32(),
+            ];
             let mut min = end_pos.min(*parent);
             let mut max = end_pos.max(*parent);
 
             let mut current = *parent;
             let mut current_direction = *parent_direction;
 
-            while let Some((parent, parent_direction)) = previous.get(&(current, current_direction)) {
+            while let Some((parent, parent_direction)) =
+                previous.get(&(current, current_direction))
+            {
                 points.push(*parent * path_finding_lod.multiplier_i32());
                 current = *parent;
                 current_direction = *parent_direction;
