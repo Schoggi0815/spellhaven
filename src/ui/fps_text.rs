@@ -13,7 +13,7 @@ pub fn update_fps_ui(
             .get(&FrameTimeDiagnosticsPlugin::FPS)
             .and_then(|fps| fps.smoothed())
         {
-            text.sections[0].value = format!("FPS: {:?}", fps.floor());
+            text.0 = format!("FPS: {:.0}", fps);
         }
     }
 }

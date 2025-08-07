@@ -11,8 +11,6 @@ pub struct Roughness {
 }
 
 impl Roughness {
-    pub const DEFAULT_SEED: u32 = 0;
-
     pub fn new(seed: u32, frequency: f64, amplitude: f64) -> Self {
         Self {
             seed,
@@ -50,6 +48,7 @@ impl NoiseFn<f64, 2usize> for Roughness {
             self.frequency,
             self.amplitude,
             &self.permutation_table,
-        ) - 0.15
+        )
+        .0 - 0.15
     }
 }
