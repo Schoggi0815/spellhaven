@@ -1,3 +1,4 @@
+use crate::utils::cartesian_product::cube_cartesian_product;
 use crate::world_generation::chunk_generation::ambient_occlusion::AmbiantOcclusion;
 use crate::world_generation::chunk_generation::block_type::{
     BlockFace, BlockType,
@@ -5,6 +6,7 @@ use crate::world_generation::chunk_generation::block_type::{
 use crate::world_generation::chunk_generation::chunk_lod::ChunkLod;
 use crate::world_generation::chunk_generation::voxel_data::VoxelData;
 use crate::world_generation::chunk_generation::{CHUNK_SIZE, VOXEL_SIZE};
+use avian3d::prelude::{Collider, Rotation};
 use bevy::prelude::*;
 use bevy::render::mesh::{Indices, PrimitiveTopology};
 use bevy::render::render_asset::RenderAssetUsages;
@@ -12,7 +14,7 @@ use bevy::render::render_asset::RenderAssetUsages;
 pub struct MeshResult {
     pub opaque_mesh: Option<Mesh>,
     pub transparent_mesh: Option<Mesh>,
-    // pub collider: Option<Collider>,
+    pub collider: Option<Collider>,
 }
 
 pub fn generate_mesh(
@@ -35,26 +37,26 @@ pub fn generate_mesh(
     let transparent_mesh =
         get_mesh_for_blocks(&[BlockType::Leaf], voxel_data, chunk_lod, true);
 
-    // let collider = if chunk_lod == ChunkLod::Full {
-    //     get_compound_collider(
-    //         &[
-    //             BlockType::Stone,
-    //             BlockType::Grass,
-    //             BlockType::Log,
-    //             BlockType::Snow,
-    //             BlockType::Dirt,
-    //             BlockType::Leaf,
-    //         ],
-    //         voxel_data,
-    //     )
-    // } else {
-    //     None
-    // };
+    let collider = if chunk_lod == ChunkLod::Full {
+        get_compound_collider(
+            &[
+                BlockType::Stone,
+                BlockType::Grass,
+                BlockType::Log,
+                BlockType::Snow,
+                BlockType::Dirt,
+                BlockType::Leaf,
+            ],
+            voxel_data,
+        )
+    } else {
+        None
+    };
 
     MeshResult {
         opaque_mesh,
         transparent_mesh,
-        // collider: Option::None,
+        collider,
     }
 }
 
@@ -319,89 +321,89 @@ pub fn rotate_into_direction<T: Vec3Swizzles>(
     }
 }
 
-// fn get_compound_collider(
-//     blocks: &[BlockType],
-//     voxel_data: &VoxelData,
-// ) -> Option<Collider> {
-//     let mut colliders: Vec<(Vec3, Rotation, Collider)> = Vec::new();
-//     let mut done_blocks =
-//         [[[false; CHUNK_SIZE + 2]; CHUNK_SIZE + 2]; CHUNK_SIZE + 2];
+fn get_compound_collider(
+    blocks: &[BlockType],
+    voxel_data: &VoxelData,
+) -> Option<Collider> {
+    let mut colliders: Vec<(Vec3, Rotation, Collider)> = Vec::new();
+    let mut done_blocks =
+        [[[false; CHUNK_SIZE + 2]; CHUNK_SIZE + 2]; CHUNK_SIZE + 2];
 
-//     for (x, y, z) in cube_cartesian_product(1..CHUNK_SIZE + 1) {
-//         let current_pos = IVec3::new(x as i32, y as i32, z as i32);
-//         let current_block = voxel_data.get_block(current_pos);
+    for (x, y, z) in cube_cartesian_product(1..CHUNK_SIZE + 1) {
+        let current_pos = IVec3::new(x as i32, y as i32, z as i32);
+        let current_block = voxel_data.get_block(current_pos);
 
-//         if done_blocks[x][y][z] || !blocks.contains(&current_block) {
-//             continue;
-//         }
+        if done_blocks[x][y][z] || !blocks.contains(&current_block) {
+            continue;
+        }
 
-//         let mut x_length = 1;
-//         let mut y_length = 1;
-//         let mut z_length = 1;
+        let mut x_length = 1;
+        let mut y_length = 1;
+        let mut z_length = 1;
 
-//         while x + x_length <= CHUNK_SIZE
-//             && !done_blocks[x + x_length][y][z]
-//             && blocks.contains(
-//                 &voxel_data
-//                     .get_block(current_pos + (IVec3::X * x_length as i32)),
-//             )
-//         {
-//             x_length += 1;
-//         }
+        while x + x_length <= CHUNK_SIZE
+            && !done_blocks[x + x_length][y][z]
+            && blocks.contains(
+                &voxel_data
+                    .get_block(current_pos + (IVec3::X * x_length as i32)),
+            )
+        {
+            x_length += 1;
+        }
 
-//         while y + y_length <= CHUNK_SIZE
-//             && (x..x_length + x).all(|x| {
-//                 !done_blocks[x][y + y_length][z]
-//                     && blocks.contains(&voxel_data.get_block(
-//                         current_pos.with_x(x as i32)
-//                             + (IVec3::Y * y_length as i32),
-//                     ))
-//             })
-//         {
-//             y_length += 1;
-//         }
+        while y + y_length <= CHUNK_SIZE
+            && (x..x_length + x).all(|x| {
+                !done_blocks[x][y + y_length][z]
+                    && blocks.contains(&voxel_data.get_block(
+                        current_pos.with_x(x as i32)
+                            + (IVec3::Y * y_length as i32),
+                    ))
+            })
+        {
+            y_length += 1;
+        }
 
-//         while z + z_length <= CHUNK_SIZE
-//             && (x..x_length + x).all(|x| {
-//                 (y..y_length + y).all(|y| {
-//                     !done_blocks[x][y][z + z_length]
-//                         && blocks.contains(&voxel_data.get_block(
-//                             current_pos.with_x(x as i32).with_y(y as i32)
-//                                 + (IVec3::Z * z_length as i32),
-//                         ))
-//                 })
-//             })
-//         {
-//             z_length += 1;
-//         }
+        while z + z_length <= CHUNK_SIZE
+            && (x..x_length + x).all(|x| {
+                (y..y_length + y).all(|y| {
+                    !done_blocks[x][y][z + z_length]
+                        && blocks.contains(&voxel_data.get_block(
+                            current_pos.with_x(x as i32).with_y(y as i32)
+                                + (IVec3::Z * z_length as i32),
+                        ))
+                })
+            })
+        {
+            z_length += 1;
+        }
 
-//         for (x_inner, y_inner, z_inner) in
-//             cube_cartesian_product(0..x_length.max(y_length).max(z_length))
-//         {
-//             if x_inner >= x_length || y_inner >= y_length || z_inner >= z_length
-//             {
-//                 continue;
-//             }
+        for (x_inner, y_inner, z_inner) in
+            cube_cartesian_product(0..x_length.max(y_length).max(z_length))
+        {
+            if x_inner >= x_length || y_inner >= y_length || z_inner >= z_length
+            {
+                continue;
+            }
 
-//             done_blocks[x + x_inner][y + y_inner][z + z_inner] = true;
-//         }
+            done_blocks[x + x_inner][y + y_inner][z + z_inner] = true;
+        }
 
-//         let x_length = x_length as f32 * VOXEL_SIZE;
-//         let y_length = y_length as f32 * VOXEL_SIZE;
-//         let z_length = z_length as f32 * VOXEL_SIZE;
+        let x_length = x_length as f32 * VOXEL_SIZE;
+        let y_length = y_length as f32 * VOXEL_SIZE;
+        let z_length = z_length as f32 * VOXEL_SIZE;
 
-//         let collider_offset = Vec3::new(x_length, y_length, z_length) * 0.5;
+        let collider_offset = Vec3::new(x_length, y_length, z_length) * 0.5;
 
-//         colliders.push((
-//             current_pos.as_vec3() * VOXEL_SIZE + collider_offset,
-//             Rotation::default(),
-//             Collider::cuboid(x_length, y_length, z_length),
-//         ));
-//     }
+        colliders.push((
+            current_pos.as_vec3() * VOXEL_SIZE + collider_offset,
+            Rotation::default(),
+            Collider::cuboid(x_length, y_length, z_length),
+        ));
+    }
 
-//     if colliders.is_empty() {
-//         return None;
-//     }
+    if colliders.is_empty() {
+        return None;
+    }
 
-//     Some(Collider::compound(colliders))
-// }
+    Some(Collider::compound(colliders))
+}

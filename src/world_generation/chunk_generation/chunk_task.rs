@@ -70,6 +70,10 @@ pub fn set_generated_chunks(
             Transform::from_translation(chunk_position),
         ));
 
+        if let Some(collider) = chunk_generation_result.mesh_result.collider {
+            current_entity.insert(collider);
+        }
+
         // let triangle_count = mesh.indices().unwrap().len() / 3;
         // let result_lod = chunk_generation_result.chunk_pos.lod.usize();
         // chunk_triangles.0[result_lod - 1] += triangle_count as u64;
