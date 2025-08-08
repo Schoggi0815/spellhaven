@@ -49,7 +49,7 @@ fn setup(mut commands: Commands) {
     ));
 
     commands.spawn((
-        DynamicPhysicsObject,
+        DynamicPhysicsObject { step_height: 0.5 },
         PhysicsPosition {
             position: Vec3::NEG_Z * 2.,
             ..Default::default()

@@ -1,6 +1,6 @@
 use bevy::math::Vec3;
 
-use crate::physics::aabb_collider::AabbCollider;
+use crate::physics::{aabb_collider::AabbCollider, collider::Collider};
 
 pub trait ColliderTrait {
     fn is_colliding_with(
@@ -15,6 +15,8 @@ pub trait ColliderTrait {
         end_position: Vec3,
         other_collider: &impl ColliderTrait,
         other_position: Vec3,
+        other_colliders: &Vec<(&Collider, Vec3)>,
+        step_height: f32,
     ) -> Vec3;
 
     fn get_aabbs<'a>(&'a self) -> Vec<&'a AabbCollider>;

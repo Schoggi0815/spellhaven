@@ -57,18 +57,24 @@ impl ColliderTrait for Collider {
         end_position: Vec3,
         other_collider: &impl ColliderTrait,
         other_position: Vec3,
+        other_colliders: &Vec<(&Collider, Vec3)>,
+        step_height: f32,
     ) -> Vec3 {
         match self {
             Collider::Aabb(aabb_collider) => aabb_collider.restrict_movement(
                 end_position,
                 other_collider,
                 other_position,
+                other_colliders,
+                step_height,
             ),
             Collider::Compound(compound_collider) => compound_collider
                 .restrict_movement(
                     end_position,
                     other_collider,
                     other_position,
+                    other_colliders,
+                    step_height,
                 ),
         }
     }

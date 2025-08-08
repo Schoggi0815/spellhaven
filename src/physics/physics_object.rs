@@ -5,6 +5,8 @@ use crate::physics::physics_position::PhysicsPosition;
 #[derive(Component)]
 pub struct StaticPhysicsObject;
 
-#[derive(Component)]
+#[derive(Component, Default)]
 #[require(PhysicsPosition)]
-pub struct DynamicPhysicsObject;
+pub struct DynamicPhysicsObject {
+    pub step_height: f32,
+}

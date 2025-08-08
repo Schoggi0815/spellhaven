@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use itertools::Itertools;
 
-use crate::physics::collider_trait::ColliderTrait;
+use crate::physics::{collider::Collider, collider_trait::ColliderTrait};
 
 #[derive(Clone)]
 pub struct AabbCollider {
@@ -34,6 +34,8 @@ impl ColliderTrait for AabbCollider {
         end_position: Vec3,
         other_collider: &impl ColliderTrait,
         other_position: Vec3,
+        other_colliders: &Vec<(&Collider, Vec3)>,
+        step_height: f32,
     ) -> Vec3 {
         let mut result = end_position;
 
@@ -50,6 +52,8 @@ impl ColliderTrait for AabbCollider {
                 result,
                 &other_collider,
                 other_position,
+                other_colliders,
+                step_height,
             );
         }
 
@@ -83,6 +87,8 @@ impl AabbCollider {
         end_position: Vec3,
         other_collider: &AabbCollider,
         other_position: Vec3,
+        all_colliders: &Vec<(&Collider, Vec3)>,
+        step_height: f32,
     ) -> Vec3 {
         let distance = (other_position + other_collider.offset)
             - (end_position + self.offset);
@@ -92,6 +98,34 @@ impl AabbCollider {
 
         if !(intersection.max_element() < 0.) {
             return end_position;
+        }
+
+        // Try step-up
+        if intersection.abs().x == intersection.abs().min_element()
+            || intersection.abs().z == intersection.abs().min_element()
+        {
+            let current_step_height = -intersection.y;
+
+            if current_step_height <= step_height {
+                let mut blocking = false;
+                let step_up_pos =
+                    end_position + (Vec3::Y * current_step_height);
+
+                for (other_col, other_pos) in all_colliders {
+                    if self.is_colliding_with(
+                        step_up_pos,
+                        *other_col,
+                        *other_pos,
+                    ) {
+                        blocking = true;
+                        break;
+                    }
+                }
+
+                if !blocking {
+                    return step_up_pos;
+                }
+            }
         }
 
         if intersection.abs().x == intersection.abs().min_element() {
