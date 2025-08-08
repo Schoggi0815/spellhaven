@@ -3,6 +3,7 @@ use crate::player::player_component::spawn_player;
 use crate::player::player_movement::{move_body, movement};
 use crate::player::player_state::PlayerState;
 use crate::ui::main_menu_state::MainMenuState;
+use avian3d::prelude::{PhysicsSchedule, PhysicsStepSet};
 use bevy::core_pipeline::experimental::taa::TemporalAntiAliasPlugin;
 use bevy::prelude::*;
 
@@ -13,6 +14,10 @@ impl Plugin for PlayerPlugin {
         app.init_state::<PlayerState>()
             .add_plugins(TemporalAntiAliasPlugin)
             .add_systems(Update, (movement, move_camera, move_body))
-            .add_systems(OnEnter(MainMenuState::Hidden), spawn_player);
+            .add_systems(OnEnter(MainMenuState::Hidden), spawn_player)
+            .add_systems(
+                PhysicsSchedule,
+                movement.before(PhysicsStepSet::BroadPhase),
+            );
     }
 }

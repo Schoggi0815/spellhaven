@@ -1,3 +1,7 @@
+use avian3d::{
+    math::{Quaternion, Vector},
+    prelude::{Collider, RigidBody, ShapeCaster},
+};
 use bevy::{
     core_pipeline::{bloom::Bloom, tonemapping::Tonemapping},
     pbr::Atmosphere,
@@ -8,20 +12,14 @@ use bevy::{
     },
 };
 use bevy_panorbit_camera::PanOrbitCamera;
-use bevy_rapier3d::prelude::*;
 
 use crate::{
-    player::player_state::PlayerState,
-    utils::velocity::HorizontalVelocity,
-    world_generation::{
-        chunk_generation::VOXEL_SIZE, chunk_loading::chunk_loader::ChunkLoader,
-    },
+    player::player_state::PlayerState, utils::velocity::HorizontalVelocity,
+    world_generation::chunk_loading::chunk_loader::ChunkLoader,
 };
 
 #[derive(Component)]
 pub struct Player {
-    pub velocity: Vec3,
-    pub jumped: bool,
     pub fly: bool,
 }
 
@@ -42,23 +40,16 @@ pub(super) fn spawn_player(
 
     // Player
     commands.spawn((
-        RigidBody::KinematicPositionBased,
+        RigidBody::Kinematic,
         Transform::from_xyz(0., 2200., 0.),
-        Collider::cuboid(0.4, 0.9, 0.4),
-        KinematicCharacterController {
-            offset: CharacterLength::Absolute(0.01),
-            autostep: Some(CharacterAutostep {
-                min_width: CharacterLength::Absolute(0.01),
-                max_height: CharacterLength::Absolute(VOXEL_SIZE + 0.1),
-                include_dynamic_bodies: true,
-            }),
-            ..default()
-        },
-        Player {
-            velocity: Vec3::ZERO,
-            jumped: false,
-            fly: true,
-        },
+        Collider::cuboid(0.8, 1.8, 0.8),
+        ShapeCaster::new(
+            Collider::cuboid(0.79, 1.79, 0.79),
+            Vector::ZERO,
+            Quaternion::default(),
+            Dir3::NEG_Y,
+        ),
+        Player { fly: true },
         HorizontalVelocity::default(),
         ChunkLoader::default(),
         Name::new("Player"),
