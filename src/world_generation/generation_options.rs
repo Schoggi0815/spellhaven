@@ -1,215 +1,173 @@
-use crate::world_generation::chunk_generation::voxel_generation::StructureGenerator;
-use crate::world_generation::chunk_generation::BlockType;
-use crate::world_generation::chunk_loading::country_cache::{
-    CountryCache, PathCache, StructureCache,
+use crate::{
+    utils::file_utils::read_ron_from_file,
+    world_generation::chunk_generation::{
+        VOXEL_SIZE,
+        block_type::BlockType,
+        noise::terrain_noise::{TERRAIN_NOISE_FILE_PATH, TerrainNoise},
+        structures::{
+            oak_structure_generator::OakStructureGenerator,
+            structure_generator::{StructureGenerator, VoxelStructureMetadata},
+            tree_structure_generator::TreeStructureGenerator,
+        },
+    },
 };
-use bevy::prelude::{IVec2, Resource};
-use bracket_noise::prelude::FastNoise;
-use bracket_noise::prelude::NoiseType::WhiteNoise;
+use bevy::prelude::*;
+use fastnoise_lite::FastNoiseLite;
+use noise::{Constant, Multiply, NoiseFn, ScalePoint};
 use rand::prelude::StdRng;
 use rand::{Rng, SeedableRng};
-use std::collections::HashMap;
-use std::hash::Hash;
-use std::ops::Deref;
-use std::sync::{Arc, RwLock};
-use vox_format::{from_file, VoxData};
+use std::sync::Arc;
 
 #[derive(Resource)]
-pub struct GenerationOptionsResource(
-    pub Arc<GenerationOptions>,
-    pub HashMap<IVec2, GenerationState<CountryCache>>,
-);
+pub struct GenerationOptionsResource(pub Arc<GenerationOptions>);
 
 impl GenerationOptionsResource {
     pub fn from_seed(seed: u64) -> Self {
-        let tree = vox_data_to_structure_data(&from_file("assets/tree_2.vox").unwrap());
-        let tree_house = vox_data_to_structure_data(&from_file("assets/tree_house.vox").unwrap());
-        let box_structure = vox_data_to_structure_data(&from_file("assets/box.vox").unwrap());
+        // let tree_house = vox_data_to_structure_data(
+        //     &from_file("assets/tree_house.vox").unwrap(),
+        // );
+        // let box_structure =
+        //     vox_data_to_structure_data(&from_file("assets/box.vox").unwrap());
+        let terrain_noise: TerrainNoise =
+            read_ron_from_file(TERRAIN_NOISE_FILE_PATH)
+                .expect("Failed loading terrain noise config.");
+
+        // let tree_model: StructureModel =
+        //     read_ron_from_file("assets/tree_test.ron")
+        //         .expect("Failed to load tree model.");
 
         let mut rng = StdRng::seed_from_u64(seed);
 
-        Self {
-            0: Arc::new(GenerationOptions {
-                seed,
-                path_cache: GenerationCache::new(),
-                structure_cache: GenerationCache::new(),
-                structures: vec![
-                    StructureGenerator {
-                        model: tree.0.clone(),
-                        model_size: tree.1,
-                        noise: get_seeded_white_noise(rng.gen()),
-                        generation_size: [30, 30],
-                        grid_offset: [15, 15],
-                        generate_debug_blocks: false,
-                        debug_rgb_multiplier: [1., 0., 0.],
-                    },
-                    StructureGenerator {
-                        model: tree.0.clone(),
-                        model_size: tree.1,
-                        noise: get_seeded_white_noise(rng.gen()),
-                        generation_size: [30, 30],
-                        grid_offset: [0, 0],
-                        generate_debug_blocks: false,
-                        debug_rgb_multiplier: [0., 1., 0.],
-                    },
-                    StructureGenerator {
-                        model: tree_house.0.clone(),
-                        model_size: tree_house.1,
-                        noise: get_seeded_white_noise(rng.gen()),
-                        generation_size: [1000, 1000],
-                        grid_offset: [7, 11],
+        Self(Arc::new(GenerationOptions {
+            seed,
+            terrain_noise,
+            generate_paths: true,
+            structure_generators: vec![
+                Arc::new(Box::new(OakStructureGenerator::new(
+                    VoxelStructureMetadata {
+                        model_size: [27, 27, 27],
+                        generation_size: [64, 64],
+                        grid_offset: [24, 16],
                         generate_debug_blocks: false,
                         debug_rgb_multiplier: [1., 1., 1.],
+                        noise: get_seeded_white_noise(rng.random()),
                     },
-                ],
-                structure_assets: vec![StructureAsset((*box_structure.0).clone())],
-            }),
-            1: HashMap::new(),
-        }
+                ))),
+                Arc::new(Box::new(OakStructureGenerator::new(
+                    VoxelStructureMetadata {
+                        model_size: [27, 27, 27],
+                        generation_size: [64, 64],
+                        grid_offset: [43, 52],
+                        generate_debug_blocks: false,
+                        debug_rgb_multiplier: [1., 1., 1.],
+                        noise: get_seeded_white_noise(rng.random()),
+                    },
+                ))),
+                Arc::new(Box::new(OakStructureGenerator::new(
+                    VoxelStructureMetadata {
+                        model_size: [27, 27, 27],
+                        generation_size: [64, 64],
+                        grid_offset: [10, 4],
+                        generate_debug_blocks: false,
+                        debug_rgb_multiplier: [1., 1., 1.],
+                        noise: get_seeded_white_noise(rng.random()),
+                    },
+                ))),
+                // Arc::new(Box::new(FixedStructureGenerator {
+                //     fixed_structure_model: Arc::new(tree_model.blocks),
+                //     fixed_structure_metadata: VoxelStructureMetadata {
+                //         model_size: tree_model.model_size.to_array(),
+                //         generation_size: [10, 10],
+                //         grid_offset: [7, 4],
+                //         generate_debug_blocks: false,
+                //         debug_rgb_multiplier: [1., 1., 1.],
+                //         noise: get_seeded_white_noise(rng.random()),
+                //     },
+                // })),
+            ],
+            structure_assets: vec![
+                // StructureAsset {
+                //     _blocks: (*box_structure.0).clone(),
+                // }
+            ],
+        }))
     }
 }
 
-impl Default for GenerationOptionsResource {
-    fn default() -> Self {
-        Self::from_seed(3)
-    }
-}
-
-fn get_seeded_white_noise(seed: u64) -> FastNoise {
-    let mut noise = FastNoise::seeded(seed);
-    noise.set_noise_type(WhiteNoise);
-    noise.set_frequency(0.1);
+fn get_seeded_white_noise(seed: u64) -> FastNoiseLite {
+    let mut noise = FastNoiseLite::with_seed(seed as i32);
+    noise.set_noise_type(Some(fastnoise_lite::NoiseType::Value));
+    noise.set_frequency(Some(100.));
     noise
-}
-
-pub enum GenerationState<T> {
-    Generating,
-    Some(T),
 }
 
 pub struct GenerationOptions {
     pub seed: u64,
-    pub structures: Vec<StructureGenerator>,
+    pub structure_generators:
+        Vec<Arc<Box<dyn StructureGenerator + Send + Sync>>>,
     pub structure_assets: Vec<StructureAsset>,
-    pub path_cache: GenerationCache<IVec2, PathCache>,
-    pub structure_cache: GenerationCache<IVec2, StructureCache>,
+    pub generate_paths: bool,
+    pub terrain_noise: TerrainNoise,
 }
 
-pub trait GenerationCacheItem<K: Copy + Eq + Hash> {
-    fn generate(key: K, generation_options: &GenerationOptions) -> Self;
-}
-
-pub struct GenerationCache<K: Copy + Eq + Hash, T: GenerationCacheItem<K>> {
-    cache_lock: RwLock<HashMap<K, Arc<RwLock<Option<Arc<T>>>>>>,
-}
-
-impl<K: Copy + Eq + Hash, T: GenerationCacheItem<K>> GenerationCache<K, T> {
-    pub fn new() -> Self {
-        Self {
-            cache_lock: RwLock::new(HashMap::new()),
-        }
-    }
-
-    pub fn get_cache_entry(&self, key: K, generation_options: &GenerationOptions) -> Arc<T> {
-        self.get_generated_cache_entry(self.get_hash_lock_entry(key), key, generation_options)
-    }
-
-    pub fn try_get_entry_no_lock(&self, key: K) -> Option<Arc<T>> {
-        match self.cache_lock.try_read() {
-            Ok(read) => {
-                let entry = read.get(&key)?;
-                match entry.try_read() {
-                    Ok(read) => match read.deref() {
-                        None => None,
-                        Some(t) => Some(t.clone()),
-                    },
-                    Err(_) => None,
-                }
-            }
-            Err(_) => None,
-        }
-    }
-
-    fn get_hash_lock_entry(&self, key: K) -> Arc<RwLock<Option<Arc<T>>>> {
-        let read = self.cache_lock.read().unwrap();
-        match read.get(&key) {
-            None => {
-                drop(read);
-                let mut write = self.cache_lock.write().unwrap();
-                let result = match write.get(&key) {
-                    None => {
-                        let lock = Arc::new(RwLock::new(None));
-                        write.insert(key, lock);
-                        write.get(&key).unwrap().clone()
-                    }
-                    Some(cache) => cache.clone(),
-                };
-                drop(write);
-                result
-            }
-            Some(cache) => cache.clone(),
-        }
-    }
-
-    fn get_generated_cache_entry(
-        &self,
-        hash_lock_entry: Arc<RwLock<Option<Arc<T>>>>,
-        key: K,
-        generation_options: &GenerationOptions,
-    ) -> Arc<T> {
-        let read = hash_lock_entry.read().unwrap();
-        match read.deref() {
-            None => {
-                drop(read);
-                let mut write = hash_lock_entry.write().unwrap();
-                match write.deref() {
-                    None => write
-                        .insert(Arc::new(T::generate(key, generation_options)))
-                        .clone(),
-                    Some(country_cache) => country_cache.clone(),
-                }
-            }
-            Some(country_cache) => country_cache.clone(),
-        }
+impl GenerationOptions {
+    pub fn get_terrain_noise(&self) -> impl NoiseFn<f64, 2> {
+        Multiply::new(
+            ScalePoint::new(
+                self.terrain_noise
+                    .get_noise_fn(&mut StdRng::seed_from_u64(self.seed + 1)),
+            )
+            .set_scale(VOXEL_SIZE as f64),
+            Constant::new(1. / VOXEL_SIZE as f64),
+        )
     }
 }
 
-pub struct StructureAsset(Vec<Vec<Vec<BlockType>>>);
-
-fn vox_data_to_blocks(vox_data: &VoxData) -> Vec<Vec<Vec<BlockType>>> {
-    let model = vox_data.models.first().unwrap();
-    let mut result: Vec<Vec<Vec<BlockType>>> = Vec::with_capacity(model.size.x as usize);
-    for x in 0..model.size.x {
-        result.push(Vec::with_capacity(model.size.z as usize));
-        for y in 0..model.size.z {
-            result[x as usize].push(Vec::with_capacity(model.size.y as usize));
-            for _ in 0..model.size.y {
-                result[x as usize][y as usize].push(BlockType::Air);
-            }
-        }
-    }
-
-    for voxel in model.voxels.iter() {
-        let color = vox_data.palette.colors[voxel.color_index.0 as usize];
-        result[voxel.point.x as usize][voxel.point.z as usize][voxel.point.y as usize] =
-            BlockType::Custom(color.r, color.g, color.b);
-    }
-
-    result
+pub struct StructureAsset {
+    pub _blocks: Vec<Vec<Vec<BlockType>>>,
 }
 
-fn vox_data_model_size(vox_data: &VoxData) -> [i32; 3] {
-    let model_size = vox_data.models.first().unwrap().size;
-    [
-        model_size.x as i32,
-        model_size.z as i32,
-        model_size.y as i32,
-    ]
-}
+// fn vox_data_to_blocks(vox_data: &VoxData) -> Vec<Vec<Vec<BlockType>>> {
+//     let model = vox_data.models.first().unwrap();
+//     let mut result: Vec<Vec<Vec<BlockType>>> =
+//         Vec::with_capacity(model.size.x as usize);
+//     for x in 0..model.size.x {
+//         result.push(Vec::with_capacity(model.size.z as usize));
+//         for y in 0..model.size.z {
+//             result[x as usize].push(Vec::with_capacity(model.size.y as usize));
+//             for _ in 0..model.size.y {
+//                 result[x as usize][y as usize].push(BlockType::Air);
+//             }
+//         }
+//     }
 
-fn vox_data_to_structure_data(vox_data: &VoxData) -> (Arc<Vec<Vec<Vec<BlockType>>>>, [i32; 3]) {
-    (
-        Arc::new(vox_data_to_blocks(vox_data)),
-        vox_data_model_size(vox_data),
-    )
-}
+//     for voxel in model.voxels.iter() {
+//         //let color = vox_data.palette.colors[voxel.color_index.0 as usize];
+//         let [x, y, z] = [
+//             voxel.point.x as usize,
+//             voxel.point.y as usize,
+//             voxel.point.z as usize,
+//         ];
+//         result[x][z][y] = BlockType::Stone;
+//     }
+
+//     result
+// }
+
+// fn vox_data_model_size(vox_data: &VoxData) -> [i32; 3] {
+//     let model_size = vox_data.models.first().unwrap().size;
+//     [
+//         model_size.x as i32,
+//         model_size.z as i32,
+//         model_size.y as i32,
+//     ]
+// }
+
+// fn vox_data_to_structure_data(
+//     vox_data: &VoxData,
+// ) -> (Arc<Vec<Vec<Vec<BlockType>>>>, [i32; 3]) {
+//     (
+//         Arc::new(vox_data_to_blocks(vox_data)),
+//         vox_data_model_size(vox_data),
+//     )
+// }
