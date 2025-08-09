@@ -1,4 +1,4 @@
-pub const MAX_LOD: ChunkLod = ChunkLod::TwoFiftySix;
+pub const MAX_LOD: ChunkLod = ChunkLod::FiveTwelve;
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Default)]
 pub enum ChunkLod {
@@ -12,6 +12,7 @@ pub enum ChunkLod {
     Sixtyfourth = 7,
     OneTwentyEight = 8,
     TwoFiftySix = 9,
+    FiveTwelve = 10,
 }
 
 impl From<ChunkLod> for i32 {

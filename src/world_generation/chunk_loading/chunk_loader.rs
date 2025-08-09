@@ -21,7 +21,7 @@ impl Default for ChunkLoader {
         Self {
             load_range: 10,
             unload_range: 12,
-            lod_range: [4, 8, 16, 32, 64, 128, 256, 512],
+            lod_range: [4, 8, 16, 32, 64, 128, 256, 512, 1024],
         }
     }
 }

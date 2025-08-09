@@ -31,12 +31,26 @@ pub(super) struct PlayerCamera;
 
 pub(super) fn spawn_player(
     mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<StandardMaterial>>,
     mut player_state: ResMut<NextState<PlayerState>>,
-    asset_server: Res<AssetServer>,
-) {
+    mut ray_cast: MeshRayCast,
+) -> Result {
     player_state.set(PlayerState::Spawend);
+
+    let ray = Ray3d::new(Vec3::Y * 5000., Dir3::NEG_Y);
+    let Some((_, hit)) = ray_cast
+        .cast_ray(
+            ray,
+            &MeshRayCastSettings {
+                visibility: RayCastVisibility::Any,
+                ..Default::default()
+            },
+        )
+        .first()
+    else {
+        return Err("Could not spawn player!".into());
+    };
+
+    let spawn_point = hit.point + Vec3::Y;
 
     // Player
     commands.spawn((
@@ -45,10 +59,10 @@ pub(super) fn spawn_player(
             ..Default::default()
         },
         PhysicsPosition {
-            position: Vec3::new(0., 2200., 0.),
+            position: spawn_point,
             ..Default::default()
         },
-        Transform::from_xyz(0., 2200., 0.),
+        Transform::from_translation(spawn_point),
         Collider::aabb(Vec3::new(0.8, 1.8, 0.8), Vec3::ZERO),
         Player { fly: false },
         ChunkLoader::default(),
@@ -83,6 +97,15 @@ pub(super) fn spawn_player(
         Name::new("PlayerCamera"),
     ));
 
+    Ok(())
+}
+
+pub(super) fn spawn_player_body(
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
+    asset_server: Res<AssetServer>,
+) {
     commands
         .spawn((PlayerBody, Name::new("PlayerBody"), Mesh3d::default()))
         .with_children(|commands| {

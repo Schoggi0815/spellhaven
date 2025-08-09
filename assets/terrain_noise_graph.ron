@@ -545,21 +545,30 @@
                 value: Some((
                     id: (
                         idx: 19,
-                        version: 1,
+                        version: 3,
                     ),
-                    label: "Simplex Noise",
-                    inputs: [],
-                    outputs: [
-                        ("out", (
-                            idx: 18,
+                    label: "Divide",
+                    inputs: [
+                        ("A", (
+                            idx: 64,
+                            version: 1,
+                        )),
+                        ("B", (
+                            idx: 65,
                             version: 1,
                         )),
                     ],
+                    outputs: [
+                        ("out", (
+                            idx: 18,
+                            version: 3,
+                        )),
+                    ],
                     user_data: (
-                        template: SimplexNoise,
+                        template: DivideF64,
                     ),
                 )),
-                version: 1,
+                version: 3,
             ),
             (
                 value: Some((
@@ -752,21 +761,26 @@
                 value: Some((
                     id: (
                         idx: 27,
-                        version: 1,
+                        version: 3,
                     ),
                     label: "Simplex Noise",
-                    inputs: [],
+                    inputs: [
+                        ("seed", (
+                            idx: 62,
+                            version: 1,
+                        )),
+                    ],
                     outputs: [
                         ("out", (
                             idx: 26,
-                            version: 1,
+                            version: 3,
                         )),
                     ],
                     user_data: (
                         template: SimplexNoise,
                     ),
                 )),
-                version: 1,
+                version: 3,
             ),
             (
                 value: Some((
@@ -934,18 +948,381 @@
                 value: Some((
                     id: (
                         idx: 34,
-                        version: 1,
+                        version: 3,
                     ),
                     label: "Simplex Noise",
-                    inputs: [],
+                    inputs: [
+                        ("seed", (
+                            idx: 63,
+                            version: 1,
+                        )),
+                    ],
                     outputs: [
                         ("out", (
                             idx: 33,
+                            version: 3,
+                        )),
+                    ],
+                    user_data: (
+                        template: SimplexNoise,
+                    ),
+                )),
+                version: 3,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 35,
+                        version: 1,
+                    ),
+                    label: "Simplex Noise",
+                    inputs: [
+                        ("seed", (
+                            idx: 61,
+                            version: 1,
+                        )),
+                    ],
+                    outputs: [
+                        ("out", (
+                            idx: 34,
                             version: 1,
                         )),
                     ],
                     user_data: (
                         template: SimplexNoise,
+                    ),
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 36,
+                        version: 1,
+                    ),
+                    label: "Random Number",
+                    inputs: [],
+                    outputs: [
+                        ("random int", (
+                            idx: 35,
+                            version: 1,
+                        )),
+                    ],
+                    user_data: (
+                        template: RandomI64,
+                    ),
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 37,
+                        version: 1,
+                    ),
+                    label: "Random Number",
+                    inputs: [],
+                    outputs: [
+                        ("random int", (
+                            idx: 36,
+                            version: 1,
+                        )),
+                    ],
+                    user_data: (
+                        template: RandomI64,
+                    ),
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 38,
+                        version: 1,
+                    ),
+                    label: "Random Number",
+                    inputs: [],
+                    outputs: [
+                        ("random int", (
+                            idx: 37,
+                            version: 1,
+                        )),
+                    ],
+                    user_data: (
+                        template: RandomI64,
+                    ),
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 39,
+                        version: 3,
+                    ),
+                    label: "Translate Point",
+                    inputs: [
+                        ("X", (
+                            idx: 66,
+                            version: 1,
+                        )),
+                        ("Y", (
+                            idx: 67,
+                            version: 1,
+                        )),
+                        ("noise", (
+                            idx: 68,
+                            version: 1,
+                        )),
+                    ],
+                    outputs: [
+                        ("out", (
+                            idx: 38,
+                            version: 3,
+                        )),
+                    ],
+                    user_data: (
+                        template: TranslatePoint,
+                    ),
+                )),
+                version: 3,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 40,
+                        version: 1,
+                    ),
+                    label: "Random Float",
+                    inputs: [
+                        ("min", (
+                            idx: 69,
+                            version: 1,
+                        )),
+                        ("max", (
+                            idx: 70,
+                            version: 1,
+                        )),
+                    ],
+                    outputs: [
+                        ("random float", (
+                            idx: 39,
+                            version: 1,
+                        )),
+                    ],
+                    user_data: (
+                        template: RandomF64,
+                    ),
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 41,
+                        version: 1,
+                    ),
+                    label: "Random Float",
+                    inputs: [
+                        ("min", (
+                            idx: 71,
+                            version: 1,
+                        )),
+                        ("max", (
+                            idx: 72,
+                            version: 1,
+                        )),
+                    ],
+                    outputs: [
+                        ("random float", (
+                            idx: 40,
+                            version: 1,
+                        )),
+                    ],
+                    user_data: (
+                        template: RandomF64,
+                    ),
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 42,
+                        version: 1,
+                    ),
+                    label: "Translate Point",
+                    inputs: [
+                        ("X", (
+                            idx: 73,
+                            version: 1,
+                        )),
+                        ("Y", (
+                            idx: 74,
+                            version: 1,
+                        )),
+                        ("noise", (
+                            idx: 75,
+                            version: 1,
+                        )),
+                    ],
+                    outputs: [
+                        ("out", (
+                            idx: 41,
+                            version: 1,
+                        )),
+                    ],
+                    user_data: (
+                        template: TranslatePoint,
+                    ),
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 43,
+                        version: 1,
+                    ),
+                    label: "Random Float",
+                    inputs: [
+                        ("min", (
+                            idx: 76,
+                            version: 1,
+                        )),
+                        ("max", (
+                            idx: 77,
+                            version: 1,
+                        )),
+                    ],
+                    outputs: [
+                        ("random float", (
+                            idx: 42,
+                            version: 1,
+                        )),
+                    ],
+                    user_data: (
+                        template: RandomF64,
+                    ),
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 44,
+                        version: 1,
+                    ),
+                    label: "Random Float",
+                    inputs: [
+                        ("min", (
+                            idx: 78,
+                            version: 1,
+                        )),
+                        ("max", (
+                            idx: 79,
+                            version: 1,
+                        )),
+                    ],
+                    outputs: [
+                        ("random float", (
+                            idx: 43,
+                            version: 1,
+                        )),
+                    ],
+                    user_data: (
+                        template: RandomF64,
+                    ),
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 45,
+                        version: 1,
+                    ),
+                    label: "Translate Point",
+                    inputs: [
+                        ("X", (
+                            idx: 80,
+                            version: 1,
+                        )),
+                        ("Y", (
+                            idx: 81,
+                            version: 1,
+                        )),
+                        ("noise", (
+                            idx: 82,
+                            version: 1,
+                        )),
+                    ],
+                    outputs: [
+                        ("out", (
+                            idx: 44,
+                            version: 1,
+                        )),
+                    ],
+                    user_data: (
+                        template: TranslatePoint,
+                    ),
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 46,
+                        version: 1,
+                    ),
+                    label: "Random Float",
+                    inputs: [
+                        ("min", (
+                            idx: 83,
+                            version: 1,
+                        )),
+                        ("max", (
+                            idx: 84,
+                            version: 1,
+                        )),
+                    ],
+                    outputs: [
+                        ("random float", (
+                            idx: 45,
+                            version: 1,
+                        )),
+                    ],
+                    user_data: (
+                        template: RandomF64,
+                    ),
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 47,
+                        version: 1,
+                    ),
+                    label: "Random Float",
+                    inputs: [
+                        ("min", (
+                            idx: 85,
+                            version: 1,
+                        )),
+                        ("max", (
+                            idx: 86,
+                            version: 1,
+                        )),
+                    ],
+                    outputs: [
+                        ("random float", (
+                            idx: 46,
+                            version: 1,
+                        )),
+                    ],
+                    user_data: (
+                        template: RandomF64,
                     ),
                 )),
                 version: 1,
@@ -983,7 +1360,7 @@
                     ),
                     typ: F64,
                     value: F64(
-                        value: -1.0,
+                        value_or_index: Value(-1.0),
                     ),
                     kind: ConnectionOrConstant,
                     node: (
@@ -1078,7 +1455,7 @@
                     ),
                     typ: F64,
                     value: F64(
-                        value: 0.0,
+                        value_or_index: Value(0.0),
                     ),
                     kind: ConnectionOrConstant,
                     node: (
@@ -1116,7 +1493,7 @@
                     ),
                     typ: F64,
                     value: F64(
-                        value: 0.0,
+                        value_or_index: Value(0.0),
                     ),
                     kind: ConnectionOrConstant,
                     node: (
@@ -1192,7 +1569,7 @@
                     ),
                     typ: I64,
                     value: I64(
-                        value: 11,
+                        value_or_index: Value(11),
                     ),
                     kind: ConnectionOrConstant,
                     node: (
@@ -1211,7 +1588,7 @@
                     ),
                     typ: F64,
                     value: F64(
-                        value: 1.0,
+                        value_or_index: Value(1.0),
                     ),
                     kind: ConnectionOrConstant,
                     node: (
@@ -1230,7 +1607,7 @@
                     ),
                     typ: F64,
                     value: F64(
-                        value: 2.0,
+                        value_or_index: Value(2.0),
                     ),
                     kind: ConnectionOrConstant,
                     node: (
@@ -1249,7 +1626,7 @@
                     ),
                     typ: F64,
                     value: F64(
-                        value: 0.5,
+                        value_or_index: Value(0.5),
                     ),
                     kind: ConnectionOrConstant,
                     node: (
@@ -1268,7 +1645,7 @@
                     ),
                     typ: F64,
                     value: F64(
-                        value: 1.0,
+                        value_or_index: Value(1.0),
                     ),
                     kind: ConnectionOrConstant,
                     node: (
@@ -1287,7 +1664,7 @@
                     ),
                     typ: F64,
                     value: F64(
-                        value: 500.0,
+                        value_or_index: Value(500.0),
                     ),
                     kind: ConnectionOrConstant,
                     node: (
@@ -1306,7 +1683,7 @@
                     ),
                     typ: F64,
                     value: F64(
-                        value: 0.5,
+                        value_or_index: Value(0.5),
                     ),
                     kind: ConnectionOrConstant,
                     node: (
@@ -1325,7 +1702,7 @@
                     ),
                     typ: F64,
                     value: F64(
-                        value: 13.0,
+                        value_or_index: Value(13.0),
                     ),
                     kind: ConnectionOrConstant,
                     node: (
@@ -1401,7 +1778,7 @@
                     ),
                     typ: F64,
                     value: F64(
-                        value: 4.0,
+                        value_or_index: Value(4.0),
                     ),
                     kind: ConnectionOrConstant,
                     node: (
@@ -1420,7 +1797,7 @@
                     ),
                     typ: F64,
                     value: F64(
-                        value: 0.5,
+                        value_or_index: Value(0.5),
                     ),
                     kind: ConnectionOrConstant,
                     node: (
@@ -1458,7 +1835,7 @@
                     ),
                     typ: I64,
                     value: I64(
-                        value: 11,
+                        value_or_index: Value(11),
                     ),
                     kind: ConnectionOrConstant,
                     node: (
@@ -1477,7 +1854,7 @@
                     ),
                     typ: F64,
                     value: F64(
-                        value: 1.0,
+                        value_or_index: Value(1.0),
                     ),
                     kind: ConnectionOrConstant,
                     node: (
@@ -1496,7 +1873,7 @@
                     ),
                     typ: F64,
                     value: F64(
-                        value: 2.0,
+                        value_or_index: Value(2.0),
                     ),
                     kind: ConnectionOrConstant,
                     node: (
@@ -1515,7 +1892,7 @@
                     ),
                     typ: F64,
                     value: F64(
-                        value: 0.5,
+                        value_or_index: Value(0.5),
                     ),
                     kind: ConnectionOrConstant,
                     node: (
@@ -1534,7 +1911,7 @@
                     ),
                     typ: F64,
                     value: F64(
-                        value: 1.0,
+                        value_or_index: Value(1.0),
                     ),
                     kind: ConnectionOrConstant,
                     node: (
@@ -1553,7 +1930,7 @@
                     ),
                     typ: F64,
                     value: F64(
-                        value: 3750.0,
+                        value_or_index: Value(3750.0),
                     ),
                     kind: ConnectionOrConstant,
                     node: (
@@ -1648,7 +2025,7 @@
                     ),
                     typ: F64,
                     value: F64(
-                        value: 0.5,
+                        value_or_index: Value(0.5),
                     ),
                     kind: ConnectionOrConstant,
                     node: (
@@ -1686,7 +2063,7 @@
                     ),
                     typ: F64,
                     value: F64(
-                        value: 0.0,
+                        value_or_index: Value(0.0),
                     ),
                     kind: ConnectionOrConstant,
                     node: (
@@ -1705,7 +2082,7 @@
                     ),
                     typ: F64,
                     value: F64(
-                        value: 0.5,
+                        value_or_index: Value(0.5),
                     ),
                     kind: ConnectionOrConstant,
                     node: (
@@ -1724,7 +2101,7 @@
                     ),
                     typ: F64,
                     value: F64(
-                        value: 15.0,
+                        value_or_index: Value(15.0),
                     ),
                     kind: ConnectionOrConstant,
                     node: (
@@ -1743,7 +2120,7 @@
                     ),
                     typ: F64,
                     value: F64(
-                        value: 1.0,
+                        value_or_index: Value(1.0),
                     ),
                     kind: ConnectionOrConstant,
                     node: (
@@ -1800,7 +2177,7 @@
                     ),
                     typ: F64,
                     value: F64(
-                        value: 0.0,
+                        value_or_index: Value(0.0),
                     ),
                     kind: ConnectionOrConstant,
                     node: (
@@ -1857,7 +2234,7 @@
                     ),
                     typ: F64,
                     value: F64(
-                        value: 1.0,
+                        value_or_index: Value(1.0),
                     ),
                     kind: ConnectionOrConstant,
                     node: (
@@ -1914,7 +2291,7 @@
                     ),
                     typ: F64,
                     value: F64(
-                        value: 0.5,
+                        value_or_index: Value(0.5),
                     ),
                     kind: ConnectionOrConstant,
                     node: (
@@ -1971,7 +2348,7 @@
                     ),
                     typ: F64,
                     value: F64(
-                        value: 1.0,
+                        value_or_index: Value(1.0),
                     ),
                     kind: ConnectionOrConstant,
                     node: (
@@ -2028,7 +2405,7 @@
                     ),
                     typ: F64,
                     value: F64(
-                        value: 0.5,
+                        value_or_index: Value(0.5),
                     ),
                     kind: ConnectionOrConstant,
                     node: (
@@ -2085,11 +2462,505 @@
                     ),
                     typ: F64,
                     value: F64(
-                        value: 0.0,
+                        value_or_index: Value(0.0),
                     ),
                     kind: ConnectionOrConstant,
                     node: (
                         idx: 33,
+                        version: 1,
+                    ),
+                    shown_inline: true,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 61,
+                        version: 1,
+                    ),
+                    typ: I64,
+                    value: I64(
+                        value_or_index: Value(0),
+                    ),
+                    kind: ConnectionOrConstant,
+                    node: (
+                        idx: 35,
+                        version: 1,
+                    ),
+                    shown_inline: true,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 62,
+                        version: 1,
+                    ),
+                    typ: I64,
+                    value: I64(
+                        value_or_index: Value(0),
+                    ),
+                    kind: ConnectionOrConstant,
+                    node: (
+                        idx: 27,
+                        version: 3,
+                    ),
+                    shown_inline: true,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 63,
+                        version: 1,
+                    ),
+                    typ: I64,
+                    value: I64(
+                        value_or_index: Value(0),
+                    ),
+                    kind: ConnectionOrConstant,
+                    node: (
+                        idx: 34,
+                        version: 3,
+                    ),
+                    shown_inline: true,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 64,
+                        version: 1,
+                    ),
+                    typ: F64,
+                    value: F64(
+                        value_or_index: Value(1.0),
+                    ),
+                    kind: ConnectionOrConstant,
+                    node: (
+                        idx: 19,
+                        version: 3,
+                    ),
+                    shown_inline: true,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 65,
+                        version: 1,
+                    ),
+                    typ: F64,
+                    value: F64(
+                        value_or_index: Value(0.0),
+                    ),
+                    kind: ConnectionOrConstant,
+                    node: (
+                        idx: 19,
+                        version: 3,
+                    ),
+                    shown_inline: true,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 66,
+                        version: 1,
+                    ),
+                    typ: F64,
+                    value: F64(
+                        value_or_index: Value(0.0),
+                    ),
+                    kind: ConnectionOrConstant,
+                    node: (
+                        idx: 39,
+                        version: 3,
+                    ),
+                    shown_inline: true,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 67,
+                        version: 1,
+                    ),
+                    typ: F64,
+                    value: F64(
+                        value_or_index: Value(0.0),
+                    ),
+                    kind: ConnectionOrConstant,
+                    node: (
+                        idx: 39,
+                        version: 3,
+                    ),
+                    shown_inline: true,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 68,
+                        version: 1,
+                    ),
+                    typ: NoiseF64x2,
+                    value: NoiseF64x2(
+                        noise_index: 0,
+                    ),
+                    kind: ConnectionOrConstant,
+                    node: (
+                        idx: 39,
+                        version: 3,
+                    ),
+                    shown_inline: true,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 69,
+                        version: 1,
+                    ),
+                    typ: F64,
+                    value: F64(
+                        value_or_index: Value(-2000.0),
+                    ),
+                    kind: ConnectionOrConstant,
+                    node: (
+                        idx: 40,
+                        version: 1,
+                    ),
+                    shown_inline: true,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 70,
+                        version: 1,
+                    ),
+                    typ: F64,
+                    value: F64(
+                        value_or_index: Value(2000.0),
+                    ),
+                    kind: ConnectionOrConstant,
+                    node: (
+                        idx: 40,
+                        version: 1,
+                    ),
+                    shown_inline: true,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 71,
+                        version: 1,
+                    ),
+                    typ: F64,
+                    value: F64(
+                        value_or_index: Value(-2000.0),
+                    ),
+                    kind: ConnectionOrConstant,
+                    node: (
+                        idx: 41,
+                        version: 1,
+                    ),
+                    shown_inline: true,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 72,
+                        version: 1,
+                    ),
+                    typ: F64,
+                    value: F64(
+                        value_or_index: Value(2000.0),
+                    ),
+                    kind: ConnectionOrConstant,
+                    node: (
+                        idx: 41,
+                        version: 1,
+                    ),
+                    shown_inline: true,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 73,
+                        version: 1,
+                    ),
+                    typ: F64,
+                    value: F64(
+                        value_or_index: Value(0.0),
+                    ),
+                    kind: ConnectionOrConstant,
+                    node: (
+                        idx: 42,
+                        version: 1,
+                    ),
+                    shown_inline: true,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 74,
+                        version: 1,
+                    ),
+                    typ: F64,
+                    value: F64(
+                        value_or_index: Value(0.0),
+                    ),
+                    kind: ConnectionOrConstant,
+                    node: (
+                        idx: 42,
+                        version: 1,
+                    ),
+                    shown_inline: true,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 75,
+                        version: 1,
+                    ),
+                    typ: NoiseF64x2,
+                    value: NoiseF64x2(
+                        noise_index: 0,
+                    ),
+                    kind: ConnectionOrConstant,
+                    node: (
+                        idx: 42,
+                        version: 1,
+                    ),
+                    shown_inline: true,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 76,
+                        version: 1,
+                    ),
+                    typ: F64,
+                    value: F64(
+                        value_or_index: Value(-2000.0),
+                    ),
+                    kind: ConnectionOrConstant,
+                    node: (
+                        idx: 43,
+                        version: 1,
+                    ),
+                    shown_inline: true,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 77,
+                        version: 1,
+                    ),
+                    typ: F64,
+                    value: F64(
+                        value_or_index: Value(2000.0),
+                    ),
+                    kind: ConnectionOrConstant,
+                    node: (
+                        idx: 43,
+                        version: 1,
+                    ),
+                    shown_inline: true,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 78,
+                        version: 1,
+                    ),
+                    typ: F64,
+                    value: F64(
+                        value_or_index: Value(-2000.0),
+                    ),
+                    kind: ConnectionOrConstant,
+                    node: (
+                        idx: 44,
+                        version: 1,
+                    ),
+                    shown_inline: true,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 79,
+                        version: 1,
+                    ),
+                    typ: F64,
+                    value: F64(
+                        value_or_index: Value(2000.0),
+                    ),
+                    kind: ConnectionOrConstant,
+                    node: (
+                        idx: 44,
+                        version: 1,
+                    ),
+                    shown_inline: true,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 80,
+                        version: 1,
+                    ),
+                    typ: F64,
+                    value: F64(
+                        value_or_index: Value(0.0),
+                    ),
+                    kind: ConnectionOrConstant,
+                    node: (
+                        idx: 45,
+                        version: 1,
+                    ),
+                    shown_inline: true,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 81,
+                        version: 1,
+                    ),
+                    typ: F64,
+                    value: F64(
+                        value_or_index: Value(0.0),
+                    ),
+                    kind: ConnectionOrConstant,
+                    node: (
+                        idx: 45,
+                        version: 1,
+                    ),
+                    shown_inline: true,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 82,
+                        version: 1,
+                    ),
+                    typ: NoiseF64x2,
+                    value: NoiseF64x2(
+                        noise_index: 0,
+                    ),
+                    kind: ConnectionOrConstant,
+                    node: (
+                        idx: 45,
+                        version: 1,
+                    ),
+                    shown_inline: true,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 83,
+                        version: 1,
+                    ),
+                    typ: F64,
+                    value: F64(
+                        value_or_index: Value(-2000.0),
+                    ),
+                    kind: ConnectionOrConstant,
+                    node: (
+                        idx: 46,
+                        version: 1,
+                    ),
+                    shown_inline: true,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 84,
+                        version: 1,
+                    ),
+                    typ: F64,
+                    value: F64(
+                        value_or_index: Value(2000.0),
+                    ),
+                    kind: ConnectionOrConstant,
+                    node: (
+                        idx: 46,
+                        version: 1,
+                    ),
+                    shown_inline: true,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 85,
+                        version: 1,
+                    ),
+                    typ: F64,
+                    value: F64(
+                        value_or_index: Value(-2000.0),
+                    ),
+                    kind: ConnectionOrConstant,
+                    node: (
+                        idx: 47,
+                        version: 1,
+                    ),
+                    shown_inline: true,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 86,
+                        version: 1,
+                    ),
+                    typ: F64,
+                    value: F64(
+                        value_or_index: Value(2000.0),
+                    ),
+                    kind: ConnectionOrConstant,
+                    node: (
+                        idx: 47,
                         version: 1,
                     ),
                     shown_inline: true,
@@ -2344,15 +3215,15 @@
                 value: Some((
                     id: (
                         idx: 18,
-                        version: 1,
+                        version: 3,
                     ),
                     node: (
                         idx: 19,
-                        version: 1,
+                        version: 3,
                     ),
-                    typ: NoiseF64x2,
+                    typ: F64,
                 )),
-                version: 1,
+                version: 3,
             ),
             (
                 value: Some((
@@ -2456,15 +3327,15 @@
                 value: Some((
                     id: (
                         idx: 26,
-                        version: 1,
+                        version: 3,
                     ),
                     node: (
                         idx: 27,
-                        version: 1,
+                        version: 3,
                     ),
                     typ: NoiseF64x2,
                 )),
-                version: 1,
+                version: 3,
             ),
             (
                 value: Some((
@@ -2554,13 +3425,195 @@
                 value: Some((
                     id: (
                         idx: 33,
-                        version: 1,
+                        version: 3,
                     ),
                     node: (
                         idx: 34,
+                        version: 3,
+                    ),
+                    typ: NoiseF64x2,
+                )),
+                version: 3,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 34,
+                        version: 1,
+                    ),
+                    node: (
+                        idx: 35,
                         version: 1,
                     ),
                     typ: NoiseF64x2,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 35,
+                        version: 1,
+                    ),
+                    node: (
+                        idx: 36,
+                        version: 1,
+                    ),
+                    typ: I64,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 36,
+                        version: 1,
+                    ),
+                    node: (
+                        idx: 37,
+                        version: 1,
+                    ),
+                    typ: I64,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 37,
+                        version: 1,
+                    ),
+                    node: (
+                        idx: 38,
+                        version: 1,
+                    ),
+                    typ: I64,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 38,
+                        version: 3,
+                    ),
+                    node: (
+                        idx: 39,
+                        version: 3,
+                    ),
+                    typ: NoiseF64x2,
+                )),
+                version: 3,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 39,
+                        version: 1,
+                    ),
+                    node: (
+                        idx: 40,
+                        version: 1,
+                    ),
+                    typ: F64,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 40,
+                        version: 1,
+                    ),
+                    node: (
+                        idx: 41,
+                        version: 1,
+                    ),
+                    typ: F64,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 41,
+                        version: 1,
+                    ),
+                    node: (
+                        idx: 42,
+                        version: 1,
+                    ),
+                    typ: NoiseF64x2,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 42,
+                        version: 1,
+                    ),
+                    node: (
+                        idx: 43,
+                        version: 1,
+                    ),
+                    typ: F64,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 43,
+                        version: 1,
+                    ),
+                    node: (
+                        idx: 44,
+                        version: 1,
+                    ),
+                    typ: F64,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 44,
+                        version: 1,
+                    ),
+                    node: (
+                        idx: 45,
+                        version: 1,
+                    ),
+                    typ: NoiseF64x2,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 45,
+                        version: 1,
+                    ),
+                    node: (
+                        idx: 46,
+                        version: 1,
+                    ),
+                    typ: F64,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    id: (
+                        idx: 46,
+                        version: 1,
+                    ),
+                    node: (
+                        idx: 47,
+                        version: 1,
+                    ),
+                    typ: F64,
                 )),
                 version: 1,
             ),
@@ -2611,8 +3664,8 @@
             ),
             (
                 value: Some((
-                    idx: 5,
-                    version: 1,
+                    idx: 18,
+                    version: 3,
                 )),
                 version: 1,
             ),
@@ -2783,8 +3836,8 @@
             ),
             (
                 value: Some((
-                    idx: 18,
-                    version: 1,
+                    idx: 38,
+                    version: 3,
                 )),
                 version: 1,
             ),
@@ -2834,7 +3887,7 @@
             ),
             (
                 value: Some((
-                    idx: 26,
+                    idx: 41,
                     version: 1,
                 )),
                 version: 3,
@@ -2863,7 +3916,7 @@
             ),
             (
                 value: Some((
-                    idx: 33,
+                    idx: 44,
                     version: 1,
                 )),
                 version: 1,
@@ -2911,6 +3964,137 @@
                 )),
                 version: 1,
             ),
+            (
+                value: None,
+                version: 0,
+            ),
+            (
+                value: Some((
+                    idx: 35,
+                    version: 1,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    idx: 36,
+                    version: 1,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    idx: 37,
+                    version: 1,
+                )),
+                version: 1,
+            ),
+            (
+                value: None,
+                version: 0,
+            ),
+            (
+                value: Some((
+                    idx: 5,
+                    version: 1,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    idx: 40,
+                    version: 1,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    idx: 39,
+                    version: 1,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    idx: 34,
+                    version: 1,
+                )),
+                version: 1,
+            ),
+            (
+                value: None,
+                version: 0,
+            ),
+            (
+                value: None,
+                version: 0,
+            ),
+            (
+                value: None,
+                version: 0,
+            ),
+            (
+                value: None,
+                version: 0,
+            ),
+            (
+                value: Some((
+                    idx: 43,
+                    version: 1,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    idx: 42,
+                    version: 1,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    idx: 26,
+                    version: 3,
+                )),
+                version: 1,
+            ),
+            (
+                value: None,
+                version: 0,
+            ),
+            (
+                value: None,
+                version: 0,
+            ),
+            (
+                value: None,
+                version: 0,
+            ),
+            (
+                value: None,
+                version: 0,
+            ),
+            (
+                value: Some((
+                    idx: 46,
+                    version: 1,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    idx: 45,
+                    version: 1,
+                )),
+                version: 1,
+            ),
+            (
+                value: Some((
+                    idx: 33,
+                    version: 3,
+                )),
+                version: 1,
+            ),
         ],
     ),
     node_order: [
@@ -2928,10 +4112,6 @@
         ),
         (
             idx: 2,
-            version: 3,
-        ),
-        (
-            idx: 3,
             version: 3,
         ),
         (
@@ -2979,10 +4159,6 @@
             version: 1,
         ),
         (
-            idx: 19,
-            version: 1,
-        ),
-        (
             idx: 9,
             version: 1,
         ),
@@ -2996,10 +4172,6 @@
         ),
         (
             idx: 22,
-            version: 1,
-        ),
-        (
-            idx: 27,
             version: 1,
         ),
         (
@@ -3047,29 +4219,76 @@
             version: 1,
         ),
         (
+            idx: 3,
+            version: 3,
+        ),
+        (
+            idx: 19,
+            version: 3,
+        ),
+        (
+            idx: 36,
+            version: 1,
+        ),
+        (
+            idx: 38,
+            version: 1,
+        ),
+        (
+            idx: 35,
+            version: 1,
+        ),
+        (
+            idx: 39,
+            version: 3,
+        ),
+        (
+            idx: 40,
+            version: 1,
+        ),
+        (
+            idx: 41,
+            version: 1,
+        ),
+        (
+            idx: 37,
+            version: 1,
+        ),
+        (
+            idx: 27,
+            version: 3,
+        ),
+        (
+            idx: 42,
+            version: 1,
+        ),
+        (
+            idx: 43,
+            version: 1,
+        ),
+        (
+            idx: 44,
+            version: 1,
+        ),
+        (
+            idx: 45,
+            version: 1,
+        ),
+        (
             idx: 34,
+            version: 3,
+        ),
+        (
+            idx: 46,
+            version: 1,
+        ),
+        (
+            idx: 47,
             version: 1,
         ),
     ],
     connection_in_progress: None,
-    selected_nodes: [
-        (
-            idx: 30,
-            version: 1,
-        ),
-        (
-            idx: 29,
-            version: 1,
-        ),
-        (
-            idx: 31,
-            version: 1,
-        ),
-        (
-            idx: 28,
-            version: 1,
-        ),
-    ],
+    selected_nodes: [],
     ongoing_box_selection: None,
     node_positions: [
         (
@@ -3078,239 +4297,330 @@
         ),
         (
             value: Some((
-                x: 566.3535,
-                y: 186.40594,
+                x: -362.39148,
+                y: 167.56088,
             )),
             version: 3,
         ),
         (
             value: Some((
-                x: 228.19727,
-                y: 264.09033,
+                x: -502.6521,
+                y: 199.78299,
             )),
             version: 3,
         ),
         (
             value: Some((
-                x: 33.306396,
-                y: 240.64783,
+                x: -557.38745,
+                y: 190.05936,
             )),
             version: 3,
         ),
         (
             value: Some((
-                x: 396.13354,
-                y: 173.8393,
+                x: -432.99658,
+                y: 162.34897,
             )),
             version: 3,
         ),
         (
             value: Some((
-                x: 212.7732,
-                y: 142.42303,
+                x: -509.04962,
+                y: 149.31744,
             )),
             version: 3,
         ),
         (
             value: Some((
-                x: -84.934204,
-                y: 293.1991,
+                x: -632.5351,
+                y: 211.8565,
             )),
             version: 1,
         ),
         (
             value: Some((
-                x: 53.297974,
-                y: 110.41199,
+                x: -575.1959,
+                y: 136.03989,
             )),
             version: 1,
         ),
         (
             value: Some((
-                x: -54.659668,
-                y: 97.274475,
+                x: -619.975,
+                y: 130.59036,
             )),
             version: 1,
         ),
         (
             value: Some((
-                x: -249.44263,
-                y: 301.7672,
+                x: -700.76953,
+                y: 215.41061,
             )),
             version: 1,
         ),
         (
             value: Some((
-                x: -667.749,
-                y: 281.7791,
+                x: -874.2765,
+                y: 207.12036,
             )),
             version: 1,
         ),
         (
             value: Some((
-                x: -300.27954,
-                y: 4.7379456,
+                x: -721.8551,
+                y: 92.207886,
             )),
             version: 1,
         ),
         (
             value: Some((
-                x: -446.50928,
-                y: -79.80084,
+                x: -782.5091,
+                y: 57.142197,
             )),
             version: 1,
         ),
         (
             value: Some((
-                x: -533.9048,
-                y: 49.292816,
+                x: -818.75757,
+                y: 110.68823,
             )),
             version: 1,
         ),
         (
             value: Some((
-                x: -623.5845,
-                y: -98.65109,
+                x: -855.95734,
+                y: 49.32373,
             )),
             version: 1,
         ),
         (
             value: Some((
-                x: -746.9667,
-                y: -119.78586,
+                x: -907.1344,
+                y: 40.557114,
             )),
             version: 1,
         ),
         (
             value: Some((
-                x: -766.958,
-                y: -2.1165466,
+                x: -915.42554,
+                y: 89.36467,
             )),
             version: 1,
         ),
         (
             value: Some((
-                x: -890.9104,
-                y: -138.06424,
+                x: -966.8406,
+                y: 32.976425,
             )),
             version: 1,
         ),
         (
             value: Some((
-                x: -999.4402,
-                y: -26.678375,
+                x: -1011.85626,
+                y: 79.17667,
             )),
             version: 1,
         ),
         (
             value: Some((
-                x: -1023.4304,
-                y: -154.05795,
-            )),
-            version: 1,
-        ),
-        (
-            value: Some((
-                x: -885.22614,
-                y: -48.9747,
-            )),
-            version: 1,
-        ),
-        (
-            value: Some((
-                x: -738.5747,
-                y: 148.41736,
-            )),
-            version: 1,
-        ),
-        (
-            value: Some((
-                x: -864.18726,
-                y: 236.28485,
-            )),
-            version: 1,
-        ),
-        (
-            value: Some((
-                x: -1146.9733,
-                y: 163.26843,
+                x: -587.68677,
+                y: 198.32736,
             )),
             version: 3,
         ),
         (
             value: Some((
-                x: -1230.5078,
-                y: 238.75983,
+                x: -964.4803,
+                y: 69.92873,
             )),
             version: 1,
         ),
         (
             value: Some((
-                x: -929.7782,
-                y: 152.74915,
+                x: -903.65173,
+                y: 151.80334,
             )),
             version: 1,
         ),
         (
             value: Some((
-                x: -1062.8182,
-                y: 270.93658,
+                x: -955.75464,
+                y: 188.24942,
             )),
             version: 1,
         ),
         (
             value: Some((
-                x: -1239.1709,
-                y: 127.37848,
+                x: -1073.0507,
+                y: 157.96399,
+            )),
+            version: 3,
+        ),
+        (
+            value: Some((
+                x: -1107.6982,
+                y: 189.27637,
             )),
             version: 1,
         ),
         (
             value: Some((
-                x: -821.4916,
-                y: 516.594,
+                x: -982.9608,
+                y: 153.60028,
             )),
             version: 1,
         ),
         (
             value: Some((
-                x: -950.81665,
-                y: 603.8428,
+                x: -1038.1426,
+                y: 202.62292,
             )),
             version: 1,
         ),
         (
             value: Some((
-                x: -659.98975,
-                y: 520.3063,
+                x: -1178.5818,
+                y: 145.82489,
+            )),
+            version: 3,
+        ),
+        (
+            value: Some((
+                x: -938.0452,
+                y: 304.51672,
             )),
             version: 1,
         ),
         (
             value: Some((
-                x: -781.88916,
-                y: 600.12933,
+                x: -991.6871,
+                y: 340.70557,
             )),
             version: 1,
         ),
         (
             value: Some((
-                x: -414.33228,
-                y: 567.33374,
+                x: -871.0571,
+                y: 306.05692,
             )),
             version: 1,
         ),
         (
             value: Some((
-                x: -560.9835,
-                y: 632.9251,
+                x: -921.618,
+                y: 339.1666,
             )),
             version: 1,
         ),
         (
             value: Some((
-                x: -997.2258,
-                y: 482.56073,
+                x: -769.16284,
+                y: 325.56415,
+            )),
+            version: 1,
+        ),
+        (
+            value: Some((
+                x: -829.9903,
+                y: 352.7687,
+            )),
+            version: 1,
+        ),
+        (
+            value: Some((
+                x: -1044.0663,
+                y: 324.17786,
+            )),
+            version: 3,
+        ),
+        (
+            value: Some((
+                x: -1079.2684,
+                y: 5.4230804,
+            )),
+            version: 1,
+        ),
+        (
+            value: Some((
+                x: -1161.0149,
+                y: 4.7948,
+            )),
+            version: 1,
+        ),
+        (
+            value: Some((
+                x: -1246.1597,
+                y: 147.12634,
+            )),
+            version: 1,
+        ),
+        (
+            value: Some((
+                x: -1098.941,
+                y: 324.96878,
+            )),
+            version: 1,
+        ),
+        (
+            value: Some((
+                x: -1018.1808,
+                y: -17.499664,
+            )),
+            version: 3,
+        ),
+        (
+            value: Some((
+                x: -1115.4683,
+                y: -41.293823,
+            )),
+            version: 1,
+        ),
+        (
+            value: Some((
+                x: -1070.2874,
+                y: -68.10043,
+            )),
+            version: 1,
+        ),
+        (
+            value: Some((
+                x: -1119.983,
+                y: 134.85999,
+            )),
+            version: 1,
+        ),
+        (
+            value: Some((
+                x: -1221.9016,
+                y: 97.68573,
+            )),
+            version: 1,
+        ),
+        (
+            value: Some((
+                x: -1182.0032,
+                y: 87.17355,
+            )),
+            version: 1,
+        ),
+        (
+            value: Some((
+                x: -982.7737,
+                y: 282.30353,
+            )),
+            version: 1,
+        ),
+        (
+            value: Some((
+                x: -1081.099,
+                y: 279.46036,
+            )),
+            version: 1,
+        ),
+        (
+            value: Some((
+                x: -1041.0581,
+                y: 260.0321,
             )),
             version: 1,
         ),
@@ -3318,10 +4628,10 @@
     node_finder: None,
     pan_zoom: (
         pan: (
-            x: 1443.0,
-            y: 371.0,
+            x: 1469.0,
+            y: 153.0,
         ),
-        zoom: 0.6525607,
+        zoom: 0.2706708,
     ),
     _user_state: (),
 )

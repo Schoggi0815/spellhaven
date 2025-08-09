@@ -17,8 +17,12 @@ impl NodeTemplateIter for AllTerrainNodeTemplates {
             TerrainNodeTemplate::ScalePoint,
             TerrainNodeTemplate::GFT,
             TerrainNodeTemplate::Max,
+            TerrainNodeTemplate::TranslatePoint,
             TerrainNodeTemplate::PowF64,
             TerrainNodeTemplate::VoxelSize,
+            TerrainNodeTemplate::DivideF64,
+            TerrainNodeTemplate::RandomI64,
+            TerrainNodeTemplate::RandomF64,
         ]
     }
 }

@@ -1,7 +1,6 @@
 use crate::{
     utils::file_utils::read_ron_from_file,
     world_generation::chunk_generation::{
-        VOXEL_SIZE,
         block_type::BlockType,
         noise::terrain_noise::{TERRAIN_NOISE_FILE_PATH, TerrainNoise},
         structures::{
@@ -13,7 +12,7 @@ use crate::{
 };
 use bevy::prelude::*;
 use fastnoise_lite::FastNoiseLite;
-use noise::{Constant, Multiply, NoiseFn, ScalePoint};
+use noise::NoiseFn;
 use rand::prelude::StdRng;
 use rand::{Rng, SeedableRng};
 use std::sync::Arc;
@@ -112,14 +111,8 @@ pub struct GenerationOptions {
 
 impl GenerationOptions {
     pub fn get_terrain_noise(&self) -> impl NoiseFn<f64, 2> {
-        Multiply::new(
-            ScalePoint::new(
-                self.terrain_noise
-                    .get_noise_fn(&mut StdRng::seed_from_u64(self.seed + 1)),
-            )
-            .set_scale(VOXEL_SIZE as f64),
-            Constant::new(1. / VOXEL_SIZE as f64),
-        )
+        self.terrain_noise
+            .get_noise_fn(&mut StdRng::seed_from_u64(self.seed + 1))
     }
 }
 

@@ -4,15 +4,56 @@ use egui::DragValue;
 use egui_node_editor::{NodeId, WidgetValueTrait};
 use serde::{Deserialize, Serialize};
 
-use crate::debug_tools::terrain_node_editor::{
-    terrain_node_data::TerrainNodeData, terrain_response::TerrainResponse,
+use crate::{
+    debug_tools::terrain_node_editor::{
+        terrain_node_data::TerrainNodeData, terrain_response::TerrainResponse,
+    },
+    world_generation::chunk_generation::noise::terrain_noise_type::{
+        ConstantValue, TerrainNoiseType,
+    },
 };
 
 #[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub enum TerrainValueType {
     NoiseF64x2 { noise_index: usize },
-    F64 { value: f64 },
-    I64 { value: i64 },
+    F64 { value_or_index: ValueOrIndex<f64> },
+    I64 { value_or_index: ValueOrIndex<i64> },
+}
+
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
+pub enum ValueOrIndex<T> {
+    Value(T),
+    Index(usize),
+}
+
+impl ValueOrIndex<i64> {
+    pub fn get_index(&self, noise_array: &mut Vec<TerrainNoiseType>) -> usize {
+        match self {
+            ValueOrIndex::Index(index) => *index,
+            ValueOrIndex::Value(value) => {
+                let index = noise_array.len();
+                noise_array.push(TerrainNoiseType::ConstantValue {
+                    value: ConstantValue::I64(*value),
+                });
+                index
+            }
+        }
+    }
+}
+
+impl ValueOrIndex<f64> {
+    pub fn get_index(&self, noise_array: &mut Vec<TerrainNoiseType>) -> usize {
+        match self {
+            ValueOrIndex::Index(index) => *index,
+            ValueOrIndex::Value(value) => {
+                let index = noise_array.len();
+                noise_array.push(TerrainNoiseType::ConstantValue {
+                    value: ConstantValue::F64(*value),
+                });
+                index
+            }
+        }
+    }
 }
 
 impl TerrainValueType {
@@ -23,16 +64,26 @@ impl TerrainValueType {
         }
     }
 
-    pub fn get_f64_value(&self) -> f64 {
+    pub fn get_f64_index(
+        &self,
+        noise_array: &mut Vec<TerrainNoiseType>,
+    ) -> usize {
         match self {
-            TerrainValueType::F64 { value } => *value,
-            _ => 0.0,
+            TerrainValueType::F64 { value_or_index } => {
+                value_or_index.get_index(noise_array)
+            }
+            _ => 0,
         }
     }
 
-    pub fn get_i64_value(&self) -> i64 {
+    pub fn get_i64_index(
+        &self,
+        noise_array: &mut Vec<TerrainNoiseType>,
+    ) -> usize {
         match self {
-            TerrainValueType::I64 { value } => *value,
+            TerrainValueType::I64 { value_or_index } => {
+                value_or_index.get_index(noise_array)
+            }
             _ => 0,
         }
     }
@@ -60,13 +111,17 @@ impl WidgetValueTrait for TerrainValueType {
             TerrainValueType::NoiseF64x2 { noise_index: _ } => {
                 ui.label(param_name);
             }
-            TerrainValueType::F64 { value } => {
+            TerrainValueType::F64 { value_or_index } => {
                 ui.label(param_name);
-                ui.add(DragValue::new(value));
+                if let ValueOrIndex::Value(value) = value_or_index {
+                    ui.add(DragValue::new(value));
+                }
             }
-            TerrainValueType::I64 { value } => {
+            TerrainValueType::I64 { value_or_index } => {
                 ui.label(param_name);
-                ui.add(DragValue::new(value));
+                if let ValueOrIndex::Value(value) = value_or_index {
+                    ui.add(DragValue::new(value));
+                }
             }
         }
         Vec::new()

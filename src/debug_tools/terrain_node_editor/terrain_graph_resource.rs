@@ -17,14 +17,11 @@ use crate::{
         terrain_node_data::TerrainNodeData,
         terrain_node_template::{TerrainGraph, TerrainNodeTemplate},
         terrain_response::TerrainResponse,
-        terrain_value_type::TerrainValueType,
+        terrain_value_type::{TerrainValueType, ValueOrIndex},
     },
-    world_generation::chunk_generation::{
-        VOXEL_SIZE,
-        noise::{
-            terrain_noise::{TERRAIN_NOISE_FILE_PATH, TerrainNoise},
-            terrain_noise_type::TerrainNoiseType,
-        },
+    world_generation::chunk_generation::noise::{
+        terrain_noise::{TERRAIN_NOISE_FILE_PATH, TerrainNoise},
+        terrain_noise_type::TerrainNoiseType,
     },
 };
 
@@ -161,8 +158,9 @@ fn get_terrain_noise_index(
     match node.user_data.template {
         TerrainNodeTemplate::Output => get_input_value("A"),
         TerrainNodeTemplate::SimplexNoise => {
+            let seed_index = get_input_value("seed").get_i64_index(noise_array);
             let noise_index = noise_array.len();
-            noise_array.push(TerrainNoiseType::Simplex);
+            noise_array.push(TerrainNoiseType::Simplex { seed_index });
             TerrainValueType::NoiseF64x2 { noise_index }
         }
         TerrainNodeTemplate::NoiseAdd => {
@@ -173,16 +171,22 @@ fn get_terrain_noise_index(
             TerrainValueType::NoiseF64x2 { noise_index }
         }
         TerrainNodeTemplate::PowF64 => {
-            let a_value = get_input_value("A").get_f64_value();
-            let b_value = get_input_value("B").get_f64_value();
+            let a_input = get_input_value("A");
+            let b_input = get_input_value("B");
+            let a_index = a_input.get_f64_index(noise_array);
+            let b_index = b_input.get_f64_index(noise_array);
+            let index = noise_array.len();
+            noise_array.push(TerrainNoiseType::Powf64 { a_index, b_index });
             TerrainValueType::F64 {
-                value: a_value.powf(b_value),
+                value_or_index: ValueOrIndex::Index(index),
             }
         }
         TerrainNodeTemplate::Constant => {
-            let a_value = get_input_value("A").get_f64_value();
+            let a_index = get_input_value("A").get_f64_index(noise_array);
             let noise_index = noise_array.len();
-            noise_array.push(TerrainNoiseType::Constant { value: a_value });
+            noise_array.push(TerrainNoiseType::Constant {
+                value_index: a_index,
+            });
             TerrainValueType::NoiseF64x2 { noise_index }
         }
         TerrainNodeTemplate::Multiply => {
@@ -201,46 +205,108 @@ fn get_terrain_noise_index(
         }
         TerrainNodeTemplate::SmoothStep => {
             let noise_index = get_input_value("noise").get_noise_index();
-            let steps = get_input_value("steps").get_f64_value();
-            let smoothness = get_input_value("smoothness").get_f64_value();
+            let steps_input = get_input_value("steps");
+            let smoothness_input = get_input_value("smoothness");
+            let steps_index = steps_input.get_f64_index(noise_array);
+            let smoothness_index = smoothness_input.get_f64_index(noise_array);
             let index = noise_array.len();
             noise_array.push(TerrainNoiseType::SmoothStep {
                 noise_index,
-                steps,
-                smoothness,
+                steps_index,
+                smoothness_index,
             });
             TerrainValueType::NoiseF64x2 { noise_index: index }
         }
         TerrainNodeTemplate::ScalePoint => {
             let noise_index = get_input_value("noise").get_noise_index();
-            let scale = get_input_value("scale").get_f64_value();
+            let scale_index =
+                get_input_value("scale").get_f64_index(noise_array);
             let index = noise_array.len();
-            noise_array
-                .push(TerrainNoiseType::ScalePoint { noise_index, scale });
+            noise_array.push(TerrainNoiseType::ScalePoint {
+                noise_index,
+                scale_index,
+            });
+            TerrainValueType::NoiseF64x2 { noise_index: index }
+        }
+        TerrainNodeTemplate::TranslatePoint => {
+            let noise_index = get_input_value("noise").get_noise_index();
+            let x_input = get_input_value("X");
+            let y_input = get_input_value("Y");
+            let x_index = x_input.get_f64_index(noise_array);
+            let y_index = y_input.get_f64_index(noise_array);
+            let index = noise_array.len();
+            noise_array.push(TerrainNoiseType::TranslatePoint {
+                noise_index,
+                x_index,
+                y_index,
+            });
             TerrainValueType::NoiseF64x2 { noise_index: index }
         }
         TerrainNodeTemplate::GFT => {
             let noise_index = get_input_value("noise").get_noise_index();
-            let octaves = get_input_value("octaves").get_i64_value();
-            let frequency = get_input_value("frequency").get_f64_value();
-            let lacunarity = get_input_value("lacunarity").get_f64_value();
-            let persistence = get_input_value("persistence").get_f64_value();
-            let gradient = get_input_value("gradient").get_f64_value();
-            let amplitude = get_input_value("amplitude").get_f64_value();
+            let octaves_input = get_input_value("octaves");
+            let frequency_input = get_input_value("frequency");
+            let lacunarity_input = get_input_value("lacunarity");
+            let persistance_input = get_input_value("persistence");
+            let gradient_input = get_input_value("gradient");
+            let amplitude_input = get_input_value("amplitude");
+            let octaves_index = octaves_input.get_i64_index(noise_array);
+            let frequency_index = frequency_input.get_f64_index(noise_array);
+            let lacunarity_index = lacunarity_input.get_f64_index(noise_array);
+            let persistence_index =
+                persistance_input.get_f64_index(noise_array);
+            let gradient_index = gradient_input.get_f64_index(noise_array);
+            let amplitude_index = amplitude_input.get_f64_index(noise_array);
             let index = noise_array.len();
             noise_array.push(TerrainNoiseType::GFT {
                 noise_index,
-                octaves: octaves as usize,
-                frequency,
-                lacunarity,
-                persistence,
-                gradient,
-                amplitude,
+                octaves_index,
+                frequency_index,
+                lacunarity_index,
+                persistence_index,
+                gradient_index,
+                amplitude_index,
             });
             TerrainValueType::NoiseF64x2 { noise_index: index }
         }
-        TerrainNodeTemplate::VoxelSize => TerrainValueType::F64 {
-            value: VOXEL_SIZE as f64,
-        },
+        TerrainNodeTemplate::VoxelSize => {
+            let index = noise_array.len();
+            noise_array.push(TerrainNoiseType::VoxelSize);
+            TerrainValueType::F64 {
+                value_or_index: ValueOrIndex::Index(index),
+            }
+        }
+        TerrainNodeTemplate::RandomI64 => {
+            let index = noise_array.len();
+            noise_array.push(TerrainNoiseType::RandomI64);
+            TerrainValueType::I64 {
+                value_or_index: ValueOrIndex::Index(index),
+            }
+        }
+        TerrainNodeTemplate::DivideF64 => {
+            let a_input = get_input_value("A");
+            let b_input = get_input_value("B");
+            let a_index = a_input.get_f64_index(noise_array);
+            let b_index = b_input.get_f64_index(noise_array);
+            let index = noise_array.len();
+            noise_array.push(TerrainNoiseType::Dividef64 { a_index, b_index });
+            TerrainValueType::F64 {
+                value_or_index: ValueOrIndex::Index(index),
+            }
+        }
+        TerrainNodeTemplate::RandomF64 => {
+            let min_input = get_input_value("min");
+            let max_input = get_input_value("max");
+            let min_index = min_input.get_f64_index(noise_array);
+            let max_index = max_input.get_f64_index(noise_array);
+            let index = noise_array.len();
+            noise_array.push(TerrainNoiseType::RandomF64 {
+                min_index,
+                max_index,
+            });
+            TerrainValueType::F64 {
+                value_or_index: ValueOrIndex::Index(index),
+            }
+        }
     }
 }
