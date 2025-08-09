@@ -1,21 +1,43 @@
-use avian3d::prelude::{LinearVelocity, ShapeHits};
+use std::f32::consts::PI;
+
 use bevy::prelude::*;
 use bevy_panorbit_camera::PanOrbitCamera;
 
-use crate::player::player_component::{Player, PlayerBody, PlayerCamera};
+use crate::{
+    physics::{
+        physics_object::DynamicPhysicsObject, physics_position::PhysicsPosition,
+    },
+    player::player_component::{Player, PlayerBody, PlayerCamera},
+};
 
 pub(super) fn movement(
     keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut players: Query<(&mut LinearVelocity, &ShapeHits), With<Player>>,
+    mut players: Query<(
+        &mut Player,
+        &mut PhysicsPosition,
+        &mut DynamicPhysicsObject,
+        &mut Transform,
+    )>,
     player_camera: Query<&PanOrbitCamera, With<PlayerCamera>>,
+    time: Res<Time>,
 ) {
-    for (mut linear_velocity, ground_hits) in &mut players {
+    for (
+        mut player,
+        mut physics_position,
+        mut physics_object,
+        mut player_transform,
+    ) in &mut players
+    {
         let mut move_direction = Vec3::ZERO;
 
-        if !ground_hits.is_empty() {
-            linear_velocity.y = 0.0;
-        } else {
-            linear_velocity.y -= 0.4;
+        let grounded = physics_object.touching_sides.y < 0;
+
+        if keyboard_input.just_pressed(KeyCode::KeyF) {
+            player.fly = !player.fly;
+        }
+
+        if grounded || player.fly {
+            physics_position.velocity.y = 0.;
         }
 
         // Directional movement
@@ -40,11 +62,22 @@ pub(super) fn movement(
             move_direction.x += 1.;
         }
 
-        let movement_speed = if keyboard_input.pressed(KeyCode::ShiftLeft) {
-            2.
+        if player.fly && keyboard_input.pressed(KeyCode::KeyE) {
+            move_direction.y += 1.;
+        }
+        if player.fly && keyboard_input.pressed(KeyCode::KeyQ) {
+            move_direction.y -= 1.;
+        }
+
+        let mut movement_speed = if keyboard_input.pressed(KeyCode::ShiftLeft) {
+            15.
         } else {
-            1.
+            7.5
         };
+
+        if player.fly {
+            movement_speed *= 10.;
+        }
 
         if let Ok(player_camera) = player_camera.single() {
             // Rotate vector to camera
@@ -52,19 +85,32 @@ pub(super) fn movement(
                 Quat::from_rotation_y(player_camera.yaw.unwrap_or(0.));
             move_direction = rotation
                 .mul_vec3(move_direction.normalize_or_zero() * movement_speed);
+
+            if move_direction.xz() != Vec2::ZERO {
+                player_transform.rotation = Quat::from_rotation_y(
+                    -move_direction.xz().to_angle() - PI * 0.5,
+                );
+            }
         }
 
         // Jump if space pressed and the player is close enough to the ground
-        if keyboard_input.pressed(KeyCode::Space) && !ground_hits.is_empty() {
-            move_direction.y = 10.;
+        if !player.fly && grounded && keyboard_input.pressed(KeyCode::Space) {
+            physics_position.velocity.y += 10.;
+            physics_object.touching_sides.y = 0;
         }
 
-        linear_velocity.0 += move_direction;
-
-        // Slow player down
-        linear_velocity.x *= 0.8;
-        linear_velocity.y *= 0.98;
-        linear_velocity.z *= 0.8;
+        physics_position.velocity.x = move_direction.x;
+        physics_position.velocity.z = move_direction.z;
+        if !player.fly {
+            if grounded {
+                physics_position.velocity.y -= 1. * time.delta_secs();
+            } else {
+                physics_position.velocity.y -=
+                    (20. * time.delta_secs()).max(-60.);
+            }
+        } else {
+            physics_position.velocity.y = move_direction.y;
+        }
     }
 }
 
@@ -78,7 +124,6 @@ pub(super) fn move_body(
         return;
     };
 
-    let difference = player.translation - player_body.translation;
-    player_body.translation += difference * 0.25;
+    player_body.translation = player.translation;
     player_body.rotation = player_body.rotation.lerp(player.rotation, 0.25);
 }

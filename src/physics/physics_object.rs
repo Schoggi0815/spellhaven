@@ -9,4 +9,5 @@ pub struct StaticPhysicsObject;
 #[require(PhysicsPosition)]
 pub struct DynamicPhysicsObject {
     pub step_height: f32,
+    pub touching_sides: IVec3,
 }

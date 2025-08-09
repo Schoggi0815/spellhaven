@@ -8,13 +8,12 @@ use bevy::{
 };
 use bevy_inspector_egui::{bevy_egui::EguiPlugin, quick::WorldInspectorPlugin};
 use bevy_panorbit_camera::PanOrbitCameraPlugin;
-use bevy_rapier3d::plugin::{NoUserData, RapierPhysicsPlugin};
 use spellhaven::{
     animation::animation_plugin::SpellhavenAnimationPlugin,
     debug_tools::debug_plugin::SpellhavenDebugPlugin,
+    physics::physics_plugin::PhysicsPlugin,
     player::player_plugin::PlayerPlugin,
     ui::game_ui_plugin::GameUiPlugin,
-    utils::util_plugin::UtilPlugin,
     world_generation::{
         terrain_material::TerrainMaterial,
         world_generation_plugin::WorldGenerationPlugin,
@@ -37,8 +36,7 @@ fn main() {
                     .set(ImagePlugin::default_nearest()),
                 PanOrbitCameraPlugin,
                 WorldGenerationPlugin,
-                RapierPhysicsPlugin::<NoUserData>::default(),
-                //RapierDebugRenderPlugin::default(),
+                PhysicsPlugin,
                 PlayerPlugin,
                 WireframePlugin { ..default() },
                 SpellhavenAnimationPlugin,
@@ -46,7 +44,6 @@ fn main() {
                 WorldInspectorPlugin::new(),
                 GameUiPlugin,
                 SpellhavenDebugPlugin,
-                UtilPlugin,
                 MaterialPlugin::<
                     ExtendedMaterial<StandardMaterial, TerrainMaterial>,
                 >::default(),

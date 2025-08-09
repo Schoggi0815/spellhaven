@@ -5,12 +5,15 @@ use bevy::{
 };
 use futures_lite::future;
 
-use crate::world_generation::{
-    chunk_generation::{
-        chunk::Chunk, chunk_generation_result::ChunkGenerationResult,
-        chunk_triangles::ChunkTriangles,
+use crate::{
+    physics::physics_object::StaticPhysicsObject,
+    world_generation::{
+        chunk_generation::{
+            chunk::Chunk, chunk_generation_result::ChunkGenerationResult,
+            chunk_triangles::ChunkTriangles,
+        },
+        terrain_material::TerrainMaterial,
     },
-    terrain_material::TerrainMaterial,
 };
 
 #[derive(Component)]
@@ -71,7 +74,7 @@ pub fn set_generated_chunks(
         ));
 
         if let Some(collider) = chunk_generation_result.mesh_result.collider {
-            current_entity.insert(collider);
+            current_entity.insert((collider, StaticPhysicsObject));
         }
 
         // let triangle_count = mesh.indices().unwrap().len() / 3;

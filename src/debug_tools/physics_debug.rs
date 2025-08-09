@@ -29,6 +29,22 @@ pub fn render_physics_debug(
     }
 
     for (collider, transform) in colliders_static {
+        let min_distance = colliders_dynamic
+            .iter()
+            .map(|d| {
+                d.1.position.distance_squared(transform.translation).ceil()
+                    as i32
+            })
+            .min();
+
+        let Some(min_distance) = min_distance else {
+            return;
+        };
+
+        if min_distance > 32i32.pow(2) {
+            continue;
+        }
+
         for aabb in collider.get_aabbs() {
             gizmos.cuboid(
                 Transform::from_translation(

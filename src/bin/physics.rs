@@ -45,11 +45,17 @@ fn setup(mut commands: Commands) {
     commands.spawn((
         Transform::from_xyz(0., 0., 0.),
         StaticPhysicsObject,
-        Collider::compund(&[(Vec3::ONE, Vec3::ZERO), (Vec3::ONE, Vec3::Y)]),
+        Collider::compund(&[
+            (Vec3::new(5., 0.25, 5.), Vec3::ZERO),
+            (Vec3::new(5., 0.25, 5.), Vec3::new(1., 0.25, 1.)),
+        ]),
     ));
 
     commands.spawn((
-        DynamicPhysicsObject { step_height: 0.5 },
+        DynamicPhysicsObject {
+            step_height: 0.6,
+            ..Default::default()
+        },
         PhysicsPosition {
             position: Vec3::NEG_Z * 2.,
             ..Default::default()

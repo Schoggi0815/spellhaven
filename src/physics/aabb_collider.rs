@@ -36,6 +36,7 @@ impl ColliderTrait for AabbCollider {
         other_position: Vec3,
         other_colliders: &Vec<(&Collider, Vec3)>,
         step_height: f32,
+        touching_sides: &mut IVec3,
     ) -> Vec3 {
         let mut result = end_position;
 
@@ -54,6 +55,7 @@ impl ColliderTrait for AabbCollider {
                 other_position,
                 other_colliders,
                 step_height,
+                touching_sides,
             );
         }
 
@@ -89,6 +91,7 @@ impl AabbCollider {
         other_position: Vec3,
         all_colliders: &Vec<(&Collider, Vec3)>,
         step_height: f32,
+        touching_sides: &mut IVec3,
     ) -> Vec3 {
         let distance = (other_position + other_collider.offset)
             - (end_position + self.offset);
@@ -109,7 +112,7 @@ impl AabbCollider {
             if current_step_height <= step_height {
                 let mut blocking = false;
                 let step_up_pos =
-                    end_position + (Vec3::Y * current_step_height);
+                    end_position + (Vec3::Y * (current_step_height + 0.01));
 
                 for (other_col, other_pos) in all_colliders {
                     if self.is_colliding_with(
@@ -123,22 +126,30 @@ impl AabbCollider {
                 }
 
                 if !blocking {
+                    touching_sides.y = -1;
+
                     return step_up_pos;
                 }
             }
         }
 
         if intersection.abs().x == intersection.abs().min_element() {
+            touching_sides.x = if distance.x > 0. { 1 } else { -1 };
+
             return end_position
                 - (Vec3::X * intersection.x.copysign(distance.x));
         }
 
         if intersection.abs().y == intersection.abs().min_element() {
+            touching_sides.y = if distance.y > 0. { 1 } else { -1 };
+
             return end_position
                 - (Vec3::Y * intersection.y.copysign(distance.y));
         }
 
         if intersection.abs().z == intersection.abs().min_element() {
+            touching_sides.z = if distance.z > 0. { 1 } else { -1 };
+
             return end_position
                 - (Vec3::Z * intersection.z.copysign(distance.z));
         }

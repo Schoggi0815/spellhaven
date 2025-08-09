@@ -8,6 +8,33 @@ use crate::physics::{
 
 pub struct CompoundCollider {
     pub colliders: Vec<AabbCollider>,
+    shell: AabbCollider,
+}
+
+impl CompoundCollider {
+    pub fn new(aabbs: Vec<AabbCollider>) -> Self {
+        let starts = aabbs.iter().map(|aabb| aabb.offset);
+        let ends = aabbs.iter().map(|aabb| aabb.offset + aabb.size);
+
+        let mut min = Vec3::MAX;
+        let mut max = Vec3::MIN;
+
+        for start in starts {
+            min = min.min(start);
+        }
+
+        for end in ends {
+            max = max.max(end);
+        }
+
+        Self {
+            colliders: aabbs,
+            shell: AabbCollider {
+                offset: min,
+                size: max - min,
+            },
+        }
+    }
 }
 
 impl ColliderTrait for CompoundCollider {
@@ -17,6 +44,14 @@ impl ColliderTrait for CompoundCollider {
         other_collider: &impl ColliderTrait,
         other_position: Vec3,
     ) -> bool {
+        if !self.shell.is_colliding_with(
+            self_position,
+            other_collider,
+            other_position,
+        ) {
+            return false;
+        }
+
         for self_collider in self.get_aabbs() {
             if self_collider.is_colliding_with(
                 self_position,
@@ -37,6 +72,7 @@ impl ColliderTrait for CompoundCollider {
         other_position: Vec3,
         other_colliders: &Vec<(&Collider, Vec3)>,
         step_height: f32,
+        touching_sides: &mut IVec3,
     ) -> Vec3 {
         let mut result = end_position;
 
@@ -55,6 +91,7 @@ impl ColliderTrait for CompoundCollider {
                 other_position,
                 other_colliders,
                 step_height,
+                touching_sides,
             );
         }
 

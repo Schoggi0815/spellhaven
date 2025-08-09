@@ -13,7 +13,7 @@ pub fn update_physics(
     dynamic_objects: Query<(
         &Collider,
         &mut PhysicsPosition,
-        &DynamicPhysicsObject,
+        &mut DynamicPhysicsObject,
     )>,
     time: Res<Time>,
 ) {
@@ -22,9 +22,11 @@ pub fn update_physics(
         .map(|s| (s.1, s.2.translation))
         .collect_vec();
 
-    for (dynamic_collider, mut dynamic_position, dynamic_object) in
+    for (dynamic_collider, mut dynamic_position, mut dynamic_object) in
         dynamic_objects
     {
+        dynamic_object.touching_sides = IVec3::ZERO;
+
         let velocity = dynamic_position.velocity * time.delta_secs();
 
         let new_position = dynamic_position.position + velocity;
@@ -55,9 +57,12 @@ pub fn update_physics(
                 static_transform.translation,
                 &all_colliders,
                 dynamic_object.step_height,
+                &mut dynamic_object.touching_sides,
             );
         }
 
+        dynamic_position.lerp_progress = 0.;
+        dynamic_position.previous_position = dynamic_position.position;
         dynamic_position.position = new_pos;
     }
 }

@@ -18,15 +18,15 @@ impl Collider {
     }
 
     pub fn compund(bounds: &[(Vec3, Vec3)]) -> Self {
-        Self::Compound(CompoundCollider {
-            colliders: bounds
+        Self::Compound(CompoundCollider::new(
+            bounds
                 .iter()
                 .map(|b| AabbCollider {
                     size: b.0,
                     offset: b.1,
                 })
                 .collect_vec(),
-        })
+        ))
     }
 }
 
@@ -59,6 +59,7 @@ impl ColliderTrait for Collider {
         other_position: Vec3,
         other_colliders: &Vec<(&Collider, Vec3)>,
         step_height: f32,
+        touching_sides: &mut IVec3,
     ) -> Vec3 {
         match self {
             Collider::Aabb(aabb_collider) => aabb_collider.restrict_movement(
@@ -67,6 +68,7 @@ impl ColliderTrait for Collider {
                 other_position,
                 other_colliders,
                 step_height,
+                touching_sides,
             ),
             Collider::Compound(compound_collider) => compound_collider
                 .restrict_movement(
@@ -75,6 +77,7 @@ impl ColliderTrait for Collider {
                     other_position,
                     other_colliders,
                     step_height,
+                    touching_sides,
                 ),
         }
     }
