@@ -1,4 +1,4 @@
-pub const MAX_LOD: ChunkLod = ChunkLod::FiveTwelve;
+pub const MAX_LOD: ChunkLod = ChunkLod::TwoFiftySix;
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Default)]
 pub enum ChunkLod {

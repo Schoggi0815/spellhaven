@@ -15,4 +15,4 @@ pub mod voxel_data;
 pub mod voxel_generation;
 
 pub const CHUNK_SIZE: usize = 64;
-pub const VOXEL_SIZE: f32 = 0.25;
+pub const VOXEL_SIZE: f32 = 0.5;

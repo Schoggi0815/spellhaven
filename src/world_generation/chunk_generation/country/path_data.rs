@@ -231,7 +231,7 @@ impl GenerationCacheItem<CountryPosition> for PathData {
                 cache_store.clone(),
             );
 
-        let path_finding_lod = ChunkLod::OneTwentyEight;
+        let path_finding_lod = ChunkLod::Sixtyfourth;
 
         let flip = (key.y + key.x) % 2 == 0;
 

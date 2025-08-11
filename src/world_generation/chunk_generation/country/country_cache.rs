@@ -16,7 +16,7 @@ use crate::world_generation::{
     generation_options::GenerationOptionsResource,
 };
 
-pub const COUNTRY_SIZE: usize = (2usize.pow(13) as f32 / VOXEL_SIZE) as usize;
+pub const COUNTRY_SIZE: usize = (2usize.pow(14) as f32 / VOXEL_SIZE) as usize;
 
 #[derive(Resource, Default)]
 pub struct CountryCache {

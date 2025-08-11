@@ -30,7 +30,7 @@ fn fragment(
     // we can optionally modify the input before lighting and alpha_discard is applied
     // pbr_input.material.base_color.b = pbr_input.material.base_color.r;
 
-    var voxel_size = 0.25f;
+    var voxel_size = 0.5f;
     var chunk_size = 64u;
 
     var in_block_pos = in.world_position.xyz - terrain_material.chunk_position - (in.world_normal * voxel_size * 0.2);

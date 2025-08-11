@@ -55,7 +55,7 @@ pub(super) fn spawn_player(
     // Player
     commands.spawn((
         DynamicPhysicsObject {
-            step_height: 0.3,
+            step_height: 0.6,
             ..Default::default()
         },
         PhysicsPosition {
