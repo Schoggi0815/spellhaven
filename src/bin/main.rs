@@ -1,6 +1,6 @@
 use bevy::{
     pbr::{
-        ExtendedMaterial,
+        CascadeShadowConfigBuilder, ExtendedMaterial,
         light_consts::lux,
         wireframe::{WireframeConfig, WireframePlugin},
     },
@@ -64,6 +64,11 @@ fn setup(mut commands: Commands, _asset_server: Res<AssetServer>) {
             illuminance: lux::RAW_SUNLIGHT,
             ..default()
         },
+        CascadeShadowConfigBuilder {
+            num_cascades: 10,
+            ..Default::default()
+        }
+        .build(),
         Transform {
             translation: Vec3::new(0.0, 2.0, 0.0),
             rotation: Quat::from_rotation_x(-std::f32::consts::PI / 3.),

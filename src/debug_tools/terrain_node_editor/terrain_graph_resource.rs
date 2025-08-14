@@ -170,6 +170,13 @@ fn get_terrain_noise_index(
             noise_array.push(TerrainNoiseType::Add { a_index, b_index });
             TerrainValueType::NoiseF64x2 { noise_index }
         }
+        TerrainNodeTemplate::NoiseSub => {
+            let a_index = get_input_value("A").get_noise_index();
+            let b_index = get_input_value("B").get_noise_index();
+            let noise_index = noise_array.len();
+            noise_array.push(TerrainNoiseType::Sub { a_index, b_index });
+            TerrainValueType::NoiseF64x2 { noise_index }
+        }
         TerrainNodeTemplate::PowF64 => {
             let a_input = get_input_value("A");
             let b_input = get_input_value("B");
@@ -201,6 +208,12 @@ fn get_terrain_noise_index(
             let b_index = get_input_value("B").get_noise_index();
             let noise_index = noise_array.len();
             noise_array.push(TerrainNoiseType::Max { a_index, b_index });
+            TerrainValueType::NoiseF64x2 { noise_index }
+        }
+        TerrainNodeTemplate::Abs => {
+            let input_index = get_input_value("noise").get_noise_index();
+            let noise_index = noise_array.len();
+            noise_array.push(TerrainNoiseType::Abs { input_index });
             TerrainValueType::NoiseF64x2 { noise_index }
         }
         TerrainNodeTemplate::SmoothStep => {

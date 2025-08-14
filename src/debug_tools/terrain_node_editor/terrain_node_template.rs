@@ -20,12 +20,14 @@ pub enum TerrainNodeTemplate {
     Output,
     SimplexNoise,
     NoiseAdd,
+    NoiseSub,
     Constant,
     Multiply,
     SmoothStep,
     ScalePoint,
     GFT,
     Max,
+    Abs,
     TranslatePoint,
     PowF64,
     VoxelSize,
@@ -63,11 +65,13 @@ impl NodeTemplateTrait for TerrainNodeTemplate {
             TerrainNodeTemplate::ScalePoint => "Scale Point",
             TerrainNodeTemplate::GFT => "Gradient Fractal Noise",
             TerrainNodeTemplate::Max => "Max",
+            TerrainNodeTemplate::Abs => "Abs",
             TerrainNodeTemplate::TranslatePoint => "Translate Point",
             TerrainNodeTemplate::VoxelSize => "Voxel Size",
             TerrainNodeTemplate::RandomI64 => "Random Integer",
             TerrainNodeTemplate::RandomF64 => "Random Float",
             TerrainNodeTemplate::DivideF64 => "Divide",
+            TerrainNodeTemplate::NoiseSub => "Noise Sub",
         })
     }
 
@@ -79,12 +83,14 @@ impl NodeTemplateTrait for TerrainNodeTemplate {
             TerrainNodeTemplate::Output => vec![],
             TerrainNodeTemplate::SimplexNoise => vec!["Noise Functions"],
             TerrainNodeTemplate::NoiseAdd
+            | TerrainNodeTemplate::NoiseSub
             | TerrainNodeTemplate::Constant
             | TerrainNodeTemplate::Multiply
             | TerrainNodeTemplate::SmoothStep
             | TerrainNodeTemplate::ScalePoint
             | TerrainNodeTemplate::GFT
             | TerrainNodeTemplate::Max
+            | TerrainNodeTemplate::Abs
             | TerrainNodeTemplate::TranslatePoint => {
                 vec!["Noise Calculations"]
             }
@@ -194,6 +200,11 @@ impl NodeTemplateTrait for TerrainNodeTemplate {
                 input_noise(graph, "B");
                 output_noise(graph, "out");
             }
+            TerrainNodeTemplate::NoiseSub => {
+                input_noise(graph, "A");
+                input_noise(graph, "B");
+                output_noise(graph, "out");
+            }
             TerrainNodeTemplate::PowF64 => {
                 input_f64(graph, "A");
                 input_f64(graph, "B");
@@ -259,6 +270,10 @@ impl NodeTemplateTrait for TerrainNodeTemplate {
                 input_f64(graph, "min");
                 input_f64(graph, "max");
                 output_f64(graph, "random float");
+            }
+            TerrainNodeTemplate::Abs => {
+                input_noise(graph, "noise");
+                output_noise(graph, "out");
             }
         }
     }

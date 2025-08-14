@@ -1,7 +1,7 @@
 use bevy::log::warn;
 use noise::{
-    Add, Constant, Max, MultiFractal, Multiply, NoiseFn, ScalePoint, Simplex,
-    TranslatePoint,
+    Abs, Add, Constant, Max, MultiFractal, Multiply, Negate, NoiseFn,
+    ScalePoint, Simplex, TranslatePoint,
 };
 use rand::Rng;
 use serde::{Deserialize, Serialize};
@@ -23,9 +23,16 @@ pub enum TerrainNoiseType {
         a_index: usize,
         b_index: usize,
     },
+    Sub {
+        a_index: usize,
+        b_index: usize,
+    },
     Max {
         a_index: usize,
         b_index: usize,
+    },
+    Abs {
+        input_index: usize,
     },
     Multiply {
         a_index: usize,
@@ -109,6 +116,12 @@ impl TerrainNoiseType {
                 noise_types[*a_index].to_noise_fn(noise_types, rng),
                 noise_types[*b_index].to_noise_fn(noise_types, rng),
             )),
+            TerrainNoiseType::Sub { a_index, b_index } => Box::new(Add::new(
+                noise_types[*a_index].to_noise_fn(noise_types, rng),
+                Negate::new(
+                    noise_types[*b_index].to_noise_fn(noise_types, rng),
+                ),
+            )),
             TerrainNoiseType::Constant { value_index } => {
                 Box::new(Constant::new(
                     noise_types[*value_index].to_f64_value(noise_types, rng),
@@ -117,6 +130,9 @@ impl TerrainNoiseType {
             TerrainNoiseType::Max { a_index, b_index } => Box::new(Max::new(
                 noise_types[*a_index].to_noise_fn(noise_types, rng),
                 noise_types[*b_index].to_noise_fn(noise_types, rng),
+            )),
+            TerrainNoiseType::Abs { input_index } => Box::new(Abs::new(
+                noise_types[*input_index].to_noise_fn(noise_types, rng),
             )),
             TerrainNoiseType::Multiply { a_index, b_index } => {
                 Box::new(Multiply::new(
