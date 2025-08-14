@@ -7,7 +7,7 @@ use crate::{
     debug_tools::terrain_node_editor::{
         terrain_data_type::TerrainDataType,
         terrain_node_data::TerrainNodeData,
-        terrain_value_type::{TerrainValueType, ValueOrIndex},
+        terrain_value_type::{NoiseValue, TerrainValueType, ValueOrIndex},
     },
     world_generation::chunk_generation::noise::gradient_fractal_noise::{
         DEFAULT_AMPLITUDE, DEFAULT_FREQUENCY, DEFAULT_GRADIENT,
@@ -127,7 +127,9 @@ impl NodeTemplateTrait for TerrainNodeTemplate {
                 node_id,
                 name.to_string(),
                 TerrainDataType::NoiseF64x2,
-                TerrainValueType::NoiseF64x2 { noise_index: 0 },
+                TerrainValueType::NoiseF64x2 {
+                    value_or_index: ValueOrIndex::Value(NoiseValue(0.)),
+                },
                 InputParamKind::ConnectionOrConstant,
                 true,
             );
