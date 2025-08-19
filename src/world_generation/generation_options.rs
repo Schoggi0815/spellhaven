@@ -40,7 +40,7 @@ impl GenerationOptionsResource {
         Self(Arc::new(GenerationOptions {
             seed,
             terrain_noise,
-            generate_paths: true,
+            generate_paths: false,
             structure_generators: vec![
                 Arc::new(Box::new(OakStructureGenerator::new(
                     VoxelStructureMetadata {

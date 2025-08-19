@@ -7,7 +7,7 @@ use crate::{
     debug_tools::terrain_node_editor::{
         terrain_data_type::TerrainDataType,
         terrain_node_data::TerrainNodeData,
-        terrain_value_type::{TerrainValueType, ValueOrIndex},
+        terrain_value_type::{NoiseValue, TerrainValueType, ValueOrIndex},
     },
     world_generation::chunk_generation::noise::gradient_fractal_noise::{
         DEFAULT_AMPLITUDE, DEFAULT_FREQUENCY, DEFAULT_GRADIENT,
@@ -20,12 +20,15 @@ pub enum TerrainNodeTemplate {
     Output,
     SimplexNoise,
     NoiseAdd,
+    NoiseSub,
+    NoisePower,
     Constant,
     Multiply,
     SmoothStep,
     ScalePoint,
     GFT,
     Max,
+    Abs,
     TranslatePoint,
     PowF64,
     VoxelSize,
@@ -56,6 +59,7 @@ impl NodeTemplateTrait for TerrainNodeTemplate {
             TerrainNodeTemplate::Output => "Output",
             TerrainNodeTemplate::SimplexNoise => "Simplex Noise",
             TerrainNodeTemplate::NoiseAdd => "Noise Add",
+            TerrainNodeTemplate::NoisePower => "Noise Power",
             TerrainNodeTemplate::PowF64 => "Power F64",
             TerrainNodeTemplate::Constant => "Constant Noise",
             TerrainNodeTemplate::Multiply => "Multiply Noise",
@@ -63,11 +67,13 @@ impl NodeTemplateTrait for TerrainNodeTemplate {
             TerrainNodeTemplate::ScalePoint => "Scale Point",
             TerrainNodeTemplate::GFT => "Gradient Fractal Noise",
             TerrainNodeTemplate::Max => "Max",
+            TerrainNodeTemplate::Abs => "Abs",
             TerrainNodeTemplate::TranslatePoint => "Translate Point",
             TerrainNodeTemplate::VoxelSize => "Voxel Size",
             TerrainNodeTemplate::RandomI64 => "Random Integer",
             TerrainNodeTemplate::RandomF64 => "Random Float",
             TerrainNodeTemplate::DivideF64 => "Divide",
+            TerrainNodeTemplate::NoiseSub => "Noise Sub",
         })
     }
 
@@ -79,12 +85,15 @@ impl NodeTemplateTrait for TerrainNodeTemplate {
             TerrainNodeTemplate::Output => vec![],
             TerrainNodeTemplate::SimplexNoise => vec!["Noise Functions"],
             TerrainNodeTemplate::NoiseAdd
+            | TerrainNodeTemplate::NoiseSub
+            | TerrainNodeTemplate::NoisePower
             | TerrainNodeTemplate::Constant
             | TerrainNodeTemplate::Multiply
             | TerrainNodeTemplate::SmoothStep
             | TerrainNodeTemplate::ScalePoint
             | TerrainNodeTemplate::GFT
             | TerrainNodeTemplate::Max
+            | TerrainNodeTemplate::Abs
             | TerrainNodeTemplate::TranslatePoint => {
                 vec!["Noise Calculations"]
             }
@@ -121,7 +130,9 @@ impl NodeTemplateTrait for TerrainNodeTemplate {
                 node_id,
                 name.to_string(),
                 TerrainDataType::NoiseF64x2,
-                TerrainValueType::NoiseF64x2 { noise_index: 0 },
+                TerrainValueType::NoiseF64x2 {
+                    value_or_index: ValueOrIndex::Value(NoiseValue(0.)),
+                },
                 InputParamKind::ConnectionOrConstant,
                 true,
             );
@@ -194,6 +205,16 @@ impl NodeTemplateTrait for TerrainNodeTemplate {
                 input_noise(graph, "B");
                 output_noise(graph, "out");
             }
+            TerrainNodeTemplate::NoiseSub => {
+                input_noise(graph, "A");
+                input_noise(graph, "B");
+                output_noise(graph, "out");
+            }
+            TerrainNodeTemplate::NoisePower => {
+                input_noise(graph, "A");
+                input_noise(graph, "B");
+                output_noise(graph, "out");
+            }
             TerrainNodeTemplate::PowF64 => {
                 input_f64(graph, "A");
                 input_f64(graph, "B");
@@ -259,6 +280,10 @@ impl NodeTemplateTrait for TerrainNodeTemplate {
                 input_f64(graph, "min");
                 input_f64(graph, "max");
                 output_f64(graph, "random float");
+            }
+            TerrainNodeTemplate::Abs => {
+                input_noise(graph, "noise");
+                output_noise(graph, "out");
             }
         }
     }

@@ -92,7 +92,7 @@ pub(super) fn spawn_player(
         Tonemapping::TonyMcMapface,
         Bloom::NATURAL,
         PanOrbitCamera::default(),
-        Atmosphere::EARTH,
+        // Atmosphere::EARTH,
         PlayerCamera,
         Name::new("PlayerCamera"),
     ));

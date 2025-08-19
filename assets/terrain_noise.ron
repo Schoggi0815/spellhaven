@@ -171,37 +171,37 @@
             a_index: 21,
             b_index: 48,
         ),
-        RandomI64,
-        Simplex(
-            seed_index: 50,
-        ),
         ConstantValue(
-            value: F64(-2000.0),
+            value: F64(0.0),
         ),
-        ConstantValue(
-            value: F64(2000.0),
+        Constant(
+            value_index: 50,
         ),
-        RandomF64(
-            min_index: 52,
-            max_index: 53,
+        Add(
+            a_index: 49,
+            b_index: 51,
         ),
-        ConstantValue(
-            value: F64(-2000.0),
-        ),
-        ConstantValue(
-            value: F64(2000.0),
-        ),
-        RandomF64(
-            min_index: 55,
-            max_index: 56,
-        ),
-        TranslatePoint(
-            noise_index: 51,
-            x_index: 54,
-            y_index: 57,
+        VoxelSize,
+        ScalePoint(
+            noise_index: 52,
+            scale_index: 53,
         ),
         ConstantValue(
             value: F64(1.0),
+        ),
+        Dividef64(
+            a_index: 55,
+            b_index: 53,
+        ),
+        Constant(
+            value_index: 56,
+        ),
+        Multiply(
+            a_index: 54,
+            b_index: 57,
+        ),
+        ConstantValue(
+            value: F64(-1.0),
         ),
         Constant(
             value_index: 59,
@@ -210,83 +210,6 @@
             a_index: 58,
             b_index: 60,
         ),
-        ConstantValue(
-            value: F64(0.5),
-        ),
-        Constant(
-            value_index: 62,
-        ),
-        Multiply(
-            a_index: 61,
-            b_index: 63,
-        ),
-        ConstantValue(
-            value: F64(0.0),
-        ),
-        Constant(
-            value_index: 65,
-        ),
-        Max(
-            a_index: 64,
-            b_index: 66,
-        ),
-        ConstantValue(
-            value: I64(11),
-        ),
-        ConstantValue(
-            value: F64(2.0),
-        ),
-        ConstantValue(
-            value: F64(0.5),
-        ),
-        ConstantValue(
-            value: F64(1.0),
-        ),
-        ConstantValue(
-            value: F64(500.0),
-        ),
-        GFT(
-            noise_index: 67,
-            octaves_index: 68,
-            frequency_index: 42,
-            lacunarity_index: 69,
-            persistence_index: 70,
-            gradient_index: 71,
-            amplitude_index: 72,
-        ),
-        Add(
-            a_index: 49,
-            b_index: 73,
-        ),
-        VoxelSize,
-        ScalePoint(
-            noise_index: 74,
-            scale_index: 75,
-        ),
-        ConstantValue(
-            value: F64(1.0),
-        ),
-        Dividef64(
-            a_index: 77,
-            b_index: 75,
-        ),
-        Constant(
-            value_index: 78,
-        ),
-        Multiply(
-            a_index: 76,
-            b_index: 79,
-        ),
-        ConstantValue(
-            value: F64(-1.0),
-        ),
-        Constant(
-            value_index: 81,
-        ),
-        Add(
-            a_index: 80,
-            b_index: 82,
-        ),
     ],
-    start_index: 83,
+    start_index: 61,
 )
