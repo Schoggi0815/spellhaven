@@ -189,6 +189,17 @@ fn get_terrain_noise_index(
                 value_or_index: ValueOrIndex::Index(noise_index),
             }
         }
+        TerrainNodeTemplate::NoisePower => {
+            let a_input = get_input_value("A");
+            let b_input = get_input_value("B");
+            let a_index = a_input.get_noise_index(noise_array);
+            let b_index = b_input.get_noise_index(noise_array);
+            let noise_index = noise_array.len();
+            noise_array.push(TerrainNoiseType::Power { a_index, b_index });
+            TerrainValueType::NoiseF64x2 {
+                value_or_index: ValueOrIndex::Index(noise_index),
+            }
+        }
         TerrainNodeTemplate::PowF64 => {
             let a_input = get_input_value("A");
             let b_input = get_input_value("B");

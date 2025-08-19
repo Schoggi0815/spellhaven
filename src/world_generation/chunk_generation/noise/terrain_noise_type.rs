@@ -1,6 +1,6 @@
 use bevy::log::warn;
 use noise::{
-    Abs, Add, Constant, Max, MultiFractal, Multiply, Negate, NoiseFn,
+    Abs, Add, Constant, Max, MultiFractal, Multiply, Negate, NoiseFn, Power,
     ScalePoint, Simplex, TranslatePoint,
 };
 use rand::Rng;
@@ -24,6 +24,10 @@ pub enum TerrainNoiseType {
         b_index: usize,
     },
     Sub {
+        a_index: usize,
+        b_index: usize,
+    },
+    Power {
         a_index: usize,
         b_index: usize,
     },
@@ -122,6 +126,12 @@ impl TerrainNoiseType {
                     noise_types[*b_index].to_noise_fn(noise_types, rng),
                 ),
             )),
+            TerrainNoiseType::Power { a_index, b_index } => {
+                Box::new(Power::new(
+                    noise_types[*a_index].to_noise_fn(noise_types, rng),
+                    noise_types[*b_index].to_noise_fn(noise_types, rng),
+                ))
+            }
             TerrainNoiseType::Constant { value_index } => {
                 Box::new(Constant::new(
                     noise_types[*value_index].to_f64_value(noise_types, rng),

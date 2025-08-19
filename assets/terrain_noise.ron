@@ -103,18 +103,35 @@
             x_index: 26,
             y_index: 29,
         ),
-        Abs(
-            input_index: 30,
-        ),
         ConstantValue(
             value: F64(1.0),
         ),
         Constant(
-            value_index: 32,
+            value_index: 31,
         ),
-        Sub(
+        Add(
+            a_index: 30,
+            b_index: 32,
+        ),
+        ConstantValue(
+            value: F64(0.5),
+        ),
+        Constant(
+            value_index: 34,
+        ),
+        Multiply(
             a_index: 33,
-            b_index: 31,
+            b_index: 35,
+        ),
+        ConstantValue(
+            value: F64(0.0),
+        ),
+        Constant(
+            value_index: 37,
+        ),
+        Max(
+            a_index: 36,
+            b_index: 38,
         ),
         ConstantValue(
             value: F64(0.5),
@@ -123,8 +140,8 @@
             value: F64(13.0),
         ),
         Powf64(
-            a_index: 35,
-            b_index: 36,
+            a_index: 40,
+            b_index: 41,
         ),
         ConstantValue(
             value: I64(11),
@@ -142,57 +159,57 @@
             value: F64(3750.0),
         ),
         GFT(
-            noise_index: 34,
-            octaves_index: 38,
-            frequency_index: 37,
-            lacunarity_index: 39,
-            persistence_index: 40,
-            gradient_index: 41,
-            amplitude_index: 42,
+            noise_index: 39,
+            octaves_index: 43,
+            frequency_index: 42,
+            lacunarity_index: 44,
+            persistence_index: 45,
+            gradient_index: 46,
+            amplitude_index: 47,
         ),
         Multiply(
             a_index: 21,
-            b_index: 43,
+            b_index: 48,
         ),
         ConstantValue(
             value: F64(0.0),
         ),
         Constant(
-            value_index: 45,
+            value_index: 50,
         ),
         Add(
-            a_index: 44,
-            b_index: 46,
+            a_index: 49,
+            b_index: 51,
         ),
         VoxelSize,
         ScalePoint(
-            noise_index: 47,
-            scale_index: 48,
+            noise_index: 52,
+            scale_index: 53,
         ),
         ConstantValue(
             value: F64(1.0),
         ),
         Dividef64(
-            a_index: 50,
-            b_index: 48,
+            a_index: 55,
+            b_index: 53,
         ),
         Constant(
-            value_index: 51,
+            value_index: 56,
         ),
         Multiply(
-            a_index: 49,
-            b_index: 52,
+            a_index: 54,
+            b_index: 57,
         ),
         ConstantValue(
             value: F64(-1.0),
         ),
         Constant(
-            value_index: 54,
+            value_index: 59,
         ),
         Add(
-            a_index: 53,
-            b_index: 55,
+            a_index: 58,
+            b_index: 60,
         ),
     ],
-    start_index: 56,
+    start_index: 61,
 )
