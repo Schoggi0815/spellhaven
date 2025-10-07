@@ -1,7 +1,7 @@
 use bevy::{
+    light::{CascadeShadowConfigBuilder, light_consts::lux},
     pbr::{
-        CascadeShadowConfigBuilder, ExtendedMaterial,
-        light_consts::lux,
+        ExtendedMaterial,
         wireframe::{WireframeConfig, WireframePlugin},
     },
     prelude::*,
@@ -65,7 +65,7 @@ fn setup(mut commands: Commands, _asset_server: Res<AssetServer>) {
             ..default()
         },
         CascadeShadowConfigBuilder {
-            num_cascades: 10,
+            // num_cascades: 10,
             ..Default::default()
         }
         .build(),

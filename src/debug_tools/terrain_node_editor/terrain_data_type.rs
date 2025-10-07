@@ -20,7 +20,7 @@ impl DataTypeTrait<()> for TerrainDataType {
         }
     }
 
-    fn name(&self) -> std::borrow::Cow<str> {
+    fn name(&self) -> std::borrow::Cow<'_, str> {
         match self {
             TerrainDataType::NoiseF64x2 => Cow::Borrowed("Noise F64 x 2"),
             TerrainDataType::F64 => Cow::Borrowed("F64"),

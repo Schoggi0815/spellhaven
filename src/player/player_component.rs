@@ -1,12 +1,11 @@
 use bevy::{
-    core_pipeline::{bloom::Bloom, tonemapping::Tonemapping},
-    pbr::Atmosphere,
+    camera::Exposure,
+    core_pipeline::tonemapping::Tonemapping,
+    post_process::bloom::Bloom,
     prelude::*,
-    render::{
-        camera::Exposure,
-        view::{ColorGrading, ColorGradingGlobal},
-    },
+    render::view::{ColorGrading, ColorGradingGlobal},
 };
+use bevy_egui::PrimaryEguiContext;
 use bevy_panorbit_camera::PanOrbitCamera;
 
 use crate::{
@@ -72,9 +71,9 @@ pub(super) fn spawn_player(
     commands.spawn((
         Camera3d::default(),
         Camera {
-            hdr: true,
             ..Default::default()
         },
+        PrimaryEguiContext,
         ColorGrading {
             global: ColorGradingGlobal {
                 post_saturation: 1.2,

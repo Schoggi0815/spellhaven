@@ -10,7 +10,7 @@ struct TerrainMaterial {
     lod_multiplier: u32,
 }
 
-@group(2) @binding(100)
+@group(#{MATERIAL_BIND_GROUP}) @binding(100)
 var<uniform> terrain_material: TerrainMaterial;
 
 fn pcg(n: u32) -> u32 {

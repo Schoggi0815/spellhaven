@@ -54,7 +54,7 @@ impl NodeTemplateTrait for TerrainNodeTemplate {
     fn node_finder_label(
         &self,
         _: &mut Self::UserState,
-    ) -> std::borrow::Cow<str> {
+    ) -> std::borrow::Cow<'_, str> {
         Cow::Borrowed(match self {
             TerrainNodeTemplate::Output => "Output",
             TerrainNodeTemplate::SimplexNoise => "Simplex Noise",
