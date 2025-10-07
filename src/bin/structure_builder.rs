@@ -6,6 +6,7 @@ use std::{
 };
 
 use bevy::{
+    camera::primitives::MeshAabb,
     color::palettes::tailwind::{PINK_100, RED_500},
     pbr::{
         ExtendedMaterial,
@@ -13,7 +14,6 @@ use bevy::{
     },
     picking::pointer::PointerInteraction,
     prelude::*,
-    render::mesh::MeshAabb,
 };
 use bevy_inspector_egui::{
     bevy_egui::{EguiContexts, EguiPlugin, EguiPrimaryContextPass},

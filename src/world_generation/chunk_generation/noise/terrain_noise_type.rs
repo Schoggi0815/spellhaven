@@ -11,7 +11,7 @@ use crate::world_generation::chunk_generation::{
     noise::{gradient_fractal_noise::GFT, smooth_step::SmoothStep},
 };
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum TerrainNoiseType {
     Simplex {
         seed_index: usize,
@@ -84,7 +84,7 @@ pub enum TerrainNoiseType {
     VoxelSize,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum ConstantValue {
     F64(f64),
     I64(i64),

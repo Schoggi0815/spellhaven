@@ -1,18 +1,37 @@
 use bevy::math::IVec2;
-use fastnoise_lite::FastNoiseLite;
+use noise::NoiseFn;
+use rand::{SeedableRng, rngs::StdRng};
+use serde::{Deserialize, Deserializer, Serialize};
 use std::{cell::RefCell, collections::HashMap, rc::Rc, sync::Arc};
 
 use crate::world_generation::chunk_generation::{
     block_type::BlockType, chunk_lod::ChunkLod,
+    noise::terrain_noise::TerrainNoise,
 };
 
+#[derive(Clone, Deserialize, Serialize)]
 pub struct VoxelStructureMetadata {
     pub model_size: [i32; 3],
     pub generation_size: [i32; 2],
     pub grid_offset: [i32; 2],
     pub generate_debug_blocks: bool,
     pub debug_rgb_multiplier: [f32; 3],
-    pub noise: FastNoiseLite,
+    #[serde(skip_serializing, deserialize_with = "deserialize_noise")]
+    pub noise: Arc<Box<dyn NoiseFn<f64, 2>>>,
+    #[serde(rename = "noise")]
+    pub noise_map: TerrainNoise,
+}
+
+fn deserialize_noise<'de, D>(
+    d: D,
+) -> Result<Arc<Box<dyn NoiseFn<f64, 2>>>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    Ok(Arc::new(
+        TerrainNoise::deserialize(d)?
+            .get_noise_fn(&mut StdRng::seed_from_u64(0)),
+    ))
 }
 
 pub trait StructureGenerator {

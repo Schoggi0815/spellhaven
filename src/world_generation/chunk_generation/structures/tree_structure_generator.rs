@@ -50,10 +50,11 @@ impl<T: TreeStructureGenerator> StructureGenerator for T {
         structure_position: IVec2,
         _: ChunkLod,
     ) -> Rc<Vec<Vec<Vec<BlockType>>>> {
-        let noise_value = self.get_structure_metadata().noise.get_noise_2d(
-            structure_position.x as f32,
-            structure_position.y as f32,
-        ) * 0.5
+        let noise_value = self
+            .get_structure_metadata()
+            .noise
+            .get(structure_position.as_dvec2().to_array())
+            * 0.5
             + 0.5;
         let mut rng =
             StdRng::seed_from_u64((noise_value.abs() * 10000.) as u64);

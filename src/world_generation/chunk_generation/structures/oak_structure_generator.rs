@@ -1,4 +1,5 @@
 use rand::rngs::StdRng;
+use serde::{Deserialize, Serialize};
 
 use crate::world_generation::chunk_generation::{
     VOXEL_SIZE,
@@ -12,6 +13,7 @@ use crate::world_generation::chunk_generation::{
     },
 };
 
+#[derive(Clone, Serialize, Deserialize)]
 pub struct OakStructureGenerator {
     pub fixed_structure_metadata: VoxelStructureMetadata,
 }

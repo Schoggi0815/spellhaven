@@ -6,7 +6,7 @@ use crate::world_generation::chunk_generation::noise::terrain_noise_type::Terrai
 
 pub const TERRAIN_NOISE_FILE_PATH: &'static str = "assets/terrain_noise.ron";
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct TerrainNoise {
     noise_types: Vec<TerrainNoiseType>,
     start_index: usize,

@@ -6,6 +6,7 @@ use crate::{
         structures::{
             oak_structure_generator::OakStructureGenerator,
             structure_generator::{StructureGenerator, VoxelStructureMetadata},
+            structure_generators::StructureGenerators,
             tree_structure_generator::TreeStructureGenerator,
         },
     },
@@ -15,6 +16,7 @@ use fastnoise_lite::FastNoiseLite;
 use noise::NoiseFn;
 use rand::prelude::StdRng;
 use rand::{Rng, SeedableRng};
+use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 
 #[derive(Resource)]
@@ -100,10 +102,10 @@ fn get_seeded_white_noise(seed: u64) -> FastNoiseLite {
     noise
 }
 
+#[derive(Clone, Serialize, Deserialize)]
 pub struct GenerationOptions {
     pub seed: u64,
-    pub structure_generators:
-        Vec<Arc<Box<dyn StructureGenerator + Send + Sync>>>,
+    pub structure_generators: Vec<Arc<Box<StructureGenerators>>>,
     pub structure_assets: Vec<StructureAsset>,
     pub generate_paths: bool,
     pub terrain_noise: TerrainNoise,
@@ -116,6 +118,7 @@ impl GenerationOptions {
     }
 }
 
+#[derive(Clone, Serialize, Deserialize)]
 pub struct StructureAsset {
     pub _blocks: Vec<Vec<Vec<BlockType>>>,
 }
