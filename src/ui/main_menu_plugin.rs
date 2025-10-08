@@ -1,12 +1,18 @@
 use std::hash::{DefaultHasher, Hash, Hasher};
 
 use bevy::prelude::*;
+use bevy_hookup_core::{
+    hook_session::SessionMessenger, owner_component::Owner,
+    sync_entity::SyncEntityOwner,
+};
+use bevy_hookup_messenger_self::self_session::SelfSession;
 use bevy_inspector_egui::{
     bevy_egui::{EguiContexts, EguiPrimaryContextPass},
     egui,
 };
 
 use crate::{
+    networking::sendables::Sendables,
     ui::{
         initial_chunk_loader::{
             remove_initial_chunk_loader, spawn_initial_chunk_loader,
@@ -15,7 +21,7 @@ use crate::{
         main_menu_state::{MainMenuState, hide_main_menu},
     },
     world_generation::{
-        generation_options::GenerationOptionsResource,
+        generation_options::GenerationOptions,
         world_generation_state::WorldGenerationState,
     },
 };
@@ -82,8 +88,11 @@ fn render_main_menu(
                 let seed = hasher.finish();
 
                 info!("Seed to use: {}", seed);
-                commands.insert_resource(GenerationOptionsResource::from_seed(
-                    seed,
+                commands.spawn(SelfSession::<Sendables>::new().to_session());
+
+                commands.spawn((
+                    SyncEntityOwner::new(),
+                    Owner::new(GenerationOptions::from_seed(seed)),
                 ));
 
                 menu_state.set(MainMenuState::LoadingWorldGen);

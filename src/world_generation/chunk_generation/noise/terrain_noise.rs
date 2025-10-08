@@ -20,7 +20,10 @@ impl TerrainNoise {
         }
     }
 
-    pub fn get_noise_fn(&self, rng: &mut impl Rng) -> Box<dyn NoiseFn<f64, 2>> {
+    pub fn get_noise_fn(
+        &self,
+        rng: &mut impl Rng,
+    ) -> Box<dyn NoiseFn<f64, 2> + Send + Sync> {
         self.noise_types[self.start_index].to_noise_fn(&self.noise_types, rng)
     }
 }

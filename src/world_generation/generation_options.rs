@@ -2,27 +2,44 @@ use crate::{
     utils::file_utils::read_ron_from_file,
     world_generation::chunk_generation::{
         block_type::BlockType,
-        noise::terrain_noise::{TERRAIN_NOISE_FILE_PATH, TerrainNoise},
+        noise::{
+            terrain_noise::{TERRAIN_NOISE_FILE_PATH, TerrainNoise},
+            terrain_noise_type::{ConstantValue, TerrainNoiseType},
+        },
         structures::{
             oak_structure_generator::OakStructureGenerator,
-            structure_generator::{StructureGenerator, VoxelStructureMetadata},
+            structure_generator::VoxelStructureMetadata,
             structure_generators::StructureGenerators,
             tree_structure_generator::TreeStructureGenerator,
         },
     },
 };
 use bevy::prelude::*;
-use fastnoise_lite::FastNoiseLite;
 use noise::NoiseFn;
+use rand::SeedableRng;
 use rand::prelude::StdRng;
-use rand::{Rng, SeedableRng};
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 
-#[derive(Resource)]
-pub struct GenerationOptionsResource(pub Arc<GenerationOptions>);
+fn get_seeded_white_noise() -> TerrainNoise {
+    TerrainNoise::new(
+        0,
+        vec![TerrainNoiseType::ConstantValue {
+            value: ConstantValue::F64(1.0),
+        }],
+    )
+}
 
-impl GenerationOptionsResource {
+#[derive(Clone, Serialize, Deserialize)]
+pub struct GenerationOptions {
+    pub seed: u64,
+    pub structure_generators: Vec<Arc<Box<StructureGenerators>>>,
+    pub structure_assets: Vec<StructureAsset>,
+    pub generate_paths: bool,
+    pub terrain_noise: TerrainNoise,
+}
+
+impl GenerationOptions {
     pub fn from_seed(seed: u64) -> Self {
         // let tree_house = vox_data_to_structure_data(
         //     &from_file("assets/tree_house.vox").unwrap(),
@@ -37,42 +54,34 @@ impl GenerationOptionsResource {
         //     read_ron_from_file("assets/tree_test.ron")
         //         .expect("Failed to load tree model.");
 
-        let mut rng = StdRng::seed_from_u64(seed);
-
-        Self(Arc::new(GenerationOptions {
+        Self {
             seed,
             terrain_noise,
             generate_paths: false,
             structure_generators: vec![
-                Arc::new(Box::new(OakStructureGenerator::new(
-                    VoxelStructureMetadata {
-                        model_size: [27, 27, 27],
-                        generation_size: [64, 64],
-                        grid_offset: [24, 16],
-                        generate_debug_blocks: false,
-                        debug_rgb_multiplier: [1., 1., 1.],
-                        noise: get_seeded_white_noise(rng.random()),
-                    },
+                Arc::new(Box::new(StructureGenerators::Oak(
+                    OakStructureGenerator::new(VoxelStructureMetadata::new(
+                        [27, 27, 27],
+                        [64, 64],
+                        [24, 16],
+                        get_seeded_white_noise(),
+                    )),
                 ))),
-                Arc::new(Box::new(OakStructureGenerator::new(
-                    VoxelStructureMetadata {
-                        model_size: [27, 27, 27],
-                        generation_size: [64, 64],
-                        grid_offset: [43, 52],
-                        generate_debug_blocks: false,
-                        debug_rgb_multiplier: [1., 1., 1.],
-                        noise: get_seeded_white_noise(rng.random()),
-                    },
+                Arc::new(Box::new(StructureGenerators::Oak(
+                    OakStructureGenerator::new(VoxelStructureMetadata::new(
+                        [27, 27, 27],
+                        [64, 64],
+                        [43, 52],
+                        get_seeded_white_noise(),
+                    )),
                 ))),
-                Arc::new(Box::new(OakStructureGenerator::new(
-                    VoxelStructureMetadata {
-                        model_size: [27, 27, 27],
-                        generation_size: [64, 64],
-                        grid_offset: [10, 4],
-                        generate_debug_blocks: false,
-                        debug_rgb_multiplier: [1., 1., 1.],
-                        noise: get_seeded_white_noise(rng.random()),
-                    },
+                Arc::new(Box::new(StructureGenerators::Oak(
+                    OakStructureGenerator::new(VoxelStructureMetadata::new(
+                        [27, 27, 27],
+                        [64, 64],
+                        [10, 4],
+                        get_seeded_white_noise(),
+                    )),
                 ))),
                 // Arc::new(Box::new(FixedStructureGenerator {
                 //     fixed_structure_model: Arc::new(tree_model.blocks),
@@ -91,34 +100,16 @@ impl GenerationOptionsResource {
                 //     _blocks: (*box_structure.0).clone(),
                 // }
             ],
-        }))
+        }
     }
-}
 
-fn get_seeded_white_noise(seed: u64) -> FastNoiseLite {
-    let mut noise = FastNoiseLite::with_seed(seed as i32);
-    noise.set_noise_type(Some(fastnoise_lite::NoiseType::Value));
-    noise.set_frequency(Some(100.));
-    noise
-}
-
-#[derive(Clone, Serialize, Deserialize)]
-pub struct GenerationOptions {
-    pub seed: u64,
-    pub structure_generators: Vec<Arc<Box<StructureGenerators>>>,
-    pub structure_assets: Vec<StructureAsset>,
-    pub generate_paths: bool,
-    pub terrain_noise: TerrainNoise,
-}
-
-impl GenerationOptions {
     pub fn get_terrain_noise(&self) -> impl NoiseFn<f64, 2> {
         self.terrain_noise
             .get_noise_fn(&mut StdRng::seed_from_u64(self.seed + 1))
     }
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct StructureAsset {
     pub _blocks: Vec<Vec<Vec<BlockType>>>,
 }

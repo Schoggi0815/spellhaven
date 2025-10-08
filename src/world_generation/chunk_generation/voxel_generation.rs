@@ -169,16 +169,11 @@ pub fn generate_voxels(
                     total_z + structure_metadata.grid_offset[1],
                     structure_metadata.generation_size[1],
                 );
-                let structure_value =
-                    if let Some(noise) = &structure_metadata.noise {
-                        noise.get([
-                            structure_offset_x as f64,
-                            structure_offset_z as f64,
-                        ]) * 0.5
-                            + 0.5
-                    } else {
-                        1.
-                    };
+                let structure_value = structure_metadata.noise.get([
+                    structure_offset_x as f64,
+                    structure_offset_z as f64,
+                ]) * 0.5
+                    + 0.5;
                 if structure_metadata.generate_debug_blocks {
                     let top_terrain = (noise_height
                         .min(CHUNK_SIZE as f32 + min_height as f32)

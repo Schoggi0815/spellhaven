@@ -111,7 +111,7 @@ impl TerrainNoiseType {
         &self,
         noise_types: &Vec<TerrainNoiseType>,
         rng: &mut impl Rng,
-    ) -> Box<dyn NoiseFn<f64, 2>> {
+    ) -> Box<dyn NoiseFn<f64, 2> + Send + Sync> {
         match self {
             TerrainNoiseType::Simplex { seed_index } => Box::new(Simplex::new(
                 noise_types[*seed_index].to_i64_value(noise_types, rng) as u32,

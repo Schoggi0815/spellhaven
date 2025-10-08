@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy_hookup_core::shared::Shared;
 use noise::{Add, Constant, NoiseFn};
 
 use crate::{
@@ -13,7 +14,7 @@ use crate::{
             },
         },
         chunk_loading::chunk_pos::AbsoluteChunkPos,
-        generation_options::GenerationOptionsResource,
+        generation_options::GenerationOptions,
     },
 };
 
@@ -25,7 +26,7 @@ pub fn setup_gizmo_settings(mut config: ResMut<GizmoConfigStore>) {
 
 pub fn draw_path_gizmos(
     mut gizmos: Gizmos,
-    generation_options: Res<GenerationOptionsResource>,
+    generation_options: Single<&Shared<GenerationOptions>>,
     country_cache: Res<CountryCache>,
     players: Query<&Transform, With<Player>>,
     debug_resource: Res<SpellhavenDebugResource>,
@@ -35,7 +36,7 @@ pub fn draw_path_gizmos(
     }
 
     let terrain_noise =
-        Add::new(generation_options.0.get_terrain_noise(), Constant::new(5.));
+        Add::new(generation_options.get_terrain_noise(), Constant::new(5.));
 
     for player in &players {
         let player_chunk_pos =

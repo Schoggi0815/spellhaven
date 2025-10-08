@@ -13,7 +13,7 @@ use crate::world_generation::{
             structure_data::StructureData,
         },
     },
-    generation_options::GenerationOptionsResource,
+    generation_options::GenerationOptions,
 };
 
 pub const COUNTRY_SIZE: usize = (2usize.pow(14) as f32 / VOXEL_SIZE) as usize;
@@ -41,11 +41,11 @@ impl CountryCache {
         commands: &mut Commands,
         country_pos: CountryPosition,
         cache_task_pool: &CacheTaskPool,
-        generation_options: &GenerationOptionsResource,
+        generation_options: &GenerationOptions,
     ) -> Option<CountryData> {
         let Some(country_data) = self.country_cache.get(&country_pos) else {
             let cache_store = self.cache_store.clone();
-            let generation_options = generation_options.0.clone();
+            let generation_options = generation_options.clone();
             commands.spawn(CacheGenerationTask(
                 cache_task_pool.task_pool.spawn(async move {
                     CountryData::generate(

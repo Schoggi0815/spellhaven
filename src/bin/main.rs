@@ -11,6 +11,7 @@ use bevy_panorbit_camera::PanOrbitCameraPlugin;
 use spellhaven::{
     animation::animation_plugin::SpellhavenAnimationPlugin,
     debug_tools::debug_plugin::SpellhavenDebugPlugin,
+    networking::networking_plugin::NetworkingPlugin,
     physics::physics_plugin::PhysicsPlugin,
     player::player_plugin::PlayerPlugin,
     ui::game_ui_plugin::GameUiPlugin,
@@ -44,6 +45,7 @@ fn main() {
                 WorldInspectorPlugin::new(),
                 GameUiPlugin,
                 SpellhavenDebugPlugin,
+                NetworkingPlugin,
                 MaterialPlugin::<
                     ExtendedMaterial<StandardMaterial, TerrainMaterial>,
                 >::default(),

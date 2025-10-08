@@ -11,7 +11,7 @@ use crate::world_generation::{
         },
     },
     chunk_loading::chunk_loader_plugin::ChunkLoaderPlugin,
-    generation_options::GenerationOptionsResource,
+    world_generation_state::WorldGenerationState,
 };
 
 pub struct ChunkGenerationPlugin;
@@ -27,8 +27,10 @@ impl Plugin for ChunkGenerationPlugin {
             .add_systems(
                 Update,
                 (
-                    queue_chunk_tasks
-                        .run_if(resource_exists::<GenerationOptionsResource>),
+                    queue_chunk_tasks.run_if(
+                        in_state(WorldGenerationState::InitialGeneration)
+                            .or(in_state(WorldGenerationState::Active)),
+                    ),
                     set_generated_chunks,
                     set_generated_caches,
                 ),

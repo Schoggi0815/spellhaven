@@ -7,6 +7,7 @@ use std::{cell::RefCell, collections::HashMap, rc::Rc, sync::Arc};
 use crate::world_generation::chunk_generation::{
     block_type::BlockType, chunk_lod::ChunkLod,
     noise::terrain_noise::TerrainNoise,
+    structures::structure_generators::StructureGenerators,
 };
 
 #[derive(Clone, Deserialize, Serialize)]
@@ -17,14 +18,14 @@ pub struct VoxelStructureMetadata {
     pub generate_debug_blocks: bool,
     pub debug_rgb_multiplier: [f32; 3],
     #[serde(skip_serializing, deserialize_with = "deserialize_noise")]
-    pub noise: Arc<Box<dyn NoiseFn<f64, 2>>>,
+    pub noise: Arc<Box<dyn NoiseFn<f64, 2> + Send + Sync>>,
     #[serde(rename = "noise")]
     pub noise_map: TerrainNoise,
 }
 
 fn deserialize_noise<'de, D>(
     d: D,
-) -> Result<Arc<Box<dyn NoiseFn<f64, 2>>>, D::Error>
+) -> Result<Arc<Box<dyn NoiseFn<f64, 2> + Send + Sync>>, D::Error>
 where
     D: Deserializer<'de>,
 {
@@ -32,6 +33,45 @@ where
         TerrainNoise::deserialize(d)?
             .get_noise_fn(&mut StdRng::seed_from_u64(0)),
     ))
+}
+
+impl VoxelStructureMetadata {
+    pub fn new(
+        model_size: [i32; 3],
+        generation_size: [i32; 2],
+        grid_offset: [i32; 2],
+        noise_map: TerrainNoise,
+    ) -> Self {
+        let noise =
+            Arc::new(noise_map.get_noise_fn(&mut StdRng::seed_from_u64(0)));
+
+        Self {
+            model_size,
+            generation_size,
+            grid_offset,
+            generate_debug_blocks: false,
+            debug_rgb_multiplier: [0., 0., 0.],
+            noise,
+            noise_map,
+        }
+    }
+
+    pub fn with_debug_blocks(self, generate_debug_blocks: bool) -> Self {
+        Self {
+            generate_debug_blocks,
+            ..self
+        }
+    }
+
+    pub fn with_debug_rgb_multiplier(
+        self,
+        debug_rgb_multiplier: [f32; 3],
+    ) -> Self {
+        Self {
+            debug_rgb_multiplier,
+            ..self
+        }
+    }
 }
 
 pub trait StructureGenerator {
@@ -64,13 +104,11 @@ impl StructureGenerator for FixedStructureGenerator {
 
 pub struct StructureGeneratorCache {
     cache: RefCell<HashMap<IVec2, Rc<Vec<Vec<Vec<BlockType>>>>>>,
-    structure_generator: Arc<Box<dyn StructureGenerator + Send + Sync>>,
+    structure_generator: Arc<Box<StructureGenerators>>,
 }
 
 impl StructureGeneratorCache {
-    pub fn new(
-        structure_generator: &Arc<Box<dyn StructureGenerator + Send + Sync>>,
-    ) -> Self {
+    pub fn new(structure_generator: &Arc<Box<StructureGenerators>>) -> Self {
         Self {
             structure_generator: structure_generator.clone(),
             cache: RefCell::new(HashMap::new()),
