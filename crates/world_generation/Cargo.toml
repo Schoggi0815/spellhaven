@@ -1,0 +1,15 @@
+[package]
+name = "world_generation"
+edition = "2024"
+
+[dependencies]
+bevy.workspace = true
+noise.workspace = true
+rand.workspace = true
+serde.workspace = true
+futures-lite.workspace = true
+fastnoise-lite.workspace = true
+utils.workspace = true
+bevy_hookup_core.workspace = true
+itertools.workspace = true
+physics.workspace = true

@@ -1,0 +1,10 @@
+[package]
+name = "utils"
+
+[dependencies]
+itertools.workspace = true
+num-traits.workspace = true
+serde.workspace = true
+anyhow.workspace = true
+ron.workspace = true
+bevy.workspace = true

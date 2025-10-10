@@ -1,0 +1,7 @@
+[package]
+name = "physics"
+
+[dependencies]
+bevy.workspace = true
+itertools.workspace = true
+utils.workspace = true
