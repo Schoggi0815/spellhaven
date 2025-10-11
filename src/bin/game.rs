@@ -8,17 +8,14 @@ use bevy::{
 };
 use bevy_inspector_egui::{bevy_egui::EguiPlugin, quick::WorldInspectorPlugin};
 use bevy_panorbit_camera::PanOrbitCameraPlugin;
-use spellhaven::{
-    animation::animation_plugin::SpellhavenAnimationPlugin,
-    debug_tools::debug_plugin::SpellhavenDebugPlugin,
-    networking::networking_plugin::NetworkingPlugin,
-    physics::physics_plugin::PhysicsPlugin,
-    player::player_plugin::PlayerPlugin,
-    ui::game_ui_plugin::GameUiPlugin,
-    world_generation::{
-        terrain_material::TerrainMaterial,
-        world_generation_plugin::WorldGenerationPlugin,
-    },
+use debug_tools::debug_plugin::SpellhavenDebugPlugin;
+use networking::networking_plugin::NetworkingPlugin;
+use physics::physics_plugin::PhysicsPlugin;
+use player::player_plugin::PlayerPlugin;
+use ui::game_ui_plugin::GameUiPlugin;
+use world_generation::{
+    terrain_material::TerrainMaterial,
+    world_generation_plugin::WorldGenerationPlugin,
 };
 
 fn main() {
@@ -40,7 +37,6 @@ fn main() {
                 PhysicsPlugin,
                 PlayerPlugin,
                 WireframePlugin { ..default() },
-                SpellhavenAnimationPlugin,
                 EguiPlugin::default(),
                 WorldInspectorPlugin::new(),
                 GameUiPlugin,

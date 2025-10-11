@@ -1,19 +1,25 @@
 use bevy::diagnostic::FrameTimeDiagnosticsPlugin;
 use bevy::prelude::*;
 
-use crate::ui::fps_text::{update_fps_ui, FpsText};
-use crate::ui::main_menu_plugin::MainMenuPlugin;
-use crate::ui::main_menu_state::MainMenuState;
-use crate::ui::task_text::{update_task_ui, ChunkTaskText, CountryTaskText};
-use crate::ui::triangle_count_text::{update_triangle_ui, TriangleText};
+use crate::fps_text::{update_fps_ui, FpsText};
+use crate::main_menu_plugin::MainMenuPlugin;
+use crate::main_menu_state::MainMenuState;
+use crate::task_text::{update_task_ui, ChunkTaskText, CountryTaskText};
+use crate::triangle_count_text::{update_triangle_ui, TriangleText};
 
 pub struct GameUiPlugin;
 
 impl Plugin for GameUiPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins((FrameTimeDiagnosticsPlugin::default(), MainMenuPlugin))
-            .add_systems(OnEnter(MainMenuState::Hidden), spawn_ui)
-            .add_systems(Update, (update_fps_ui, update_task_ui, update_triangle_ui));
+        app.add_plugins((
+            FrameTimeDiagnosticsPlugin::default(),
+            MainMenuPlugin,
+        ))
+        .add_systems(OnEnter(MainMenuState::Hidden), spawn_ui)
+        .add_systems(
+            Update,
+            (update_fps_ui, update_task_ui, update_triangle_ui),
+        );
     }
 }
 
@@ -30,7 +36,12 @@ fn spawn_ui(mut commands: Commands) {
                 Node {
                     width: Val::Auto,
                     height: Val::Px(32.0),
-                    margin: UiRect::new(Val::Auto, Val::Auto, Val::Px(15.0), Val::Px(0.0)),
+                    margin: UiRect::new(
+                        Val::Auto,
+                        Val::Auto,
+                        Val::Px(15.0),
+                        Val::Px(0.0),
+                    ),
                     ..default()
                 },
                 Text("FPS!".to_string()),
@@ -44,7 +55,12 @@ fn spawn_ui(mut commands: Commands) {
                 Node {
                     width: Val::Auto,
                     height: Val::Px(32.0),
-                    margin: UiRect::new(Val::Auto, Val::Auto, Val::Px(15.0), Val::Px(0.0)),
+                    margin: UiRect::new(
+                        Val::Auto,
+                        Val::Auto,
+                        Val::Px(15.0),
+                        Val::Px(0.0),
+                    ),
                     ..default()
                 },
                 Text("TRIANGLES!".to_string()),
@@ -58,7 +74,12 @@ fn spawn_ui(mut commands: Commands) {
                 Node {
                     width: Val::Auto,
                     height: Val::Px(32.0),
-                    margin: UiRect::new(Val::Auto, Val::Auto, Val::Px(15.0), Val::Px(0.0)),
+                    margin: UiRect::new(
+                        Val::Auto,
+                        Val::Auto,
+                        Val::Px(15.0),
+                        Val::Px(0.0),
+                    ),
                     ..default()
                 },
                 Text("Country Tasks!".to_string()),
@@ -72,7 +93,12 @@ fn spawn_ui(mut commands: Commands) {
                 Node {
                     width: Val::Auto,
                     height: Val::Px(32.0),
-                    margin: UiRect::new(Val::Auto, Val::Auto, Val::Px(15.0), Val::Px(0.0)),
+                    margin: UiRect::new(
+                        Val::Auto,
+                        Val::Auto,
+                        Val::Px(15.0),
+                        Val::Px(0.0),
+                    ),
                     ..default()
                 },
                 Text("Chunk Tasks!".to_string()),

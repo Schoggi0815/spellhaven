@@ -21,19 +21,17 @@ use bevy_inspector_egui::{
     quick::WorldInspectorPlugin,
 };
 use bevy_panorbit_camera::{PanOrbitCamera, PanOrbitCameraPlugin};
+use debug_tools::debug_plugin::SpellhavenDebugPlugin;
 use itertools::Itertools;
 use ron::ser::PrettyConfig;
-use spellhaven::{
-    debug_tools::debug_plugin::SpellhavenDebugPlugin,
-    utils::cartesian_product::cube_cartesian_product,
-    world_generation::{
-        chunk_generation::{
-            block_type::BlockType, chunk_lod::ChunkLod,
-            mesh_generation::generate_mesh,
-            structures::structure_model::StructureModel, voxel_data::VoxelData,
-        },
-        terrain_material::TerrainMaterial,
+use utils::cartesian_product::cube_cartesian_product;
+use world_generation::{
+    chunk_generation::{
+        block_type::BlockType, chunk_lod::ChunkLod,
+        mesh_generation::generate_mesh,
+        structures::structure_model::StructureModel, voxel_data::VoxelData,
     },
+    terrain_material::TerrainMaterial,
 };
 
 const PLACEABLE_BLOCKS: [BlockType; 4] = [

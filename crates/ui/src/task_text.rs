@@ -1,6 +1,6 @@
 use bevy::prelude::{Component, Query, Text, With, Without};
 
-use crate::world_generation::chunk_generation::{
+use world_generation::chunk_generation::{
     chunk_start::ChunkStart, chunk_task::ChunkTask,
     country::cache_generation_task::CacheGenerationTask,
 };

@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use bevy_egui::{EguiContexts, EguiPlugin, EguiPrimaryContextPass};
-use spellhaven::debug_tools::terrain_node_editor::terrain_graph_resource::TerrainGraphResource;
+use debug_tools::terrain_node_editor::terrain_graph_resource::TerrainGraphResource;
 
 fn main() {
     App::new()

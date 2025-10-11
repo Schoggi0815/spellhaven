@@ -1,20 +1,18 @@
 use bevy::prelude::*;
 use bevy_hookup_core::shared::Shared;
+use debug_resource::debug_resource::SpellhavenDebugResource;
 use noise::{Add, Constant, NoiseFn};
-
-use crate::{
-    player::player_component::Player,
-    world_generation::{
-        chunk_generation::{
-            country::{
-                country_cache::{CountryCache, GenerationState},
-                country_cache_position::CountryPosition,
-            },
-            VOXEL_SIZE,
+use player::player_component::Player;
+use world_generation::{
+    chunk_generation::{
+        country::{
+            country_cache::{CountryCache, GenerationState},
+            country_cache_position::CountryPosition,
         },
-        chunk_loading::chunk_pos::AbsoluteChunkPos,
-        generation_options::GenerationOptions,
+        VOXEL_SIZE,
     },
+    chunk_loading::chunk_pos::AbsoluteChunkPos,
+    generation_options::GenerationOptions,
 };
 
 pub fn setup_gizmo_settings(mut config: ResMut<GizmoConfigStore>) {

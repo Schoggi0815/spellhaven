@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::world_generation::chunk_loading::chunk_loader::ChunkLoader;
+use world_generation::chunk_loading::chunk_loader::ChunkLoader;
 
 #[derive(Component)]
 pub struct InitialChunkLoader;

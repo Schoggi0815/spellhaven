@@ -7,8 +7,10 @@ extern crate egui;
 extern crate egui_node_editor;
 extern crate noise;
 extern crate physics;
+extern crate player;
 extern crate ron;
 extern crate serde;
+extern crate world_generation;
 
 pub mod chunk_gizmos;
 pub mod debug_plugin;

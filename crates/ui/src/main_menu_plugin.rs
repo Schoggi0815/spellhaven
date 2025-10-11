@@ -10,20 +10,18 @@ use bevy_inspector_egui::{
     bevy_egui::{EguiContexts, EguiPrimaryContextPass},
     egui,
 };
+use networking::sendables::Sendables;
+use world_generation::{
+    generation_options::GenerationOptions,
+    world_generation_state::WorldGenerationState,
+};
 
 use crate::{
-    networking::sendables::Sendables,
-    ui::{
-        initial_chunk_loader::{
-            remove_initial_chunk_loader, spawn_initial_chunk_loader,
-        },
-        main_menu_data::MainMenuData,
-        main_menu_state::{MainMenuState, hide_main_menu},
+    initial_chunk_loader::{
+        remove_initial_chunk_loader, spawn_initial_chunk_loader,
     },
-    world_generation::{
-        generation_options::GenerationOptions,
-        world_generation_state::WorldGenerationState,
-    },
+    main_menu_data::MainMenuData,
+    main_menu_state::{hide_main_menu, MainMenuState},
 };
 
 #[derive(Default)]

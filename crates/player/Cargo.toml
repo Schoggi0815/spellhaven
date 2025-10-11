@@ -1,5 +1,6 @@
 [package]
 name = "player"
+edition = "2024"
 
 [dependencies]
 bevy.workspace = true
@@ -8,3 +9,4 @@ debug_resource.workspace = true
 physics.workspace = true
 world_generation.workspace = true
 bevy_egui.workspace = true
+ui.workspace = true

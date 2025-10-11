@@ -3,11 +3,9 @@ use bevy_hookup_core::{
     hookup_component_plugin::HookupComponentPlugin,
     hookup_sendable_plugin::HookupSendablePlugin,
 };
+use world_generation::generation_options::GenerationOptions;
 
-use crate::{
-    networking::sendables::Sendables,
-    world_generation::generation_options::GenerationOptions,
-};
+use crate::sendables::Sendables;
 
 pub struct NetworkingPlugin;
 

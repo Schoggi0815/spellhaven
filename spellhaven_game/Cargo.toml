@@ -1,5 +1,0 @@
-[package]
-name = "spellhaven_game"
-
-[dependencies]
-bevy.workspace = true

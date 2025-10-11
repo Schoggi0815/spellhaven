@@ -1,5 +1,6 @@
 [package]
 name = "debug_resource"
+edition = "2024"
 
 [dependencies]
 bevy.workspace = true

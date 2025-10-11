@@ -1,5 +1,6 @@
 [package]
 name = "physics"
+edition = "2024"
 
 [dependencies]
 bevy.workspace = true
