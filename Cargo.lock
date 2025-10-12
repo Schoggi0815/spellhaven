@@ -3428,6 +3428,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "main_menu"
+version = "0.0.0"
+dependencies = [
+ "bevy",
+ "bevy_egui",
+ "egui",
+ "networking",
+ "world_generation",
+]
+
+[[package]]
 name = "malloc_buf"
 version = "0.0.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3605,6 +3616,7 @@ dependencies = [
  "bevy",
  "bevy_hookup_core",
  "bevy_hookup_macros",
+ "bevy_hookup_messenger_self",
  "world_generation",
 ]
 
@@ -4213,7 +4225,6 @@ dependencies = [
  "bevy_panorbit_camera",
  "debug_resource",
  "physics",
- "ui",
  "world_generation",
 ]
 
@@ -4830,6 +4841,7 @@ dependencies = [
  "fastrand",
  "futures-lite",
  "itertools 0.14.0",
+ "main_menu",
  "networking",
  "noise",
  "num-traits",

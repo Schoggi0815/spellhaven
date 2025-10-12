@@ -1,27 +1,14 @@
 use std::hash::{DefaultHasher, Hash, Hasher};
 
 use bevy::prelude::*;
-use bevy_hookup_core::{
-    hook_session::SessionMessenger, owner_component::Owner,
-    sync_entity::SyncEntityOwner,
-};
-use bevy_hookup_messenger_self::self_session::SelfSession;
-use bevy_inspector_egui::{
-    bevy_egui::{EguiContexts, EguiPrimaryContextPass},
-    egui,
-};
-use networking::sendables::Sendables;
-use world_generation::{
-    generation_options::GenerationOptions,
-    world_generation_state::WorldGenerationState,
+use bevy_egui::{EguiContexts, EguiPrimaryContextPass};
+use networking::{
+    create_world::CreateWorld, start_self_session::StartSelfSession,
 };
 
 use crate::{
-    initial_chunk_loader::{
-        remove_initial_chunk_loader, spawn_initial_chunk_loader,
-    },
     main_menu_data::MainMenuData,
-    main_menu_state::{hide_main_menu, MainMenuState},
+    main_menu_state::{MainMenuState, hide_main_menu},
 };
 
 #[derive(Default)]
@@ -30,18 +17,7 @@ pub struct MainMenuPlugin;
 impl Plugin for MainMenuPlugin {
     fn build(&self, app: &mut App) {
         app.init_state::<MainMenuState>()
-            .init_resource::<MainMenuData>()
             .add_systems(OnEnter(MainMenuState::Shown), add_menu_cam)
-            .add_systems(OnEnter(MainMenuState::Hidden), remove_menu_cam)
-            .add_systems(
-                OnEnter(MainMenuState::LoadingWorldGen),
-                spawn_initial_chunk_loader,
-            )
-            .add_systems(
-                OnExit(MainMenuState::LoadingWorldGen),
-                remove_initial_chunk_loader,
-            )
-            .add_systems(OnEnter(WorldGenerationState::Active), hide_main_menu)
             .add_systems(
                 EguiPrimaryContextPass,
                 (
@@ -49,28 +25,20 @@ impl Plugin for MainMenuPlugin {
                     render_loading_screen
                         .run_if(in_state(MainMenuState::LoadingWorldGen)),
                 ),
-            );
+            )
+            .add_observer(hide_main_menu);
     }
 }
 
 #[derive(Component)]
-struct MenuCamera;
+pub struct MenuCamera;
 
 fn add_menu_cam(mut commands: Commands) {
     commands.spawn((Camera2d, MenuCamera));
 }
 
-fn remove_menu_cam(
-    mut commands: Commands,
-    cameras: Query<Entity, With<MenuCamera>>,
-) {
-    for camera in cameras {
-        commands.entity(camera).despawn();
-    }
-}
-
 fn render_main_menu(
-    mut menu_data: ResMut<MainMenuData>,
+    mut menu_data: Local<MainMenuData>,
     mut menu_state: ResMut<NextState<MainMenuState>>,
     mut commands: Commands,
     mut contexts: EguiContexts,
@@ -86,12 +54,9 @@ fn render_main_menu(
                 let seed = hasher.finish();
 
                 info!("Seed to use: {}", seed);
-                commands.spawn(SelfSession::<Sendables>::new().to_session());
 
-                commands.spawn((
-                    SyncEntityOwner::new(),
-                    Owner::new(GenerationOptions::from_seed(seed)),
-                ));
+                commands.trigger(StartSelfSession);
+                commands.trigger(CreateWorld { seed });
 
                 menu_state.set(MainMenuState::LoadingWorldGen);
             }

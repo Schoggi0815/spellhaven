@@ -13,7 +13,9 @@ use physics::{
     physics_position::PhysicsPosition,
 };
 
-use world_generation::chunk_loading::chunk_loader::ChunkLoader;
+use world_generation::{
+    chunk_loading::chunk_loader::ChunkLoader, world_ready::WorldReady,
+};
 
 use crate::player_state::PlayerState;
 
@@ -29,6 +31,7 @@ pub(super) struct PlayerBody;
 pub(super) struct PlayerCamera;
 
 pub(super) fn spawn_player(
+    _: On<WorldReady>,
     mut commands: Commands,
     mut player_state: ResMut<NextState<PlayerState>>,
     mut ray_cast: MeshRayCast,
@@ -104,6 +107,7 @@ pub(super) fn spawn_player(
 }
 
 pub(super) fn spawn_player_body(
+    _: On<WorldReady>,
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,

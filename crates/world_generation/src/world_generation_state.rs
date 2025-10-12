@@ -1,6 +1,9 @@
 use bevy::prelude::*;
 
-use crate::chunk_generation::{chunk_start::ChunkStart, chunk_task::ChunkTask};
+use crate::{
+    chunk_generation::{chunk_start::ChunkStart, chunk_task::ChunkTask},
+    world_ready::WorldReady,
+};
 
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
 pub enum WorldGenerationState {
@@ -24,6 +27,7 @@ pub fn check_world_done_initializing(
     chunk_starts: Query<(), With<ChunkStart>>,
     chunk_tasks: Query<(), With<ChunkTask>>,
     mut world_gen_state: ResMut<NextState<WorldGenerationState>>,
+    mut commands: Commands,
 ) {
     let chunk_start_count = chunk_starts.iter().count();
     let chunk_task_count = chunk_tasks.iter().count();
@@ -32,5 +36,6 @@ pub fn check_world_done_initializing(
         info!("World Ready!");
 
         world_gen_state.set(WorldGenerationState::Active);
+        commands.trigger(WorldReady);
     }
 }

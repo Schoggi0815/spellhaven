@@ -9,6 +9,7 @@ use bevy::{
 use bevy_inspector_egui::{bevy_egui::EguiPlugin, quick::WorldInspectorPlugin};
 use bevy_panorbit_camera::PanOrbitCameraPlugin;
 use debug_tools::debug_plugin::SpellhavenDebugPlugin;
+use main_menu::main_menu_plugin::MainMenuPlugin;
 use networking::networking_plugin::NetworkingPlugin;
 use physics::physics_plugin::PhysicsPlugin;
 use player::player_plugin::PlayerPlugin;
@@ -40,6 +41,7 @@ fn main() {
                 EguiPlugin::default(),
                 WorldInspectorPlugin::new(),
                 GameUiPlugin,
+                MainMenuPlugin,
                 SpellhavenDebugPlugin,
                 NetworkingPlugin,
                 MaterialPlugin::<

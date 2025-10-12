@@ -1,0 +1,10 @@
+[package]
+name = "main_menu"
+edition = "2024"
+
+[dependencies]
+bevy.workspace = true
+networking.workspace = true
+bevy_egui.workspace = true
+egui.workspace = true
+world_generation.workspace = true

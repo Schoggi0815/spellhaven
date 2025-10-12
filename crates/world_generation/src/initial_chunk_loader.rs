@@ -1,11 +1,16 @@
 use bevy::prelude::*;
 
-use world_generation::chunk_loading::chunk_loader::ChunkLoader;
+use crate::{
+    chunk_loading::chunk_loader::ChunkLoader, start_world_gen::StartWorldGen,
+};
 
 #[derive(Component)]
 pub struct InitialChunkLoader;
 
-pub fn spawn_initial_chunk_loader(mut commands: Commands) {
+pub fn spawn_initial_chunk_loader(
+    _: On<StartWorldGen>,
+    mut commands: Commands,
+) {
     commands.spawn((
         InitialChunkLoader,
         ChunkLoader {

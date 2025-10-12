@@ -12,6 +12,7 @@ members = [
 [dependencies]
 debug_resource = { path = "crates/debug_resource" }
 debug_tools = { path = "crates/debug_tools" }
+main_menu = { path = "crates/main_menu" }
 networking = { path = "crates/networking" }
 physics = { path = "crates/physics" }
 player = { path = "crates/player" }
@@ -44,6 +45,7 @@ bevy_hookup_messenger_self = "2.1.2"
 [workspace.dependencies]
 debug_resource = { path = "crates/debug_resource" }
 debug_tools = { path = "crates/debug_tools" }
+main_menu = { path = "crates/main_menu" }
 networking = { path = "crates/networking" }
 physics = { path = "crates/physics" }
 player = { path = "crates/player" }

@@ -1,29 +1,26 @@
-use bevy::diagnostic::FrameTimeDiagnosticsPlugin;
-use bevy::prelude::*;
+use bevy::{diagnostic::FrameTimeDiagnosticsPlugin, prelude::*};
+use world_generation::world_ready::WorldReady;
 
-use crate::fps_text::{update_fps_ui, FpsText};
-use crate::main_menu_plugin::MainMenuPlugin;
-use crate::main_menu_state::MainMenuState;
-use crate::task_text::{update_task_ui, ChunkTaskText, CountryTaskText};
-use crate::triangle_count_text::{update_triangle_ui, TriangleText};
+use crate::{
+    fps_text::{FpsText, update_fps_ui},
+    task_text::{ChunkTaskText, CountryTaskText, update_task_ui},
+    triangle_count_text::{TriangleText, update_triangle_ui},
+};
 
 pub struct GameUiPlugin;
 
 impl Plugin for GameUiPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins((
-            FrameTimeDiagnosticsPlugin::default(),
-            MainMenuPlugin,
-        ))
-        .add_systems(OnEnter(MainMenuState::Hidden), spawn_ui)
-        .add_systems(
-            Update,
-            (update_fps_ui, update_task_ui, update_triangle_ui),
-        );
+        app.add_plugins(FrameTimeDiagnosticsPlugin::default())
+            .add_systems(
+                Update,
+                (update_fps_ui, update_task_ui, update_triangle_ui),
+            )
+            .add_observer(spawn_ui);
     }
 }
 
-fn spawn_ui(mut commands: Commands) {
+fn spawn_ui(_: On<WorldReady>, mut commands: Commands) {
     commands
         .spawn(Node {
             width: Val::Percent(100.0),
