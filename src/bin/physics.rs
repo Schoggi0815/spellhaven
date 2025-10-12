@@ -2,18 +2,15 @@ use bevy::prelude::*;
 use bevy_egui::EguiPlugin;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_panorbit_camera::{PanOrbitCamera, PanOrbitCameraPlugin};
-use spellhaven::{
-    debug_tools::{
-        debug_plugin::SpellhavenDebugPlugin,
-        physics_debug::PhysicsDebugResource,
-    },
-    physics::{
-        collider::Collider,
-        physics_object::{DynamicPhysicsObject, StaticPhysicsObject},
-        physics_plugin::PhysicsPlugin,
-        physics_position::PhysicsPosition,
-        physics_set::PhysicsSet,
-    },
+use debug_tools::{
+    debug_plugin::SpellhavenDebugPlugin, physics_debug::PhysicsDebugResource,
+};
+use physics::{
+    collider::Collider,
+    physics_object::{DynamicPhysicsObject, StaticPhysicsObject},
+    physics_plugin::PhysicsPlugin,
+    physics_position::PhysicsPosition,
+    physics_set::PhysicsSet,
 };
 
 fn main() {

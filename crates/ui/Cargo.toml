@@ -1,0 +1,11 @@
+[package]
+name = "ui"
+edition = "2024"
+
+[dependencies]
+bevy.workspace = true
+world_generation.workspace = true
+bevy_hookup_core.workspace = true
+bevy_hookup_messenger_self.workspace = true
+bevy-inspector-egui.workspace = true
+networking.workspace = true

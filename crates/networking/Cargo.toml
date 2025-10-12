@@ -1,0 +1,13 @@
+[package]
+name = "networking"
+edition = "2024"
+
+[dependencies]
+bevy.workspace = true
+bevy_hookup_core.workspace = true
+bevy_hookup_macros.workspace = true
+bevy_hookup_messenger_self.workspace = true
+bevy_hookup_messenger_websocket.workspace = true
+world_generation.workspace = true
+serde.workspace = true
+player.workspace = true
