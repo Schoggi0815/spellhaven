@@ -1,15 +1,15 @@
 use bevy::prelude::*;
-use bevy_hookup_core::shared::Shared;
+use bevy_hookup_core::{owner_component::Owner, shared::Shared};
 use debug_resource::debug_resource::SpellhavenDebugResource;
 use noise::{Add, Constant, NoiseFn};
 use player::player_component::Player;
 use world_generation::{
     chunk_generation::{
+        VOXEL_SIZE,
         country::{
             country_cache::{CountryCache, GenerationState},
             country_cache_position::CountryPosition,
         },
-        VOXEL_SIZE,
     },
     chunk_loading::chunk_pos::AbsoluteChunkPos,
     generation_options::GenerationOptions,
@@ -25,7 +25,7 @@ pub fn draw_path_gizmos(
     mut gizmos: Gizmos,
     generation_options: Single<&Shared<GenerationOptions>>,
     country_cache: Res<CountryCache>,
-    players: Query<&Transform, With<Player>>,
+    players: Query<&Transform, With<Owner<Player>>>,
     debug_resource: Res<SpellhavenDebugResource>,
 ) {
     if !debug_resource.show_path_debug {

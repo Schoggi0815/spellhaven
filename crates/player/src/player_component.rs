@@ -7,19 +7,23 @@ use bevy::{
     render::view::{ColorGrading, ColorGradingGlobal},
 };
 use bevy_egui::PrimaryEguiContext;
+use bevy_hookup_core::{
+    owner_component::Owner, shared::Shared, sync_entity::SyncEntityOwner,
+};
 use bevy_panorbit_camera::PanOrbitCamera;
 use physics::{
     collider::Collider, physics_object::DynamicPhysicsObject,
     physics_position::PhysicsPosition,
 };
 
+use serde::{Deserialize, Serialize};
 use world_generation::{
     chunk_loading::chunk_loader::ChunkLoader, world_ready::WorldReady,
 };
 
 use crate::player_state::PlayerState;
 
-#[derive(Component)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct Player {
     pub fly: bool,
 }
@@ -66,7 +70,9 @@ pub(super) fn spawn_player(
         },
         Transform::from_translation(spawn_point),
         Collider::aabb(Vec3::new(0.8, 1.8, 0.8), Vec3::ZERO),
-        Player { fly: false },
+        SyncEntityOwner::new(),
+        Owner::new(Player { fly: false }),
+        Owner::new(Transform::from_translation(spawn_point)),
         ChunkLoader::default(),
         Name::new("Player"),
     ));
@@ -107,29 +113,35 @@ pub(super) fn spawn_player(
 }
 
 pub(super) fn spawn_player_body(
-    _: On<WorldReady>,
+    players_without_body: Query<
+        Entity,
+        (With<Shared<Player>>, Without<PlayerBody>),
+    >,
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
     asset_server: Res<AssetServer>,
 ) {
-    commands
-        .spawn((PlayerBody, Name::new("PlayerBody"), Mesh3d::default()))
-        .with_children(|commands| {
-            commands.spawn((
-                SceneRoot(asset_server.load("player.gltf#Scene0")),
-                Transform::from_xyz(0., 0.15, 0.),
-                Name::new("PlayerHead"),
-            ));
-            commands.spawn((
-                Mesh3d(meshes.add(Mesh::from(Capsule3d {
-                    radius: 0.4,
-                    half_length: 0.3,
-                    ..default()
-                }))),
-                MeshMaterial3d(materials.add(Color::srgb(0.8, 0.7, 0.6))),
-                Transform::from_xyz(0., -0.35, 0.),
-                Name::new("PlayerTorso"),
-            ));
-        });
+    for player_entity in players_without_body {
+        commands
+            .entity(player_entity)
+            .insert((PlayerBody, Name::new("PlayerBody"), Mesh3d::default()))
+            .with_children(|commands| {
+                commands.spawn((
+                    SceneRoot(asset_server.load("player.gltf#Scene0")),
+                    Transform::from_xyz(0., 0.15, 0.),
+                    Name::new("PlayerHead"),
+                ));
+                commands.spawn((
+                    Mesh3d(meshes.add(Mesh::from(Capsule3d {
+                        radius: 0.4,
+                        half_length: 0.3,
+                        ..default()
+                    }))),
+                    MeshMaterial3d(materials.add(Color::srgb(0.8, 0.7, 0.6))),
+                    Transform::from_xyz(0., -0.35, 0.),
+                    Name::new("PlayerTorso"),
+                ));
+            });
+    }
 }

@@ -1,6 +1,7 @@
 use std::f32::consts::PI;
 
 use bevy::prelude::*;
+use bevy_hookup_core::{owner_component::Owner, shared::Shared};
 use bevy_panorbit_camera::PanOrbitCamera;
 use physics::{
     physics_object::DynamicPhysicsObject, physics_position::PhysicsPosition,
@@ -11,10 +12,11 @@ use crate::player_component::{Player, PlayerBody, PlayerCamera};
 pub(super) fn movement(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut players: Query<(
-        &mut Player,
+        &mut Owner<Player>,
         &mut PhysicsPosition,
         &mut DynamicPhysicsObject,
         &mut Transform,
+        &mut Owner<Transform>,
     )>,
     player_camera: Query<&PanOrbitCamera, With<PlayerCamera>>,
     time: Res<Time>,
@@ -24,6 +26,7 @@ pub(super) fn movement(
         mut physics_position,
         mut physics_object,
         mut player_transform,
+        mut owned_player_transform,
     ) in &mut players
     {
         let mut move_direction = Vec3::ZERO;
@@ -109,19 +112,23 @@ pub(super) fn movement(
         } else {
             physics_position.velocity.y = move_direction.y;
         }
+
+        owned_player_transform.inner = player_transform.clone();
     }
 }
 
 pub(super) fn move_body(
-    player: Query<&Transform, (With<Player>, Without<PlayerBody>)>,
-    mut player_body: Query<&mut Transform, (With<PlayerBody>, Without<Player>)>,
+    players: Query<
+        (&Shared<Transform>, &mut Transform),
+        (With<Shared<Player>>, With<PlayerBody>),
+    >,
 ) {
-    let (Ok(player), Ok(mut player_body)) =
-        (player.single(), player_body.single_mut())
-    else {
-        return;
-    };
-
-    player_body.translation = player.translation;
-    player_body.rotation = player_body.rotation.lerp(player.rotation, 0.25);
+    for (player_transfrom, mut body_transform) in players {
+        body_transform.translation = body_transform
+            .translation
+            .lerp(player_transfrom.translation, 0.5);
+        body_transform.rotation = body_transform
+            .rotation
+            .lerp(player_transfrom.rotation, 0.25);
+    }
 }

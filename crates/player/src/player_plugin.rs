@@ -13,9 +13,8 @@ pub struct PlayerPlugin;
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app.init_state::<PlayerState>()
-            .add_systems(Update, (move_camera, move_body))
+            .add_systems(Update, (move_camera, move_body, spawn_player_body))
             .add_systems(Update, movement.after(PhysicsSet))
-            .add_observer(spawn_player)
-            .add_observer(spawn_player_body);
+            .add_observer(spawn_player);
     }
 }

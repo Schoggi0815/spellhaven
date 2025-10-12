@@ -19,7 +19,8 @@ use world_generation::{
     world_generation_plugin::WorldGenerationPlugin,
 };
 
-fn main() {
+#[tokio::main]
+async fn main() {
     App::new()
         .add_plugins(
             (

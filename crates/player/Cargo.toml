@@ -9,3 +9,5 @@ debug_resource.workspace = true
 physics.workspace = true
 world_generation.workspace = true
 bevy_egui.workspace = true
+serde.workspace = true
+bevy_hookup_core.workspace = true
