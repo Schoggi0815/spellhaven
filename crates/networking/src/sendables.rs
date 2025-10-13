@@ -1,7 +1,7 @@
 use bevy::transform::components::Transform;
 use bevy_hookup_macros::Sendable;
 
-use player::player_component::Player;
+use player::player_component::PlayerPosition;
 use serde::{Deserialize, Serialize};
 use world_generation::generation_options::GenerationOptions;
 
@@ -10,7 +10,7 @@ pub enum Sendables {
     #[sendable]
     GenerationOptions(GenerationOptions),
     #[sendable]
-    Player(Player),
+    PlayerPosition(PlayerPosition),
     #[sendable]
     Transform(Transform),
 }

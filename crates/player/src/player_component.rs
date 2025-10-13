@@ -23,9 +23,23 @@ use world_generation::{
 
 use crate::player_state::PlayerState;
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Component)]
 pub struct Player {
     pub fly: bool,
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+pub struct PlayerPosition {
+    pub position: Vec3,
+    pub velocity: Vec3,
+    pub rotation: Quat,
+}
+
+#[derive(Component, Default)]
+pub struct PlayerSmoothing {
+    pub lerp_time: f32,
+    pub start_pos: Vec3,
+    pub end_pos: Vec3,
 }
 
 #[derive(Component)]
@@ -71,8 +85,12 @@ pub(super) fn spawn_player(
         Transform::from_translation(spawn_point),
         Collider::aabb(Vec3::new(0.8, 1.8, 0.8), Vec3::ZERO),
         SyncEntityOwner::new(),
-        Owner::new(Player { fly: false }),
-        Owner::new(Transform::from_translation(spawn_point)),
+        Player { fly: false },
+        Owner::new(PlayerPosition {
+            position: spawn_point,
+            velocity: Vec3::ZERO,
+            rotation: Quat::default(),
+        }),
         ChunkLoader::default(),
         Name::new("Player"),
     ));
@@ -115,7 +133,7 @@ pub(super) fn spawn_player(
 pub(super) fn spawn_player_body(
     players_without_body: Query<
         Entity,
-        (With<Shared<Player>>, Without<PlayerBody>),
+        (With<Shared<PlayerPosition>>, Without<PlayerBody>),
     >,
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
@@ -125,7 +143,12 @@ pub(super) fn spawn_player_body(
     for player_entity in players_without_body {
         commands
             .entity(player_entity)
-            .insert((PlayerBody, Name::new("PlayerBody"), Mesh3d::default()))
+            .insert((
+                PlayerBody,
+                PlayerSmoothing::default(),
+                Name::new("PlayerBody"),
+                Mesh3d::default(),
+            ))
             .with_children(|commands| {
                 commands.spawn((
                     SceneRoot(asset_server.load("player.gltf#Scene0")),
