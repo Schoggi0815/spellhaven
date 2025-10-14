@@ -3,7 +3,8 @@ use bevy_hookup_core::{
     hook_session::SessionMessenger,
     hookup_component_plugin::HookupComponentPlugin,
     hookup_sendable_plugin::HookupSendablePlugin, owner_component::Owner,
-    sync_entity::SyncEntityOwner,
+    reshare_component_plugin::ReshareComponentPlugin,
+    reshare_entity_plugin::ReshareEntityPlugin, sync_entity::SyncEntityOwner,
 };
 use bevy_hookup_messenger_self::self_session::SelfSession;
 use bevy_hookup_messenger_websocket::{
@@ -35,6 +36,8 @@ impl Plugin for NetworkingPlugin {
             HookupSendablePlugin::<Sendables>::default(),
             HookupComponentPlugin::<Sendables, GenerationOptions>::default(),
             HookupComponentPlugin::<Sendables, PlayerPosition>::default(),
+            ReshareEntityPlugin::<Sendables>::default(),
+            // ReshareComponentPlugin::<Sendables, PlayerPosition>::default(),
         ))
         .add_systems(Update, client_on_connect)
         .add_observer(start_self_session)

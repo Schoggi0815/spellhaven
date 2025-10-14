@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use bevy_hookup_core::{
-    owner_component::Owner, send_component_set::SendComponentSet,
+    owner_component::Owner, send_component_systems::SendComponentSystems,
     shared::Shared,
 };
 use physics::physics_set::PhysicsSet;
@@ -8,7 +8,7 @@ use physics::physics_set::PhysicsSet;
 use crate::{
     player_camera_movement::move_camera,
     player_component::{
-        Player, PlayerBody, PlayerPosition, PlayerSmoothing, spawn_player,
+        PlayerBody, PlayerPosition, PlayerSmoothing, spawn_player,
         spawn_player_body,
     },
     player_movement::movement,
@@ -25,7 +25,7 @@ impl Plugin for PlayerPlugin {
             .add_systems(
                 Update,
                 update_player_pos
-                    .before(SendComponentSet::<PlayerPosition>::default()),
+                    .before(SendComponentSystems::<PlayerPosition>::default()),
             )
             .add_systems(
                 Update,
@@ -66,7 +66,6 @@ fn update_player_smoothing(
     >,
 ) {
     for (player_position, mut player_smoothing, transfrom) in other_players {
-        info!("New Velocity: {}", player_position.velocity);
         player_smoothing.lerp_time = 0.;
         player_smoothing.start_pos = transfrom.translation;
         player_smoothing.end_pos =

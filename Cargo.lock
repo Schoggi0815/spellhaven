@@ -417,7 +417,7 @@ dependencies = [
  "bevy_window",
  "bytemuck",
  "disqualified",
- "egui",
+ "egui 0.32.3",
  "fuzzy-matcher",
  "image",
  "opener",
@@ -790,7 +790,7 @@ dependencies = [
  "bevy_winit",
  "bytemuck",
  "crossbeam-channel",
- "egui",
+ "egui 0.32.3",
  "encase",
  "getrandom",
  "image",
@@ -908,9 +908,9 @@ dependencies = [
 
 [[package]]
 name = "bevy_hookup_core"
-version = "4.5.0"
+version = "4.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "754a00b418864442684ac341c6e4a65ac048a6b4a7f15b1259b7255502193a43"
+checksum = "890f49800a5acc3ed56ee80b5352ded31b1161e08bdfb7e1d84f3981f5e420fe"
 dependencies = [
  "bevy",
  "crossbeam",
@@ -931,9 +931,9 @@ dependencies = [
 
 [[package]]
 name = "bevy_hookup_messenger_self"
-version = "2.1.2"
+version = "2.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "59e793941427f561627fd194f449733f9abd08ca4ef13d01def4b44a72419ad6"
+checksum = "5a296b5673e15433135cfdb78d5236eab52d0c994c064c186562f420cc1d2b3b"
 dependencies = [
  "bevy",
  "bevy_hookup_core",
@@ -942,9 +942,9 @@ dependencies = [
 
 [[package]]
 name = "bevy_hookup_messenger_websocket"
-version = "2.3.2"
+version = "2.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5ebd89b619abb0bd138b7277be41d120bdad709802d80c7a70c00d615fad3b1b"
+checksum = "e9840e46fef70a0ad54f8f3550a4e260528c32bb3325101a510c25f6c68bf339"
 dependencies = [
  "bevy",
  "bevy_hookup_core",
@@ -2338,8 +2338,8 @@ dependencies = [
  "bevy-inspector-egui",
  "bevy_hookup_core",
  "debug_resource",
- "egui",
- "egui_node_editor",
+ "egui 0.32.3",
+ "egui_node_editor 0.8.0",
  "noise",
  "physics",
  "player",
@@ -2466,6 +2466,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "adf31f99fad93fe83c1055b92b5c1b135f1ecfa464789817c372000e768d4bd1"
 dependencies = [
  "emath 0.33.0",
+ "serde",
 ]
 
 [[package]]
@@ -2488,12 +2489,45 @@ dependencies = [
 ]
 
 [[package]]
+name = "egui"
+version = "0.33.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ab9b5d3376c79439f53a78bf7da1e3c0b862ffa3e29f46ab0f3e107430f2e576"
+dependencies = [
+ "accesskit 0.21.1",
+ "ahash",
+ "bitflags 2.9.4",
+ "emath 0.33.0",
+ "epaint 0.33.0",
+ "log",
+ "nohash-hasher",
+ "profiling",
+ "ron 0.11.0",
+ "serde",
+ "smallvec",
+ "unicode-segmentation",
+]
+
+[[package]]
 name = "egui_node_editor"
 version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "430ac455498a9cb12e68145d7eada907672ec2feb2aac27f2a5777354085e320"
 dependencies = [
- "egui",
+ "egui 0.32.3",
+ "serde",
+ "slotmap",
+ "smallvec",
+ "thiserror 2.0.17",
+]
+
+[[package]]
+name = "egui_node_editor"
+version = "0.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "516756e7305b54b2daade6fd3622c8e67940507cf917b6d66c43ea734f0907a5"
+dependencies = [
+ "egui 0.33.0",
  "serde",
  "slotmap",
  "smallvec",
@@ -2521,6 +2555,9 @@ name = "emath"
 version = "0.33.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c615516cdceec867065f20d7db13d8eb8aedd65c9e32cc0c7c379380fa42e6e8"
+dependencies = [
+ "serde",
+]
 
 [[package]]
 name = "encase"
@@ -2598,6 +2635,7 @@ dependencies = [
  "nohash-hasher",
  "parking_lot",
  "profiling",
+ "serde",
 ]
 
 [[package]]
@@ -3621,7 +3659,7 @@ version = "0.0.0"
 dependencies = [
  "bevy",
  "bevy_egui",
- "egui",
+ "egui 0.32.3",
  "networking",
  "world_generation",
 ]
@@ -5090,8 +5128,8 @@ dependencies = [
  "bitflags 2.9.4",
  "debug_resource",
  "debug_tools",
- "egui",
- "egui_node_editor",
+ "egui 0.32.3",
+ "egui_node_editor 0.9.0",
  "epaint 0.33.0",
  "fastnoise-lite",
  "fastrand",

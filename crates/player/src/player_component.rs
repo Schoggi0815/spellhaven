@@ -46,7 +46,7 @@ pub struct PlayerSmoothing {
 pub(super) struct PlayerBody;
 
 #[derive(Component)]
-pub(super) struct PlayerCamera;
+pub struct PlayerCamera;
 
 pub(super) fn spawn_player(
     _: On<WorldReady>,
