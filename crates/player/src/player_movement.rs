@@ -101,9 +101,9 @@ pub(super) fn movement(
         physics_velocity.z = move_direction.z;
         if !player.fly {
             if grounded {
-                physics_velocity.y -= 1. * time.delta_secs();
+                physics_velocity.y -= 100. * time.delta_secs();
             } else {
-                physics_velocity.y -= (20. * time.delta_secs()).max(-60.);
+                physics_velocity.y -= (20. * time.delta_secs()).max(-160.);
             }
         } else {
             physics_velocity.y = move_direction.y;

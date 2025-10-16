@@ -41,7 +41,7 @@ pub fn update_network_physics_smoothing(
         network_smoothing.lerp_time = 0.;
         network_smoothing.start_pos = transform.translation;
         network_smoothing.end_pos =
-            network_object.position + network_object.velocity * 0.1;
+            network_object.position + network_object.velocity * 0.09;
     }
 }
 
