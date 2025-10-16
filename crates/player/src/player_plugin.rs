@@ -3,13 +3,12 @@ use bevy_hookup_core::{
     owner_component::Owner, send_component_systems::SendComponentSystems,
     shared::Shared,
 };
-use physics::physics_set::PhysicsSet;
+use physics::physics_systems::PhysicsSystems;
 
 use crate::{
     player_camera_movement::move_camera,
     player_component::{
-        PlayerBody, PlayerPosition, PlayerSmoothing, spawn_player,
-        spawn_player_body,
+        PlayerBody, PlayerRotation, spawn_player, spawn_player_body,
     },
     player_movement::movement,
     player_state::PlayerState,
@@ -21,79 +20,35 @@ impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app.init_state::<PlayerState>()
             .add_systems(Update, (move_camera, spawn_player_body))
-            .add_systems(Update, movement.after(PhysicsSet))
+            .add_systems(PreUpdate, movement)
             .add_systems(
-                Update,
-                update_player_pos
-                    .before(SendComponentSystems::<PlayerPosition>::default()),
+                FixedUpdate,
+                update_rotation
+                    .after(PhysicsSystems)
+                    .before(SendComponentSystems::<PlayerRotation>::default()),
             )
-            .add_systems(
-                Update,
-                (
-                    update_player_smoothing,
-                    rotate_body_smoothed,
-                    move_player_smoothed.after(update_player_smoothing),
-                ),
-            )
+            .add_systems(Update, rotate_body_smoothed)
             .add_observer(spawn_player);
     }
 }
 
-fn update_player_pos(
-    mut player: Single<(&mut Owner<PlayerPosition>, &Transform)>,
-    time: Res<Time>,
-) {
-    let velocity = ((player.1.translation - player.0.position)
-        / time.delta_secs())
-    .round();
+fn update_rotation(player: Single<(&mut Owner<PlayerRotation>, &Transform)>) {
+    let (mut player_rotation, transform) = player.into_inner();
 
-    if player.0.position == player.1.translation
-        && player.0.rotation == player.1.rotation
-        && player.0.velocity == velocity
-    {
+    if ***player_rotation == transform.rotation {
         return;
     }
 
-    player.0.position = player.1.translation;
-    player.0.rotation = player.1.rotation;
-    player.0.velocity = velocity;
-}
-
-fn update_player_smoothing(
-    other_players: Query<
-        (&Shared<PlayerPosition>, &mut PlayerSmoothing, &Transform),
-        Changed<Shared<PlayerPosition>>,
-    >,
-) {
-    for (player_position, mut player_smoothing, transfrom) in other_players {
-        player_smoothing.lerp_time = 0.;
-        player_smoothing.start_pos = transfrom.translation;
-        player_smoothing.end_pos =
-            player_position.position + player_position.velocity * 0.2;
-    }
+    ***player_rotation = transform.rotation;
 }
 
 fn rotate_body_smoothed(
     player_bodies: Query<
-        (&mut Transform, &Shared<PlayerPosition>),
+        (&mut Transform, &Shared<PlayerRotation>),
         With<PlayerBody>,
     >,
 ) {
-    for (mut transform, player_position) in player_bodies {
-        transform.rotation =
-            transform.rotation.lerp(player_position.rotation, 0.25);
-    }
-}
-
-fn move_player_smoothed(
-    player_smoothings: Query<(&mut PlayerSmoothing, &mut Transform)>,
-    time: Res<Time>,
-) {
-    for (mut player_smoothing, mut transform) in player_smoothings {
-        player_smoothing.lerp_time += time.delta_secs() * 5.;
-        let new_pos = player_smoothing
-            .start_pos
-            .lerp(player_smoothing.end_pos, player_smoothing.lerp_time.min(1.));
-        transform.translation = new_pos;
+    for (mut transform, player_rotation) in player_bodies {
+        transform.rotation = transform.rotation.lerp(***player_rotation, 0.25);
     }
 }

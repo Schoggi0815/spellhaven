@@ -14,7 +14,8 @@ use bevy_hookup_messenger_websocket::{
     websocket_server::WebsocketServer,
     websocket_server_plugin::WebsocketServerPlugin,
 };
-use player::player_component::PlayerPosition;
+use physics::network_physics_object::NetworkPhysicsObject;
+use player::player_component::PlayerRotation;
 use world_generation::{
     generation_options::GenerationOptions, start_world_gen::StartWorldGen,
 };
@@ -35,7 +36,8 @@ impl Plugin for NetworkingPlugin {
             WebsocketServerPlugin::<Sendables>::default(),
             HookupSendablePlugin::<Sendables>::default(),
             HookupComponentPlugin::<Sendables, GenerationOptions>::default(),
-            HookupComponentPlugin::<Sendables, PlayerPosition>::default(),
+            HookupComponentPlugin::<Sendables, PlayerRotation>::default(),
+            HookupComponentPlugin::<Sendables, NetworkPhysicsObject>::default(),
             ReshareEntityPlugin::<Sendables>::default(),
             // ReshareComponentPlugin::<Sendables, PlayerPosition>::default(),
         ))

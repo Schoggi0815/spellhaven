@@ -10,7 +10,8 @@ use physics::{
     physics_object::{DynamicPhysicsObject, StaticPhysicsObject},
     physics_plugin::PhysicsPlugin,
     physics_position::PhysicsPosition,
-    physics_set::PhysicsSet,
+    physics_systems::PhysicsSystems,
+    physics_velocity::PhysicsVelocity,
 };
 
 fn main() {
@@ -33,7 +34,7 @@ fn main() {
             SpellhavenDebugPlugin,
         ))
         .add_systems(Startup, setup)
-        .add_systems(Update, move_player.after(PhysicsSet))
+        .add_systems(Update, move_player.after(PhysicsSystems))
         .init_resource::<PhysicsDebugResource>()
         .run();
 }
@@ -53,10 +54,7 @@ fn setup(mut commands: Commands) {
             step_height: 0.6,
             ..Default::default()
         },
-        PhysicsPosition {
-            position: Vec3::NEG_Z * 2.,
-            ..Default::default()
-        },
+        PhysicsPosition(Vec3::NEG_Z * 2.),
         Collider::aabb(Vec3::ONE, Vec3::ZERO),
     ));
 
@@ -64,7 +62,7 @@ fn setup(mut commands: Commands) {
 }
 
 fn move_player(
-    mut player: Query<&mut PhysicsPosition>,
+    mut player_velocity: Single<&mut PhysicsVelocity>,
     input: Res<ButtonInput<KeyCode>>,
 ) -> Result {
     let mut velocity = Vec3::ZERO;
@@ -90,7 +88,7 @@ fn move_player(
         velocity -= Vec3::Y;
     }
 
-    player.single_mut()?.velocity = velocity;
+    ***player_velocity = velocity;
 
     Ok(())
 }

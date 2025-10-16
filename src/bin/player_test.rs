@@ -21,12 +21,13 @@ use debug_tools::{
 use networking::{networking_plugin::NetworkingPlugin, sendables::Sendables};
 use physics::{
     collider::Collider,
+    network_physics_object::NetworkPhysicsObject,
     physics_object::{DynamicPhysicsObject, StaticPhysicsObject},
     physics_plugin::PhysicsPlugin,
     physics_position::PhysicsPosition,
 };
 use player::{
-    player_component::{Player, PlayerCamera, PlayerPosition},
+    player_component::{Player, PlayerCamera, PlayerRotation},
     player_plugin::PlayerPlugin,
 };
 
@@ -56,13 +57,21 @@ fn main() {
         .run();
 }
 
-fn setup(mut commands: Commands) {
+fn setup(
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
+) {
     let spawn_point = Vec3::new(0., 2., 0.);
 
     commands.spawn((
         StaticPhysicsObject,
         Collider::aabb(Vec3::new(100., 1., 100.), Vec3::ZERO),
         Transform::from_translation(Vec3::ZERO),
+        Mesh3d(meshes.add(Cuboid::new(100., 1., 100.))),
+        MeshMaterial3d(
+            materials.add(StandardMaterial::from_color(Color::WHITE)),
+        ),
     ));
 
     // Player
@@ -71,19 +80,17 @@ fn setup(mut commands: Commands) {
             step_height: 0.6,
             ..Default::default()
         },
-        PhysicsPosition {
-            position: spawn_point,
-            ..Default::default()
-        },
+        PhysicsPosition(spawn_point),
         Transform::from_translation(spawn_point),
         Collider::aabb(Vec3::new(0.8, 1.8, 0.8), Vec3::ZERO),
         SyncEntityOwner::new(),
         Player { fly: false },
-        Owner::new(PlayerPosition {
-            position: spawn_point,
-            velocity: Vec3::ZERO,
-            rotation: Quat::default(),
-        }),
+        Owner::new(PlayerRotation::default()),
+        Owner::new(NetworkPhysicsObject::default()),
+        // Mesh3d(meshes.add(Cuboid::new(1., 2., 1.))),
+        // MeshMaterial3d(
+        //     materials.add(StandardMaterial::from_color(Color::WHITE)),
+        // ),
         Name::new("Player"),
     ));
 

@@ -3855,6 +3855,7 @@ dependencies = [
  "bevy_hookup_macros",
  "bevy_hookup_messenger_self",
  "bevy_hookup_messenger_websocket",
+ "physics",
  "player",
  "serde",
  "world_generation",
@@ -4418,7 +4419,9 @@ name = "physics"
 version = "0.0.0"
 dependencies = [
  "bevy",
+ "bevy_hookup_core",
  "itertools 0.14.0",
+ "serde",
  "utils",
 ]
 

@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use itertools::Itertools;
-use physics::physics_position::PhysicsPosition;
+use physics::physics_velocity::PhysicsVelocity;
 
 use crate::{
     chunk_generation::{
@@ -156,7 +156,7 @@ pub fn check_for_task_spawning(
 pub fn check_for_division(
     mut commands: Commands,
     chunk_nodes: Query<(&mut ChunkNode, Entity)>,
-    chunk_loaders: Query<(&ChunkLoader, &Transform, Option<&PhysicsPosition>)>,
+    chunk_loaders: Query<(&ChunkLoader, &Transform, Option<&PhysicsVelocity>)>,
 ) {
     for (mut chunk_node, chunk_node_entity) in chunk_nodes
         .into_iter()
@@ -176,13 +176,11 @@ pub fn check_for_division(
                     chunk_node.tree_pos,
                 );
 
-                let Some(physics_position) = chunk_loader.2 else {
+                let Some(physics_velocity) = chunk_loader.2 else {
                     return min_lod;
                 };
 
-                if physics_position.velocity.xz().length_squared()
-                    > 30f32.powi(2)
-                {
+                if physics_velocity.xz().length_squared() > 30f32.powi(2) {
                     min_lod.max(ChunkLod::Quarter)
                 } else {
                     min_lod

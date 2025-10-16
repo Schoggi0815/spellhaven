@@ -11,3 +11,4 @@ bevy_hookup_messenger_websocket.workspace = true
 world_generation.workspace = true
 serde.workspace = true
 player.workspace = true
+physics.workspace = true

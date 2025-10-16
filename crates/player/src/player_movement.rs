@@ -3,7 +3,7 @@ use std::f32::consts::PI;
 use bevy::prelude::*;
 use bevy_panorbit_camera::PanOrbitCamera;
 use physics::{
-    physics_object::DynamicPhysicsObject, physics_position::PhysicsPosition,
+    physics_object::DynamicPhysicsObject, physics_velocity::PhysicsVelocity,
 };
 
 use crate::player_component::{Player, PlayerCamera};
@@ -12,7 +12,7 @@ pub(super) fn movement(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut players: Query<(
         &mut Player,
-        &mut PhysicsPosition,
+        &mut PhysicsVelocity,
         &mut DynamicPhysicsObject,
         &mut Transform,
     )>,
@@ -21,7 +21,7 @@ pub(super) fn movement(
 ) {
     for (
         mut player,
-        mut physics_position,
+        mut physics_velocity,
         mut physics_object,
         mut player_transform,
     ) in &mut players
@@ -35,7 +35,7 @@ pub(super) fn movement(
         }
 
         if grounded || player.fly {
-            physics_position.velocity.y = 0.;
+            physics_velocity.y = 0.;
         }
 
         // Directional movement
@@ -93,21 +93,20 @@ pub(super) fn movement(
 
         // Jump if space pressed and the player is close enough to the ground
         if !player.fly && grounded && keyboard_input.pressed(KeyCode::Space) {
-            physics_position.velocity.y += 10.;
+            physics_velocity.y += 10.;
             physics_object.touching_sides.y = 0;
         }
 
-        physics_position.velocity.x = move_direction.x;
-        physics_position.velocity.z = move_direction.z;
+        physics_velocity.x = move_direction.x;
+        physics_velocity.z = move_direction.z;
         if !player.fly {
             if grounded {
-                physics_position.velocity.y -= 1. * time.delta_secs();
+                physics_velocity.y -= 1. * time.delta_secs();
             } else {
-                physics_position.velocity.y -=
-                    (20. * time.delta_secs()).max(-60.);
+                physics_velocity.y -= (20. * time.delta_secs()).max(-60.);
             }
         } else {
-            physics_position.velocity.y = move_direction.y;
+            physics_velocity.y = move_direction.y;
         }
     }
 }

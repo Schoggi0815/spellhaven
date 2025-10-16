@@ -12,8 +12,8 @@ use bevy_hookup_core::{
 };
 use bevy_panorbit_camera::PanOrbitCamera;
 use physics::{
-    collider::Collider, physics_object::DynamicPhysicsObject,
-    physics_position::PhysicsPosition,
+    collider::Collider, network_physics_object::NetworkPhysicsObject,
+    physics_object::DynamicPhysicsObject, physics_position::PhysicsPosition,
 };
 
 use serde::{Deserialize, Serialize};
@@ -28,19 +28,8 @@ pub struct Player {
     pub fly: bool,
 }
 
-#[derive(Clone, Serialize, Deserialize)]
-pub struct PlayerPosition {
-    pub position: Vec3,
-    pub velocity: Vec3,
-    pub rotation: Quat,
-}
-
-#[derive(Component, Default)]
-pub struct PlayerSmoothing {
-    pub lerp_time: f32,
-    pub start_pos: Vec3,
-    pub end_pos: Vec3,
-}
+#[derive(Clone, Serialize, Deserialize, Deref, DerefMut, Default)]
+pub struct PlayerRotation(pub Quat);
 
 #[derive(Component)]
 pub(super) struct PlayerBody;
@@ -78,19 +67,16 @@ pub(super) fn spawn_player(
             step_height: 0.6,
             ..Default::default()
         },
-        PhysicsPosition {
-            position: spawn_point,
-            ..Default::default()
-        },
+        PhysicsPosition(spawn_point),
         Transform::from_translation(spawn_point),
         Collider::aabb(Vec3::new(0.8, 1.8, 0.8), Vec3::ZERO),
         SyncEntityOwner::new(),
         Player { fly: false },
-        Owner::new(PlayerPosition {
+        Owner::new(NetworkPhysicsObject {
             position: spawn_point,
-            velocity: Vec3::ZERO,
-            rotation: Quat::default(),
+            ..default()
         }),
+        Owner::new(PlayerRotation::default()),
         ChunkLoader::default(),
         Name::new("Player"),
     ));
@@ -133,7 +119,7 @@ pub(super) fn spawn_player(
 pub(super) fn spawn_player_body(
     players_without_body: Query<
         Entity,
-        (With<Shared<PlayerPosition>>, Without<PlayerBody>),
+        (With<Shared<PlayerRotation>>, Without<PlayerBody>),
     >,
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
@@ -143,12 +129,7 @@ pub(super) fn spawn_player_body(
     for player_entity in players_without_body {
         commands
             .entity(player_entity)
-            .insert((
-                PlayerBody,
-                PlayerSmoothing::default(),
-                Name::new("PlayerBody"),
-                Mesh3d::default(),
-            ))
+            .insert((PlayerBody, Name::new("PlayerBody"), Mesh3d::default()))
             .with_children(|commands| {
                 commands.spawn((
                     SceneRoot(asset_server.load("player.gltf#Scene0")),
