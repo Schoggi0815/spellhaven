@@ -3,58 +3,71 @@ use bevy_hookup_core::shared::Shared;
 
 use crate::network_physics_object::NetworkPhysicsObject;
 
-#[derive(Component, Default)]
+#[derive(Component, Default, Debug)]
 pub struct NetworkPhysicsSmoothing {
-    lerp_time: f32,
-    start_pos: Vec3,
-    end_pos: Vec3,
+    start_position: Vec3,
+    end_position: Vec3,
+    lerp_amount: f32,
+    index: u64,
 }
 
 pub fn add_smoothing(
     shared_physics: Query<
-        Entity,
-        (
-            With<Shared<NetworkPhysicsObject>>,
-            Without<NetworkPhysicsSmoothing>,
-        ),
+        (Entity, &Shared<NetworkPhysicsObject>),
+        (Without<NetworkPhysicsSmoothing>,),
     >,
     mut commands: Commands,
 ) {
-    for entity in shared_physics {
-        commands
-            .entity(entity)
-            .insert(NetworkPhysicsSmoothing::default());
+    for (entity, network_object) in shared_physics {
+        commands.entity(entity).insert(NetworkPhysicsSmoothing {
+            start_position: network_object.position,
+            end_position: network_object.position,
+            lerp_amount: 0.0,
+            index: network_object.update_index,
+        });
     }
 }
 
 pub fn update_network_physics_smoothing(
     smoothings: Query<
-        (
-            &mut NetworkPhysicsSmoothing,
-            &Shared<NetworkPhysicsObject>,
-            &Transform,
-        ),
+        (&mut NetworkPhysicsSmoothing, &Shared<NetworkPhysicsObject>),
         Changed<Shared<NetworkPhysicsObject>>,
     >,
 ) {
-    for (mut network_smoothing, network_object, transform) in smoothings {
-        network_smoothing.lerp_time = 0.;
-        network_smoothing.start_pos = transform.translation;
-        network_smoothing.end_pos =
-            network_object.position + network_object.velocity * 0.09;
+    for (mut network_smoothing, network_object) in smoothings {
+        if network_object.update_index < network_smoothing.index {
+            continue;
+        }
+        let index_difference =
+            network_object.update_index - network_smoothing.index;
+        network_smoothing.start_position = network_smoothing
+            .start_position
+            .lerp(network_smoothing.end_position, index_difference as f32);
+        network_smoothing.end_position = network_object.position;
+        network_smoothing.lerp_amount = 0.0;
+        network_smoothing.index = network_object.update_index;
     }
 }
 
 pub fn move_network_physics_smoothed(
     smoothings: Query<(&mut NetworkPhysicsSmoothing, &mut Transform)>,
+    time_fixed: Res<Time<Fixed>>,
     time: Res<Time>,
 ) {
     for (mut network_smoothing, mut transform) in smoothings {
-        network_smoothing.lerp_time += time.delta_secs() * 10.;
-        let new_pos = network_smoothing.start_pos.lerp(
-            network_smoothing.end_pos,
-            network_smoothing.lerp_time.min(1.),
-        );
-        transform.translation = new_pos;
+        let mut overstep_fraction = time_fixed.overstep_fraction();
+        while overstep_fraction < network_smoothing.lerp_amount {
+            overstep_fraction += 1.;
+        }
+        network_smoothing.lerp_amount = overstep_fraction;
+        transform.translation = network_smoothing
+            .start_position
+            .as_dvec3()
+            .lerp(
+                network_smoothing.end_position.as_dvec3(),
+                network_smoothing.lerp_amount as f64,
+            )
+            .as_vec3();
+        info!("{:?}", network_smoothing);
     }
 }

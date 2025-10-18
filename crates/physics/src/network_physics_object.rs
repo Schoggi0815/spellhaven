@@ -10,6 +10,7 @@ use crate::{
 pub struct NetworkPhysicsObject {
     pub position: Vec3,
     pub velocity: Vec3,
+    pub update_index: u64
 }
 
 pub fn update_network_physics(
@@ -30,4 +31,5 @@ pub fn update_network_physics(
 
     network_physics.position = **physics_position;
     network_physics.velocity = **physics_velocity;
+    network_physics.update_index += 1;
 }
