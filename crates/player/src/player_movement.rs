@@ -6,10 +6,13 @@ use physics::{
     physics_object::DynamicPhysicsObject, physics_velocity::PhysicsVelocity,
 };
 
-use crate::player_component::{Player, PlayerCamera};
+use crate::{
+    player_component::{Player, PlayerCamera},
+    player_inputs::PlayerInputs,
+};
 
 pub(super) fn movement(
-    keyboard_input: Res<ButtonInput<KeyCode>>,
+    player_input: Res<PlayerInputs>,
     mut players: Query<(
         &mut Player,
         &mut PhysicsVelocity,
@@ -30,7 +33,7 @@ pub(super) fn movement(
 
         let grounded = physics_object.touching_sides.y < 0;
 
-        if keyboard_input.just_pressed(KeyCode::KeyF) {
+        if player_input.fly {
             player.fly = !player.fly;
         }
 
@@ -39,39 +42,27 @@ pub(super) fn movement(
         }
 
         // Directional movement
-        if keyboard_input.pressed(KeyCode::KeyW)
-            || keyboard_input.pressed(KeyCode::ArrowUp)
-        {
+        if player_input.forward {
             move_direction.z -= 1.;
         }
-        if keyboard_input.pressed(KeyCode::KeyA)
-            || keyboard_input.pressed(KeyCode::ArrowLeft)
-        {
+        if player_input.left {
             move_direction.x -= 1.;
         }
-        if keyboard_input.pressed(KeyCode::KeyS)
-            || keyboard_input.pressed(KeyCode::ArrowDown)
-        {
+        if player_input.backwards {
             move_direction.z += 1.;
         }
-        if keyboard_input.pressed(KeyCode::KeyD)
-            || keyboard_input.pressed(KeyCode::ArrowRight)
-        {
+        if player_input.right {
             move_direction.x += 1.;
         }
 
-        if player.fly && keyboard_input.pressed(KeyCode::KeyE) {
+        if player.fly && player_input.up {
             move_direction.y += 1.;
         }
-        if player.fly && keyboard_input.pressed(KeyCode::KeyQ) {
+        if player.fly && player_input.down {
             move_direction.y -= 1.;
         }
 
-        let mut movement_speed = if keyboard_input.pressed(KeyCode::ShiftLeft) {
-            15.
-        } else {
-            7.5
-        };
+        let mut movement_speed = if player_input.sprint { 15. } else { 7.5 };
 
         if player.fly {
             movement_speed *= 10.;
@@ -92,7 +83,7 @@ pub(super) fn movement(
         }
 
         // Jump if space pressed and the player is close enough to the ground
-        if !player.fly && grounded && keyboard_input.pressed(KeyCode::Space) {
+        if !player.fly && grounded && player_input.jump {
             physics_velocity.y += 10.;
             physics_object.touching_sides.y = 0;
         }

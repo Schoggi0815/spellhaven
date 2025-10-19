@@ -52,7 +52,6 @@ pub fn update_network_physics_smoothing(
 pub fn move_network_physics_smoothed(
     smoothings: Query<(&mut NetworkPhysicsSmoothing, &mut Transform)>,
     time_fixed: Res<Time<Fixed>>,
-    time: Res<Time>,
 ) {
     for (mut network_smoothing, mut transform) in smoothings {
         let mut overstep_fraction = time_fixed.overstep_fraction();
@@ -68,6 +67,5 @@ pub fn move_network_physics_smoothed(
                 network_smoothing.lerp_amount as f64,
             )
             .as_vec3();
-        info!("{:?}", network_smoothing);
     }
 }

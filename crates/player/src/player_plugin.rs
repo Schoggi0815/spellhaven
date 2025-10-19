@@ -10,6 +10,7 @@ use crate::{
     player_component::{
         PlayerBody, PlayerRotation, spawn_player, spawn_player_body,
     },
+    player_inputs::{PlayerInputs, update_player_inputs},
     player_movement::movement,
     player_state::PlayerState,
 };
@@ -19,14 +20,16 @@ pub struct PlayerPlugin;
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app.init_state::<PlayerState>()
+            .init_resource::<PlayerInputs>()
             .add_systems(Update, (move_camera, spawn_player_body))
-            .add_systems(PreUpdate, movement)
+            .add_systems(PreUpdate, update_player_inputs)
             .add_systems(
                 FixedUpdate,
                 update_rotation
                     .after(PhysicsSystems)
                     .before(SendComponentSystems::<PlayerRotation>::default()),
             )
+            .add_systems(FixedUpdate, movement.before(PhysicsSystems))
             .add_systems(Update, rotate_body_smoothed)
             .add_observer(spawn_player);
     }
