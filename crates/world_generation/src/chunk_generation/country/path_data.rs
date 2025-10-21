@@ -4,20 +4,20 @@ use std::{
     time::Instant,
 };
 
-use bevy::prelude::*;
-use noise::NoiseFn;
+use bevy::{math::DVec2, prelude::*};
 
 use crate::{
     chunk_generation::{
         chunk_lod::ChunkLod,
         country::{
             a_star_candidate::AStarCandidate,
-            country_cache::{CacheStore, COUNTRY_SIZE},
+            country_cache::{COUNTRY_SIZE, CacheStore},
             country_cache_position::CountryPosition,
             generation_cache::GenerationCacheItem,
         },
         noise::{
             full_cache::FullCache, lod_height_adjuster::LodHeightAdjuster,
+            noise_function::NoiseFunction, noise_result::NoiseResult,
         },
     },
     generation_options::GenerationOptions,
@@ -288,7 +288,7 @@ impl PathData {
             path_finding_lod,
         ));
 
-        let get_terrain_height = |pos: IVec2| -> f64 {
+        let get_terrain_height = |pos: IVec2| -> NoiseResult {
             terrain_noise.get(
                 (pos * path_finding_lod.multiplier_i32())
                     .as_dvec2()
@@ -366,7 +366,8 @@ impl PathData {
                 break;
             }
 
-            let current_height = get_terrain_height(current);
+            let noise_result = get_terrain_height(current);
+            let derivative = DVec2::from_array(noise_result.derivative);
 
             for (next, weight) in neighbours(current) {
                 if is_outside_of_countries(next) {
@@ -383,17 +384,16 @@ impl PathData {
                     continue;
                 }
 
-                let next_height = get_terrain_height(next);
-
-                let height_difference = (current_height - next_height).abs()
+                let height_difference = (derivative * direction.as_dvec2())
+                    .length()
                     / path_finding_lod.multiplier_i32() as f64;
                 if height_difference > 0.55 {
                     continue;
                 }
 
                 let direction_turned = direction.perp();
-                let side_height = get_terrain_height(next + direction_turned);
-                let steepness = (next_height - side_height).abs()
+                let steepness = (derivative * direction_turned.as_dvec2())
+                    .length()
                     / path_finding_lod.multiplier_i32() as f64;
 
                 let real_weight = real_weight

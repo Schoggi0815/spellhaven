@@ -1,6 +1,7 @@
-use noise::{NoiseFn, Seedable};
-
-use crate::chunk_generation::chunk_lod::ChunkLod;
+use crate::chunk_generation::{
+    chunk_lod::ChunkLod,
+    noise::{noise_function::NoiseFunction, noise_result::NoiseResult},
+};
 
 pub struct LodHeightAdjuster<T> {
     noise: T,
@@ -24,7 +25,7 @@ impl<T> LodHeightAdjuster<T> {
 
 impl<T> Default for LodHeightAdjuster<T>
 where
-    T: Default + Seedable,
+    T: Default,
 {
     fn default() -> Self {
         Self {
@@ -34,27 +35,19 @@ where
     }
 }
 
-impl<T> Seedable for LodHeightAdjuster<T>
+impl<T> NoiseFunction<NoiseResult, [f64; 2]> for LodHeightAdjuster<T>
 where
-    T: Default + Seedable,
+    T: NoiseFunction<NoiseResult, [f64; 2]>,
 {
-    fn set_seed(mut self, seed: u32) -> Self {
-        self.noise = T::default().set_seed(seed);
-        self
-    }
-
-    fn seed(&self) -> u32 {
-        self.noise.seed()
-    }
-}
-
-impl<T> NoiseFn<f64, 2usize> for LodHeightAdjuster<T>
-where
-    T: NoiseFn<f64, 2usize>,
-{
-    fn get(&self, point: [f64; 2usize]) -> f64 {
-        self.noise.get(point) * (1. / self.lod.multiplier_i32() as f64)
+    fn get(&self, point: [f64; 2]) -> NoiseResult {
+        let result = self.noise.get(point);
+        let value = result.value * (1. / self.lod.multiplier_i32() as f64)
             + 1.
-            + 10. / self.lod.multiplier_i32() as f64
+            + (10. / self.lod.multiplier_i32() as f64);
+
+        NoiseResult {
+            value,
+            derivative: result.derivative,
+        }
     }
 }

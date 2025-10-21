@@ -12,7 +12,6 @@ impl NodeTemplateIter for AllTerrainNodeTemplates {
             TerrainNodeTemplate::SimplexNoise,
             TerrainNodeTemplate::NoiseAdd,
             TerrainNodeTemplate::NoiseSub,
-            TerrainNodeTemplate::NoisePower,
             TerrainNodeTemplate::Constant,
             TerrainNodeTemplate::Multiply,
             TerrainNodeTemplate::SmoothStep,

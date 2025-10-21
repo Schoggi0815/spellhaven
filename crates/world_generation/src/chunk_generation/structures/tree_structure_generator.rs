@@ -1,15 +1,15 @@
 use std::rc::Rc;
 
 use bevy::math::IVec2;
-use rand::{rngs::StdRng, SeedableRng};
+use rand::{SeedableRng, rngs::StdRng};
 
 use crate::chunk_generation::{
+    VOXEL_SIZE,
     block_type::BlockType,
     chunk_lod::ChunkLod,
     structures::structure_generator::{
         StructureGenerator, VoxelStructureMetadata,
     },
-    VOXEL_SIZE,
 };
 
 pub trait TreeStructureGenerator {
@@ -57,7 +57,7 @@ impl<T: TreeStructureGenerator> StructureGenerator for T {
             * 0.5
             + 0.5;
         let mut rng =
-            StdRng::seed_from_u64((noise_value.abs() * 10000.) as u64);
+            StdRng::seed_from_u64((noise_value.value.abs() * 10000.) as u64);
 
         let voxel_grid = Self::grow(&self, &mut rng);
 

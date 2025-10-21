@@ -1,6 +1,8 @@
 use crate::chunk_generation::{
     block_type::BlockType,
     noise::{
+        noise_function::NoiseFunction,
+        noise_result::NoiseResult,
         terrain_noise::{TERRAIN_NOISE_FILE_PATH, TerrainNoise},
         terrain_noise_type::{ConstantValue, TerrainNoiseType},
     },
@@ -12,7 +14,6 @@ use crate::chunk_generation::{
     },
 };
 use bevy::prelude::*;
-use noise::NoiseFn;
 use rand::SeedableRng;
 use rand::prelude::StdRng;
 use serde::{Deserialize, Serialize};
@@ -101,7 +102,9 @@ impl GenerationOptions {
         }
     }
 
-    pub fn get_terrain_noise(&self) -> impl NoiseFn<f64, 2> {
+    pub fn get_terrain_noise(
+        &self,
+    ) -> impl NoiseFunction<NoiseResult, [f64; 2]> {
         self.terrain_noise
             .get_noise_fn(&mut StdRng::seed_from_u64(self.seed + 1))
     }

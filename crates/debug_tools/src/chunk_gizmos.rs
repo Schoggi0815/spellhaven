@@ -1,7 +1,6 @@
 use bevy::prelude::*;
 use bevy_hookup_core::{owner_component::Owner, shared::Shared};
 use debug_resource::debug_resource::SpellhavenDebugResource;
-use noise::{Add, Constant, NoiseFn};
 use player::player_component::Player;
 use world_generation::{
     chunk_generation::{
@@ -10,6 +9,7 @@ use world_generation::{
             country_cache::{CountryCache, GenerationState},
             country_cache_position::CountryPosition,
         },
+        noise::{add::Add, constant::Constant, noise_function::NoiseFunction},
     },
     chunk_loading::chunk_pos::AbsoluteChunkPos,
     generation_options::GenerationOptions,
@@ -87,15 +87,17 @@ pub fn draw_path_gizmos(
                 gizmos.line(
                     Vec3::from((
                         path_line.start.as_vec2(),
-                        terrain_noise.get(path_line.start.as_dvec2().to_array())
-                            as f32,
+                        terrain_noise
+                            .get(path_line.start.as_dvec2().to_array())
+                            .value as f32,
                     ))
                     .xzy()
                         * VOXEL_SIZE,
                     Vec3::from((
                         path_line.end.as_vec2(),
-                        terrain_noise.get(path_line.end.as_dvec2().to_array())
-                            as f32,
+                        terrain_noise
+                            .get(path_line.end.as_dvec2().to_array())
+                            .value as f32,
                     ))
                     .xzy()
                         * VOXEL_SIZE,
@@ -111,7 +113,7 @@ pub fn draw_path_gizmos(
                             path_line.spline_one,
                             terrain_noise
                                 .get(path_line.spline_one.as_dvec2().to_array())
-                                as f32,
+                                .value as f32,
                         ))
                         .xzy()
                             * VOXEL_SIZE,
@@ -126,7 +128,7 @@ pub fn draw_path_gizmos(
                             path_line.spline_two,
                             terrain_noise
                                 .get(path_line.spline_two.as_dvec2().to_array())
-                                as f32,
+                                .value as f32,
                         ))
                         .xzy()
                             * VOXEL_SIZE,
@@ -141,7 +143,7 @@ pub fn draw_path_gizmos(
                             path_line.start.as_vec2(),
                             terrain_noise
                                 .get(path_line.start.as_dvec2().to_array())
-                                as f32,
+                                .value as f32,
                         ))
                         .xzy()
                             * VOXEL_SIZE,
@@ -156,7 +158,7 @@ pub fn draw_path_gizmos(
                             path_line.end.as_vec2(),
                             terrain_noise
                                 .get(path_line.end.as_dvec2().to_array())
-                                as f32,
+                                .value as f32,
                         ))
                         .xzy()
                             * VOXEL_SIZE,
@@ -171,14 +173,15 @@ pub fn draw_path_gizmos(
                     gizmos.line(
                         Vec3::from((
                             start.as_vec2(),
-                            terrain_noise.get(start.as_dvec2().to_array())
+                            terrain_noise.get(start.as_dvec2().to_array()).value
                                 as f32,
                         ))
                         .xzy()
                             * VOXEL_SIZE,
                         Vec3::from((
                             end.as_vec2(),
-                            terrain_noise.get(end.as_dvec2().to_array()) as f32,
+                            terrain_noise.get(end.as_dvec2().to_array()).value
+                                as f32,
                         ))
                         .xzy()
                             * VOXEL_SIZE,
@@ -199,7 +202,7 @@ pub fn draw_path_gizmos(
                             player_pos_on_path,
                             terrain_noise
                                 .get(player_pos_on_path.as_dvec2().to_array())
-                                as f32,
+                                .value as f32,
                         ))
                         .xzy()
                             * VOXEL_SIZE,
@@ -215,7 +218,7 @@ pub fn draw_path_gizmos(
                                 + VOXEL_SIZE,
                             terrain_noise
                                 .get(player_pos_on_path.as_dvec2().to_array())
-                                as f32,
+                                .value as f32,
                         ))
                         .xzy()
                             * VOXEL_SIZE,
@@ -231,7 +234,7 @@ pub fn draw_path_gizmos(
                             player_voxel_pos.as_vec2() + VOXEL_SIZE,
                             terrain_noise
                                 .get(player_pos_on_path.as_dvec2().to_array())
-                                as f32,
+                                .value as f32,
                         ))
                         .xzy()
                             * VOXEL_SIZE,

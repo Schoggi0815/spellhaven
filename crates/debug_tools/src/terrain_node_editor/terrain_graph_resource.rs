@@ -20,7 +20,7 @@ use crate::{
         terrain_value_type::{TerrainValueType, ValueOrIndex},
     },
     world_generation::chunk_generation::noise::{
-        terrain_noise::{TerrainNoise, TERRAIN_NOISE_FILE_PATH},
+        terrain_noise::{TERRAIN_NOISE_FILE_PATH, TerrainNoise},
         terrain_noise_type::TerrainNoiseType,
     },
 };
@@ -185,17 +185,6 @@ fn get_terrain_noise_index(
             let b_index = b_input.get_noise_index(noise_array);
             let noise_index = noise_array.len();
             noise_array.push(TerrainNoiseType::Sub { a_index, b_index });
-            TerrainValueType::NoiseF64x2 {
-                value_or_index: ValueOrIndex::Index(noise_index),
-            }
-        }
-        TerrainNodeTemplate::NoisePower => {
-            let a_input = get_input_value("A");
-            let b_input = get_input_value("B");
-            let a_index = a_input.get_noise_index(noise_array);
-            let b_index = b_input.get_noise_index(noise_array);
-            let noise_index = noise_array.len();
-            noise_array.push(TerrainNoiseType::Power { a_index, b_index });
             TerrainValueType::NoiseF64x2 {
                 value_or_index: ValueOrIndex::Index(noise_index),
             }

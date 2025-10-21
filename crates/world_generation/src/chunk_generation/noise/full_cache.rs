@@ -1,10 +1,12 @@
 use std::{cell::RefCell, collections::HashMap};
 
-use noise::{NoiseFn, Seedable};
+use crate::chunk_generation::noise::{
+    noise_function::NoiseFunction, noise_result::NoiseResult,
+};
 
 pub struct FullCache<T> {
     source: T,
-    cache_map: RefCell<HashMap<[i64; 2], f64>>,
+    cache_map: RefCell<HashMap<[i64; 2], NoiseResult>>,
 }
 
 impl<T> FullCache<T> {
@@ -18,7 +20,7 @@ impl<T> FullCache<T> {
 
 impl<T> Default for FullCache<T>
 where
-    T: Default + Seedable,
+    T: Default,
 {
     fn default() -> Self {
         Self {
@@ -28,32 +30,18 @@ where
     }
 }
 
-impl<T> Seedable for FullCache<T>
+impl<T> NoiseFunction<NoiseResult, [f64; 2]> for FullCache<T>
 where
-    T: Default + Seedable,
+    T: NoiseFunction<NoiseResult, [f64; 2]>,
 {
-    fn set_seed(mut self, seed: u32) -> Self {
-        self.source = T::default().set_seed(seed);
-        self
-    }
-
-    fn seed(&self) -> u32 {
-        self.source.seed()
-    }
-}
-
-impl<T> NoiseFn<f64, 2usize> for FullCache<T>
-where
-    T: NoiseFn<f64, 2usize>,
-{
-    fn get(&self, point: [f64; 2usize]) -> f64 {
-        let cache_key = [point[0] as i64, point[1] as i64];
+    fn get(&self, input: [f64; 2]) -> NoiseResult {
+        let cache_key = [input[0] as i64, input[1] as i64];
         let mut map = self.cache_map.borrow_mut();
         let item = map.get(&cache_key);
         if let Some(cache_value) = item {
             return *cache_value;
         }
-        let value = self.source.get(point);
+        let value = self.source.get(input);
         map.insert(cache_key, value);
         return value;
     }

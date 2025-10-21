@@ -1,5 +1,4 @@
 use bevy::math::IVec2;
-use noise::NoiseFn;
 use rand::{SeedableRng, rngs::StdRng};
 use serde::{
     Deserialize, Deserializer, Serialize, Serializer, ser::SerializeStruct,
@@ -7,8 +6,12 @@ use serde::{
 use std::{cell::RefCell, collections::HashMap, rc::Rc, sync::Arc};
 
 use crate::chunk_generation::{
-    block_type::BlockType, chunk_lod::ChunkLod,
-    noise::terrain_noise::TerrainNoise,
+    block_type::BlockType,
+    chunk_lod::ChunkLod,
+    noise::{
+        noise_function::NoiseFunction, noise_result::NoiseResult,
+        terrain_noise::TerrainNoise,
+    },
     structures::structure_generators::StructureGenerators,
 };
 
@@ -20,7 +23,7 @@ pub struct VoxelStructureMetadata {
     pub generate_debug_blocks: bool,
     pub debug_rgb_multiplier: [f32; 3],
     #[serde(deserialize_with = "deserialize_noise")]
-    pub noise: Arc<Box<dyn NoiseFn<f64, 2> + Send + Sync>>,
+    pub noise: Arc<Box<dyn NoiseFunction<NoiseResult, [f64; 2]> + Send + Sync>>,
     pub noise_map: TerrainNoise,
 }
 
@@ -50,7 +53,10 @@ impl Serialize for VoxelStructureMetadata {
 
 fn deserialize_noise<'de, D>(
     d: D,
-) -> Result<Arc<Box<dyn NoiseFn<f64, 2> + Send + Sync>>, D::Error>
+) -> Result<
+    Arc<Box<dyn NoiseFunction<NoiseResult, [f64; 2]> + Send + Sync>>,
+    D::Error,
+>
 where
     D: Deserializer<'de>,
 {

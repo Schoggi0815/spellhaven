@@ -21,7 +21,6 @@ pub enum TerrainNodeTemplate {
     SimplexNoise,
     NoiseAdd,
     NoiseSub,
-    NoisePower,
     Constant,
     Multiply,
     SmoothStep,
@@ -59,7 +58,6 @@ impl NodeTemplateTrait for TerrainNodeTemplate {
             TerrainNodeTemplate::Output => "Output",
             TerrainNodeTemplate::SimplexNoise => "Simplex Noise",
             TerrainNodeTemplate::NoiseAdd => "Noise Add",
-            TerrainNodeTemplate::NoisePower => "Noise Power",
             TerrainNodeTemplate::PowF64 => "Power F64",
             TerrainNodeTemplate::Constant => "Constant Noise",
             TerrainNodeTemplate::Multiply => "Multiply Noise",
@@ -86,7 +84,6 @@ impl NodeTemplateTrait for TerrainNodeTemplate {
             TerrainNodeTemplate::SimplexNoise => vec!["Noise Functions"],
             TerrainNodeTemplate::NoiseAdd
             | TerrainNodeTemplate::NoiseSub
-            | TerrainNodeTemplate::NoisePower
             | TerrainNodeTemplate::Constant
             | TerrainNodeTemplate::Multiply
             | TerrainNodeTemplate::SmoothStep
@@ -206,11 +203,6 @@ impl NodeTemplateTrait for TerrainNodeTemplate {
                 output_noise(graph, "out");
             }
             TerrainNodeTemplate::NoiseSub => {
-                input_noise(graph, "A");
-                input_noise(graph, "B");
-                output_noise(graph, "out");
-            }
-            TerrainNodeTemplate::NoisePower => {
                 input_noise(graph, "A");
                 input_noise(graph, "B");
                 output_noise(graph, "out");

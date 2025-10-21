@@ -1,5 +1,8 @@
-use noise::{NoiseFn, Seedable};
 use std::f64::consts::PI;
+
+use crate::chunk_generation::noise::{
+    noise_function::NoiseFunction, noise_result::NoiseResult,
+};
 
 pub struct SmoothStep<T> {
     noise: T,
@@ -30,7 +33,7 @@ impl<T> SmoothStep<T> {
 
 impl<T> Default for SmoothStep<T>
 where
-    T: Default + Seedable,
+    T: Default,
 {
     fn default() -> Self {
         Self {
@@ -41,29 +44,16 @@ where
     }
 }
 
-impl<T> Seedable for SmoothStep<T>
+impl<T, TInput> NoiseFunction<NoiseResult, TInput> for SmoothStep<T>
 where
-    T: Default + Seedable,
+    T: NoiseFunction<NoiseResult, TInput>,
 {
-    fn set_seed(mut self, seed: u32) -> Self {
-        self.noise = T::default().set_seed(seed);
-        self
-    }
-
-    fn seed(&self) -> u32 {
-        self.noise.seed()
-    }
-}
-
-impl<T, const D: usize> NoiseFn<f64, D> for SmoothStep<T>
-where
-    T: NoiseFn<f64, D>,
-{
-    fn get(&self, point: [f64; D]) -> f64 {
-        smooth_floor(
-            self.noise.get(point) * self.steps + 0.5, 
-            self.smoothness
-        ) / self.steps
+    fn get(&self, _input: TInput) -> NoiseResult {
+        // NOOP
+        NoiseResult {
+            value: 0.,
+            derivative: [0., 0.],
+        }
     }
 }
 

@@ -1,5 +1,4 @@
 use bevy::{math::DVec2, prelude::*};
-use noise::NoiseFn;
 use rand::{Rng, SeedableRng, rngs::StdRng};
 use std::usize;
 use utils::div_floor::div_floor;
@@ -15,7 +14,7 @@ use crate::{
         },
         noise::{
             full_cache::FullCache, lod_height_adjuster::LodHeightAdjuster,
-            steepness::Steepness,
+            noise_function::NoiseFunction, noise_result::NoiseResult,
         },
         structures::structure_generator::{
             StructureGenerator, StructureGeneratorCache,
@@ -37,9 +36,6 @@ pub fn generate_voxels(
         generation_options.get_terrain_noise(),
         chunk_lod,
     ));
-    let terrain_steepness = FullCache::new(Steepness::new(FullCache::new(
-        generation_options.get_terrain_noise(),
-    )));
 
     let chunk_noise_offset =
         DVec2::new(position[0] as f64, position[2] as f64) * CHUNK_SIZE as f64;
@@ -79,9 +75,13 @@ pub fn generate_voxels(
             //let dryness = value_noise.get([total_x as f64, total_z as f64]);
             //let mountain = mountain_noise.get([total_x as f64, total_z as f64]);
 
-            let steepness = terrain_steepness.get(noise_position);
+            let noise_result = terrain_noise.get(noise_position);
 
-            let mut noise_height = terrain_noise.get(noise_position) as f32;
+            let steepness = DVec2::from_array(noise_result.derivative)
+                .abs()
+                .max_element();
+
+            let mut noise_height = noise_result.value as f32;
 
             let is_snow =
                 noise_height * chunk_lod.multiplier_f32() > 3500. / VOXEL_SIZE;
@@ -109,10 +109,10 @@ pub fn generate_voxels(
             if path_distance <= 1.65 {
                 let path_start_height = terrain_noise
                     .get(line.unwrap().start.as_dvec2().to_array())
-                    as f32;
+                    .value as f32;
                 let path_end_height = terrain_noise
                     .get(line.unwrap().end.as_dvec2().to_array())
-                    as f32;
+                    .value as f32;
                 let path_height = lerp(
                     path_start_height,
                     path_end_height,
@@ -121,7 +121,7 @@ pub fn generate_voxels(
 
                 let closest_point_height = terrain_noise
                     .get(closest_point_on_path.as_dvec2().to_array())
-                    as f32;
+                    .value as f32;
                 let closest_point_height =
                     lerp(closest_point_height, noise_height, 0.75);
 
@@ -192,10 +192,10 @@ pub fn generate_voxels(
                     );
                 }
                 let mut rand = StdRng::seed_from_u64(
-                    (structure_value.abs() * 10000.) as u64,
+                    (structure_value.value.abs() * 10000.) as u64,
                 );
 
-                if structure_value > 0. {
+                if structure_value.value > 0. {
                     let random_x = rand.random_range(
                         0..=structure_metadata.generation_size[0]
                             - structure_metadata.model_size[0],
@@ -237,10 +237,10 @@ pub fn generate_voxels(
                         - structure_metadata.grid_offset[1]
                         + random_z;
 
-                    let structure_steepness = terrain_steepness.get([
-                        structure_noise_height_x as f64,
-                        structure_noise_height_z as f64,
-                    ]);
+                    let structure_steepness = (structure_value.derivative[0]
+                        .abs()
+                        + structure_value.derivative[1].abs())
+                        * 0.5;
 
                     if structure_steepness > 0.8 {
                         continue;
@@ -283,7 +283,8 @@ pub fn generate_voxels(
                         .enumerate()
                     {
                         if (index as i32
-                            + (noise_height * chunk_lod.multiplier_i32() as f64)
+                            + (noise_height.value
+                                * chunk_lod.multiplier_i32() as f64)
                                 as i32)
                             % chunk_lod.multiplier_i32()
                             != 0
@@ -292,7 +293,7 @@ pub fn generate_voxels(
                         }
                         let chunk_index =
                             index / chunk_lod.multiplier_i32() as usize;
-                        if (noise_height as i32 - min_height
+                        if (noise_height.value as i32 - min_height
                             + chunk_index as i32)
                             < 0
                         {
@@ -303,7 +304,8 @@ pub fn generate_voxels(
                         if structure_block == BlockType::Air {
                             continue;
                         }
-                        if noise_height as i32 + chunk_index as i32 - min_height
+                        if noise_height.value as i32 + chunk_index as i32
+                            - min_height
                             >= CHUNK_SIZE as i32 + 2
                         {
                             generate_more = true;
@@ -312,7 +314,7 @@ pub fn generate_voxels(
                         blocks.set_block(
                             [
                                 x as i32,
-                                noise_height as i32 + chunk_index as i32
+                                noise_height.value as i32 + chunk_index as i32
                                     - min_height as i32,
                                 z as i32,
                             ],
@@ -328,18 +330,22 @@ pub fn generate_voxels(
 }
 
 fn get_min_in_noise_map(
-    noise: &impl NoiseFn<f64, 2usize>,
+    noise: &impl NoiseFunction<NoiseResult, [f64; 2]>,
     chunk_offset: DVec2,
     chunk_lod: ChunkLod,
 ) -> f64 {
-    let mut min = noise.get(chunk_offset.to_array());
+    let mut min = noise.get(chunk_offset.to_array()).value;
 
     for x in 0..CHUNK_SIZE {
         for z in 0..CHUNK_SIZE {
-            let current = noise.get([
-                x as f64 * chunk_lod.multiplier_i32() as f64 + chunk_offset.x,
-                z as f64 * chunk_lod.multiplier_i32() as f64 + chunk_offset.y,
-            ]);
+            let current = noise
+                .get([
+                    x as f64 * chunk_lod.multiplier_i32() as f64
+                        + chunk_offset.x,
+                    z as f64 * chunk_lod.multiplier_i32() as f64
+                        + chunk_offset.y,
+                ])
+                .value;
             if current < min {
                 min = current;
             }
