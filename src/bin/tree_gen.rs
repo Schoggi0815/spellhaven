@@ -1,55 +1,60 @@
-use bevy::core_pipeline::experimental::taa::TemporalAntiAliasing;
-use bevy::pbr::wireframe::{WireframeConfig, WireframePlugin};
-use bevy::pbr::ExtendedMaterial;
-use bevy::prelude::*;
-use bevy::render::camera::Exposure;
-use bevy::window::PresentMode;
-use bevy_atmosphere::plugin::AtmosphereCamera;
-use bevy_atmosphere::prelude::AtmospherePlugin;
-use bevy_inspector_egui::bevy_egui::EguiPlugin;
+use bevy::{
+    camera::Exposure,
+    core_pipeline::tonemapping::Tonemapping,
+    light::{SunDisk, light_consts::lux},
+    pbr::{
+        Atmosphere, AtmospherePlugin, ExtendedMaterial,
+        wireframe::{WireframeConfig, WireframePlugin},
+    },
+    post_process::bloom::Bloom,
+    prelude::*,
+    render::view::{ColorGrading, ColorGradingGlobal},
+};
+use bevy_egui::EguiPlugin;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_panorbit_camera::{PanOrbitCamera, PanOrbitCameraPlugin};
-use bevy_rapier3d::prelude::{NoUserData, RapierPhysicsPlugin};
-use fastnoise_lite::FastNoiseLite;
-use rand::{rng, RngCore};
-use spellhaven::animations::AnimationPlugin;
-use spellhaven::debug_tools::debug_resource::OpentaleDebugPlugin;
-use spellhaven::terrain_material::TerrainMaterial;
-use spellhaven::world_generation::chunk_generation::mesh_generation::generate_mesh;
-use spellhaven::world_generation::chunk_generation::pine_structure_generator::PineStructureGenerator;
-use spellhaven::world_generation::chunk_generation::structure_generator::{
-    StructureGenerator, VoxelStructureMetadata,
+use rand::{Rng, rng};
+use world_generation::{
+    chunk_generation::{
+        CHUNK_SIZE, VOXEL_SIZE,
+        block_type::BlockType,
+        chunk_lod::ChunkLod,
+        mesh_generation::generate_mesh,
+        noise::{
+            terrain_noise::TerrainNoise,
+            terrain_noise_type::{ConstantValue, TerrainNoiseType},
+        },
+        structures::{
+            pine_structure_generator::PineStructureGenerator,
+            structure_generator::{StructureGenerator, VoxelStructureMetadata},
+            tree_structure_generator::TreeStructureGenerator,
+        },
+        voxel_data::VoxelData,
+    },
+    terrain_material::TerrainMaterial,
 };
-use spellhaven::world_generation::chunk_generation::voxel_types::VoxelData;
-use spellhaven::world_generation::chunk_generation::{BlockType, CHUNK_SIZE, VOXEL_SIZE};
-use spellhaven::world_generation::voxel_world::ChunkLod;
-use std::f32::consts::PI;
 
 fn main() {
     App::new()
-        .add_plugins((
-            DefaultPlugins.set(WindowPlugin {
-                primary_window: Some(Window {
-                    title: "Spellhaven".into(),
-                    present_mode: PresentMode::Immediate,
+        .add_plugins(
+            (
+                DefaultPlugins.set(WindowPlugin {
+                    primary_window: Some(Window {
+                        title: "Spellhaven".into(),
+                        ..default()
+                    }),
                     ..default()
                 }),
-                ..default()
-            }),
-            PanOrbitCameraPlugin,
-            AtmospherePlugin,
-            RapierPhysicsPlugin::<NoUserData>::default(),
-            //RapierDebugRenderPlugin::default(),
-            WireframePlugin { ..default() },
-            AnimationPlugin,
-            //BirdCameraPlugin,
-            EguiPlugin {
-                enable_multipass_for_primary_context: false,
-            },
-            WorldInspectorPlugin::new(),
-            OpentaleDebugPlugin,
-            MaterialPlugin::<ExtendedMaterial<StandardMaterial, TerrainMaterial>>::default(),
-        ))
+                PanOrbitCameraPlugin,
+                WireframePlugin { ..default() },
+                //BirdCameraPlugin,
+                EguiPlugin::default(),
+                WorldInspectorPlugin::new(),
+                MaterialPlugin::<
+                    ExtendedMaterial<StandardMaterial, TerrainMaterial>,
+                >::default(),
+            ),
+        )
         .add_systems(Startup, setup)
         .add_systems(Update, rebuild_tree_system)
         .insert_resource(WireframeConfig {
@@ -65,17 +70,20 @@ struct TreeGen;
 fn setup(
     mut commands: Commands,
     meshes: ResMut<Assets<Mesh>>,
-    materials: ResMut<Assets<ExtendedMaterial<StandardMaterial, TerrainMaterial>>>,
+    materials: ResMut<
+        Assets<ExtendedMaterial<StandardMaterial, TerrainMaterial>>,
+    >,
 ) {
     commands.spawn((
         DirectionalLight {
             shadows_enabled: true,
-            illuminance: 1000.,
+            illuminance: lux::RAW_SUNLIGHT,
             ..default()
         },
+        SunDisk::EARTH,
         Transform {
             translation: Vec3::new(0.0, 2.0, 0.0),
-            rotation: Quat::from_rotation_x(-PI / 3.),
+            rotation: Quat::from_rotation_x(-std::f32::consts::PI / 3.),
             ..default()
         },
         Name::new("Light"),
@@ -83,22 +91,30 @@ fn setup(
 
     commands.spawn((
         Camera3d::default(),
-        Msaa::Off,
-        TemporalAntiAliasing::default(),
+        ColorGrading {
+            global: ColorGradingGlobal {
+                post_saturation: 1.2,
+                ..Default::default()
+            },
+            ..Default::default()
+        },
+        Msaa::Sample2,
         Transform::from_xyz(-4.0, 6.5, 8.0).looking_at(Vec3::ZERO, Vec3::Y),
         Projection::Perspective(PerspectiveProjection {
             far: 2f32.powi(20),
             ..default()
         }),
-        Exposure { ev100: 10f32 },
+        Exposure::SUNLIGHT,
+        Tonemapping::TonyMcMapface,
+        Bloom::NATURAL,
         PanOrbitCamera::default(),
-        AtmosphereCamera::default(),
+        Atmosphere::EARTH,
         Name::new("CAMMIE"),
     ));
 
     commands.insert_resource(AmbientLight {
         color: Color::WHITE,
-        brightness: 50f32,
+        brightness: lux::FULL_DAYLIGHT,
         ..default()
     });
 
@@ -108,29 +124,30 @@ fn setup(
 fn spawn_mesh(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ExtendedMaterial<StandardMaterial, TerrainMaterial>>>,
+    mut materials: ResMut<
+        Assets<ExtendedMaterial<StandardMaterial, TerrainMaterial>>,
+    >,
 ) {
     let chunks = get_tree_voxel_data();
 
     for (chunk, chunk_pos) in chunks {
-        let mesh = generate_mesh(&chunk, 0, ChunkLod::Full);
+        let mesh = generate_mesh(&chunk, ChunkLod::Full);
 
-        let Some(mesh) = mesh else {
+        let Some(mesh) = mesh.opaque_mesh else {
             continue;
         };
 
         commands.spawn((
-            Transform::from_translation(chunk_pos.as_vec3() * CHUNK_SIZE as f32 * VOXEL_SIZE),
+            Transform::from_translation(
+                chunk_pos.as_vec3() * CHUNK_SIZE as f32 * VOXEL_SIZE,
+            ),
             Name::new("Chunk"),
-            Mesh3d(meshes.add(mesh.0)),
+            Mesh3d(meshes.add(mesh)),
             MeshMaterial3d(materials.add(ExtendedMaterial {
                 base: Color::WHITE.into(),
                 extension: TerrainMaterial {
-                    chunk_blocks: chunk.array,
-                    palette: chunk.palette,
-                    chunk_pos: chunk_pos,
-                    chunk_lod: ChunkLod::Full.multiplier_i32(),
-                    min_chunk_height: chunk_pos.y * CHUNK_SIZE as i32,
+                    chunk_position: chunk_pos.as_vec3(),
+                    lod_multiplier: ChunkLod::Full.multiplier_i32() as u32,
                 },
             })),
             TreeGen,
@@ -141,7 +158,9 @@ fn spawn_mesh(
 fn rebuild_tree_system(
     mut tree_entities: Query<Entity, With<TreeGen>>,
     meshes: ResMut<Assets<Mesh>>,
-    materials: ResMut<Assets<ExtendedMaterial<StandardMaterial, TerrainMaterial>>>,
+    materials: ResMut<
+        Assets<ExtendedMaterial<StandardMaterial, TerrainMaterial>>,
+    >,
     mut commands: Commands,
     input: Res<ButtonInput<KeyCode>>,
 ) {
@@ -172,30 +191,33 @@ fn get_tree_voxel_data() -> Vec<(Box<VoxelData>, IVec3)> {
         (Box::new(VoxelData::default()), IVec3::new(1, 2, 1)),
     ];
 
-    let seed = rng().next_u32();
+    let seed = rng().random::<u32>();
 
-    let mut noise = FastNoiseLite::with_seed(seed as i32);
-    noise.set_noise_type(Some(fastnoise_lite::NoiseType::Value));
-    noise.set_frequency(Some(100.));
+    let tree_generator =
+        PineStructureGenerator::new(VoxelStructureMetadata::new(
+            [27, 27, 27],
+            [0, 0],
+            [0, 0],
+            get_tree_noise(),
+        ));
 
-    let tree_generator = PineStructureGenerator {
-        fixed_structure_metadata: VoxelStructureMetadata {
-            debug_rgb_multiplier: [0., 0., 0.],
-            generate_debug_blocks: false,
-            generation_size: [0, 0],
-            grid_offset: [0, 0],
-            model_size: [0, 0, 0],
-            noise,
-        },
-    };
-
-    let tree_model = tree_generator.get_structure_model(IVec2::new(0, 0), ChunkLod::Full);
+    let tree_model =
+        tree_generator.get_structure_model(IVec2::new(0, 0), ChunkLod::Full);
 
     for (chunk, chunk_pos) in &mut chunks {
         apply_trees(chunk, *chunk_pos, &tree_model);
     }
 
     chunks
+}
+
+fn get_tree_noise() -> TerrainNoise {
+    TerrainNoise::new(
+        0,
+        vec![TerrainNoiseType::ConstantValue {
+            value: ConstantValue::F64(rng().random()),
+        }],
+    )
 }
 
 fn apply_trees(
