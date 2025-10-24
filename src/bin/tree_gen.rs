@@ -25,6 +25,7 @@ use world_generation::{
             terrain_noise_type::{ConstantValue, TerrainNoiseType},
         },
         structures::{
+            oak_structure_generator::OakStructureGenerator,
             pine_structure_generator::PineStructureGenerator,
             structure_generator::{StructureGenerator, VoxelStructureMetadata},
             tree_structure_generator::TreeStructureGenerator,
@@ -199,6 +200,7 @@ fn get_tree_voxel_data() -> Vec<(Box<VoxelData>, IVec3)> {
             [0, 0],
             [0, 0],
             get_tree_noise(),
+            seed,
         ));
 
     let tree_model =
@@ -214,9 +216,19 @@ fn get_tree_voxel_data() -> Vec<(Box<VoxelData>, IVec3)> {
 fn get_tree_noise() -> TerrainNoise {
     TerrainNoise::new(
         0,
-        vec![TerrainNoiseType::ConstantValue {
-            value: ConstantValue::F64(rng().random()),
-        }],
+        vec![
+            TerrainNoiseType::Constant { value_index: 1 },
+            TerrainNoiseType::RandomF64 {
+                min_index: 2,
+                max_index: 3,
+            },
+            TerrainNoiseType::ConstantValue {
+                value: ConstantValue::F64(-1.),
+            },
+            TerrainNoiseType::ConstantValue {
+                value: ConstantValue::F64(1.),
+            },
+        ],
     )
 }
 

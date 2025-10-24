@@ -31,14 +31,15 @@ pub fn generate_mesh(
             BlockType::Log,
             BlockType::Snow,
             BlockType::Dirt,
+            BlockType::Leaf,
         ],
         voxel_data,
         chunk_lod,
         true,
     );
 
-    let transparent_mesh =
-        get_mesh_for_blocks(&[BlockType::Leaf], voxel_data, chunk_lod, true);
+    let transparent_mesh = None;
+    // get_mesh_for_blocks(&[BlockType::Leaf], voxel_data, chunk_lod, true);
 
     let collider = if chunk_lod == ChunkLod::Full {
         get_compound_collider(

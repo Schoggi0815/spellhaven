@@ -19,6 +19,7 @@ pub struct VoxelStructureMetadata {
     pub grid_offset: [i32; 2],
     pub generate_debug_blocks: bool,
     pub debug_rgb_multiplier: [f32; 3],
+    pub seed: u32,
     #[serde(deserialize_with = "deserialize_noise")]
     pub noise: Arc<Box<dyn NoiseFn<f64, 2> + Send + Sync>>,
     pub noise_map: TerrainNoise,
@@ -66,9 +67,11 @@ impl VoxelStructureMetadata {
         generation_size: [i32; 2],
         grid_offset: [i32; 2],
         noise_map: TerrainNoise,
+        seed: u32,
     ) -> Self {
-        let noise =
-            Arc::new(noise_map.get_noise_fn(&mut StdRng::seed_from_u64(0)));
+        let noise = Arc::new(
+            noise_map.get_noise_fn(&mut StdRng::seed_from_u64(seed as u64)),
+        );
 
         Self {
             model_size,
@@ -78,6 +81,7 @@ impl VoxelStructureMetadata {
             debug_rgb_multiplier: [0., 0., 0.],
             noise,
             noise_map,
+            seed,
         }
     }
 

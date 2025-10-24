@@ -13,8 +13,8 @@ use crate::chunk_generation::{
 };
 use bevy::prelude::*;
 use noise::NoiseFn;
-use rand::SeedableRng;
 use rand::prelude::StdRng;
+use rand::{Rng, SeedableRng};
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use utils::file_utils::read_ron_from_file;
@@ -52,6 +52,8 @@ impl GenerationOptions {
         //     read_ron_from_file("assets/tree_test.ron")
         //         .expect("Failed to load tree model.");
 
+        let mut rng = StdRng::seed_from_u64(seed);
+
         Self {
             seed,
             terrain_noise,
@@ -63,6 +65,7 @@ impl GenerationOptions {
                         [64, 64],
                         [24, 16],
                         get_seeded_white_noise(),
+                        rng.random(),
                     )),
                 ))),
                 Arc::new(Box::new(StructureGenerators::Oak(
@@ -71,6 +74,7 @@ impl GenerationOptions {
                         [64, 64],
                         [43, 52],
                         get_seeded_white_noise(),
+                        rng.random(),
                     )),
                 ))),
                 Arc::new(Box::new(StructureGenerators::Oak(
@@ -79,6 +83,7 @@ impl GenerationOptions {
                         [64, 64],
                         [10, 4],
                         get_seeded_white_noise(),
+                        rng.random(),
                     )),
                 ))),
                 // Arc::new(Box::new(FixedStructureGenerator {

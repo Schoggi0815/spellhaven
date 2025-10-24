@@ -48,7 +48,7 @@ impl BlockType {
         }
 
         match self {
-            BlockType::Air | BlockType::Leaf => false,
+            BlockType::Air => false,
             _ => true,
         }
     }
