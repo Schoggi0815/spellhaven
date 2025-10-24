@@ -114,8 +114,8 @@ where
                 .get([point[0] * frequency, point[1] * frequency]);
 
             noise_value.derivative = [
-                noise_value.derivative[0] / frequency,
-                noise_value.derivative[1] / frequency,
+                noise_value.derivative[0] * frequency,
+                noise_value.derivative[1] * frequency,
             ];
 
             let magnitude = noise_value.derivative[0].abs()

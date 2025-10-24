@@ -15,4 +15,5 @@ extern crate world_generation;
 pub mod chunk_gizmos;
 pub mod debug_plugin;
 pub mod physics_debug;
+pub mod terrain_derivative;
 pub mod terrain_node_editor;

@@ -26,6 +26,9 @@ impl NoiseFunction<NoiseResult, [f64; 2]> for Simplex {
     fn get(&self, input: [f64; 2]) -> NoiseResult {
         let (value, derivative) = simplex_2d(input.into(), &self.hasher);
 
-        NoiseResult { value, derivative }
+        NoiseResult {
+            value,
+            derivative: [derivative[0] * 4., derivative[1] * 4.],
+        }
     }
 }
