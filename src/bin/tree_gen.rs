@@ -3,7 +3,7 @@ use bevy::{
     core_pipeline::tonemapping::Tonemapping,
     light::{SunDisk, light_consts::lux},
     pbr::{
-        Atmosphere, AtmospherePlugin, ExtendedMaterial,
+        Atmosphere, ExtendedMaterial,
         wireframe::{WireframeConfig, WireframePlugin},
     },
     post_process::bloom::Bloom,
@@ -195,8 +195,8 @@ fn get_tree_voxel_data() -> Vec<(Box<VoxelData>, IVec3)> {
     let seed = rng().random::<u32>();
 
     let tree_generator =
-        PineStructureGenerator::new(VoxelStructureMetadata::new(
-            [27, 27, 27],
+        OakStructureGenerator::new(VoxelStructureMetadata::new(
+            [45, 45, 45],
             [0, 0],
             [0, 0],
             get_tree_noise(),

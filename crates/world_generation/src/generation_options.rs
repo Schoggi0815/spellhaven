@@ -22,9 +22,10 @@ use utils::file_utils::read_ron_from_file;
 fn get_seeded_white_noise() -> TerrainNoise {
     TerrainNoise::new(
         0,
-        vec![TerrainNoiseType::ConstantValue {
-            value: ConstantValue::F64(1.0),
-        }],
+        vec![
+            TerrainNoiseType::Simplex { seed_index: 1 },
+            TerrainNoiseType::RandomI64,
+        ],
     )
 }
 
