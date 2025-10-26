@@ -2,7 +2,7 @@ use crate::chunk_generation::{
     block_type::BlockType,
     noise::{
         terrain_noise::{TERRAIN_NOISE_FILE_PATH, TerrainNoise},
-        terrain_noise_type::{ConstantValue, TerrainNoiseType},
+        terrain_noise_type::TerrainNoiseType,
     },
     structures::{
         oak_structure_generator::OakStructureGenerator,
@@ -61,31 +61,40 @@ impl GenerationOptions {
             generate_paths: false,
             structure_generators: vec![
                 Arc::new(Box::new(StructureGenerators::Oak(
-                    OakStructureGenerator::new(VoxelStructureMetadata::new(
-                        [27, 27, 27],
-                        [64, 64],
-                        [24, 16],
-                        get_seeded_white_noise(),
-                        rng.random(),
-                    )),
+                    OakStructureGenerator::new(
+                        VoxelStructureMetadata::new(
+                            [27, 27, 27],
+                            [64, 64],
+                            [24, 16],
+                            get_seeded_white_noise(),
+                            rng.random(),
+                        ),
+                        &mut rng,
+                    ),
                 ))),
                 Arc::new(Box::new(StructureGenerators::Oak(
-                    OakStructureGenerator::new(VoxelStructureMetadata::new(
-                        [27, 27, 27],
-                        [64, 64],
-                        [43, 52],
-                        get_seeded_white_noise(),
-                        rng.random(),
-                    )),
+                    OakStructureGenerator::new(
+                        VoxelStructureMetadata::new(
+                            [27, 27, 27],
+                            [64, 64],
+                            [43, 52],
+                            get_seeded_white_noise(),
+                            rng.random(),
+                        ),
+                        &mut rng,
+                    ),
                 ))),
                 Arc::new(Box::new(StructureGenerators::Oak(
-                    OakStructureGenerator::new(VoxelStructureMetadata::new(
-                        [27, 27, 27],
-                        [64, 64],
-                        [10, 4],
-                        get_seeded_white_noise(),
-                        rng.random(),
-                    )),
+                    OakStructureGenerator::new(
+                        VoxelStructureMetadata::new(
+                            [27, 27, 27],
+                            [64, 64],
+                            [10, 4],
+                            get_seeded_white_noise(),
+                            rng.random(),
+                        ),
+                        &mut rng,
+                    ),
                 ))),
                 // Arc::new(Box::new(FixedStructureGenerator {
                 //     fixed_structure_model: Arc::new(tree_model.blocks),

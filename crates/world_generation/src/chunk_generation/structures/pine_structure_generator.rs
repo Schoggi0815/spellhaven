@@ -1,6 +1,8 @@
+use bevy::prelude::*;
 use rand::rngs::StdRng;
 
 use crate::chunk_generation::{
+    VOXEL_SIZE,
     block_type::BlockType,
     structures::{
         foliage_generation::{
@@ -9,7 +11,6 @@ use crate::chunk_generation::{
         structure_generator::VoxelStructureMetadata,
         tree_structure_generator::TreeStructureGenerator,
     },
-    VOXEL_SIZE,
 };
 
 pub struct PineStructureGenerator {
@@ -20,7 +21,7 @@ const PINE_VOXEL_SIZE: usize = (32f32 / VOXEL_SIZE) as usize;
 const PINE_VOXEL_HEIGHT: usize = (70f32 / VOXEL_SIZE) as usize;
 
 impl TreeStructureGenerator for PineStructureGenerator {
-    fn new(mut metadata: VoxelStructureMetadata) -> Self {
+    fn new(mut metadata: VoxelStructureMetadata, _: &mut StdRng) -> Self {
         Self::adjust_metadata(&mut metadata);
 
         Self {
@@ -32,11 +33,15 @@ impl TreeStructureGenerator for PineStructureGenerator {
         &self.fixed_structure_metadata
     }
 
-    fn grow(&self, rng: &mut StdRng) -> Vec<Vec<Vec<BlockType>>> {
+    fn grow(
+        &self,
+        rng: &mut StdRng,
+        _structure_position: IVec2,
+    ) -> Vec<Vec<Vec<BlockType>>> {
         PineLSystem::grow_new::<
             PINE_VOXEL_SIZE,
             PINE_VOXEL_HEIGHT,
             PINE_VOXEL_SIZE,
-        >(rng)
+        >(rng, &())
     }
 }

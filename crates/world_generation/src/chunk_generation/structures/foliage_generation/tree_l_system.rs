@@ -1,12 +1,12 @@
 use crate::chunk_generation::{
-    block_type::BlockType,
-    structures::foliage_generation::entry_range::EntryRange, VOXEL_SIZE,
+    VOXEL_SIZE, block_type::BlockType,
+    structures::foliage_generation::entry_range::EntryRange,
 };
 use bevy::math::Vec3;
-use rand::{rngs::StdRng, Rng};
+use rand::{Rng, rngs::StdRng};
 use utils::{
     cartesian_product::cube_cartesian_product,
-    rotation::{rotate_around, RotationDirection},
+    rotation::{RotationDirection, rotate_around},
     vec_utils::vec_round_to_int,
 };
 
@@ -19,9 +19,10 @@ pub struct LSystemEntry<EntryEnum> {
 /// A LindenMayer System used to generate foliage.
 ///
 /// See [L-System](https://en.wikipedia.org/wiki/L-system) for more information.
-pub trait LSystem<EntryEnum: Clone + Copy> {
+pub trait LSystem<EntryEnum: Clone + Copy, GrowOptions> {
     fn grow_new<const XSIZE: usize, const YSIZE: usize, const ZSIZE: usize>(
         rng: &mut StdRng,
+        grow_options: &GrowOptions,
     ) -> Vec<Vec<Vec<BlockType>>> {
         let pos = Vec3::new(XSIZE as f32 / 2., 0., ZSIZE as f32 / 2.);
         let pos_offset = Vec3 {
@@ -29,9 +30,10 @@ pub trait LSystem<EntryEnum: Clone + Copy> {
             y: 0.,
             z: rng.random(),
         };
-        let mut start_state = Self::get_start_state(pos + pos_offset, rng);
+        let mut start_state =
+            Self::get_start_state(pos + pos_offset, rng, grow_options);
 
-        Self::process_tree(&mut start_state, rng);
+        Self::process_tree(&mut start_state, rng, grow_options);
 
         let mut voxel_grid = vec![];
 
@@ -86,6 +88,7 @@ pub trait LSystem<EntryEnum: Clone + Copy> {
     fn recurse_l_system(
         data: &mut Vec<LSystemEntry<EntryEnum>>,
         rng: &mut StdRng,
+        grow_options: &GrowOptions,
     ) -> bool {
         let mut i = 0usize;
         let mut changed = false;
@@ -94,7 +97,7 @@ pub trait LSystem<EntryEnum: Clone + Copy> {
             let entry = &data[i];
             let mut branches: Vec<LSystemEntry<EntryEnum>> = vec![];
 
-            Self::recurse_entry(entry, rng, &mut branches);
+            Self::recurse_entry(entry, rng, &mut branches, grow_options);
 
             let length = branches.len();
 
@@ -186,15 +189,18 @@ pub trait LSystem<EntryEnum: Clone + Copy> {
     fn get_start_state(
         position: Vec3,
         rng: &mut StdRng,
+        grow_options: &GrowOptions,
     ) -> Vec<LSystemEntry<EntryEnum>>;
     fn process_tree(
         start_state: &mut Vec<LSystemEntry<EntryEnum>>,
         rng: &mut StdRng,
+        grow_options: &GrowOptions,
     );
     fn get_block_from_entry(entry: &LSystemEntry<EntryEnum>) -> BlockType;
     fn recurse_entry(
         entry: &LSystemEntry<EntryEnum>,
         rng: &mut StdRng,
         branches: &mut Vec<LSystemEntry<EntryEnum>>,
+        grow_options: &GrowOptions,
     );
 }

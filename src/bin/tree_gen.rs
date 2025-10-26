@@ -13,7 +13,7 @@ use bevy::{
 use bevy_egui::EguiPlugin;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_panorbit_camera::{PanOrbitCamera, PanOrbitCameraPlugin};
-use rand::{Rng, rng};
+use rand::{Rng, SeedableRng, rng, rngs::StdRng};
 use world_generation::{
     chunk_generation::{
         CHUNK_SIZE, VOXEL_SIZE,
@@ -192,16 +192,18 @@ fn get_tree_voxel_data() -> Vec<(Box<VoxelData>, IVec3)> {
         (Box::new(VoxelData::default()), IVec3::new(1, 2, 1)),
     ];
 
-    let seed = rng().random::<u32>();
+    let seed = rng().random();
 
-    let tree_generator =
-        OakStructureGenerator::new(VoxelStructureMetadata::new(
+    let tree_generator = OakStructureGenerator::new(
+        VoxelStructureMetadata::new(
             [45, 45, 45],
             [0, 0],
             [0, 0],
             get_tree_noise(),
             seed,
-        ));
+        ),
+        &mut StdRng::seed_from_u64(seed),
+    );
 
     let tree_model =
         tree_generator.get_structure_model(IVec2::new(0, 0), ChunkLod::Full);

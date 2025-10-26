@@ -1,16 +1,16 @@
 use std::f32::consts::PI;
 
 use bevy::math::{Quat, Vec3};
-use rand::{rngs::StdRng, Rng};
-use utils::rotation::{rotate_around, RotationDirection};
+use rand::{Rng, rngs::StdRng};
+use utils::rotation::{RotationDirection, rotate_around};
 
 use crate::chunk_generation::{
+    VOXEL_SIZE,
     block_type::BlockType,
     structures::foliage_generation::{
         entry_range::EntryRange,
         tree_l_system::{LSystem, LSystemEntry},
     },
-    VOXEL_SIZE,
 };
 
 pub struct PineLSystem;
@@ -34,10 +34,11 @@ pub enum PineEntryType {
     Needle,
 }
 
-impl LSystem<PineEntryType> for PineLSystem {
+impl LSystem<PineEntryType, ()> for PineLSystem {
     fn get_start_state(
         position: Vec3,
         rng: &mut StdRng,
+        _: &(),
     ) -> Vec<LSystemEntry<PineEntryType>> {
         let mut entries = vec![];
 
@@ -93,8 +94,9 @@ impl LSystem<PineEntryType> for PineLSystem {
     fn process_tree(
         mut start_state: &mut Vec<LSystemEntry<PineEntryType>>,
         rng: &mut StdRng,
+        _: &(),
     ) {
-        while Self::recurse_l_system(&mut start_state, rng) {}
+        while Self::recurse_l_system(&mut start_state, rng, &()) {}
     }
 
     fn get_block_from_entry(entry: &LSystemEntry<PineEntryType>) -> BlockType {
@@ -108,6 +110,7 @@ impl LSystem<PineEntryType> for PineLSystem {
         entry: &LSystemEntry<PineEntryType>,
         rng: &mut StdRng,
         branches: &mut Vec<LSystemEntry<PineEntryType>>,
+        _: &(),
     ) {
         match entry.entry_type {
             PineEntryType::Stem {
