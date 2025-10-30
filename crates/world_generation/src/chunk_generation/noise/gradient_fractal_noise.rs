@@ -118,10 +118,11 @@ where
                 noise_value.derivative[1] * frequency,
             ];
 
-            let magnitude = noise_value.derivative[0].abs()
-                + noise_value.derivative[1].abs();
+            let magnitude = (noise_value.derivative[0].powi(2)
+                + noise_value.derivative[1].powi(2))
+            .sqrt();
 
-            total_flatness += magnitude * (1. / (x + 1) as f64);
+            total_flatness += 1. / magnitude;
 
             let gradience = self.get_gradient_influence(total_flatness);
 

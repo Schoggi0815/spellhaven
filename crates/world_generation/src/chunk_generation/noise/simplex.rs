@@ -1,4 +1,4 @@
-use noise::{core::simplex::simplex_2d, permutationtable::PermutationTable};
+use noise::{permutationtable::PermutationTable, simplex::simplex_2d};
 
 use crate::chunk_generation::noise::{
     noise_function::NoiseFunction, noise_result::NoiseResult,

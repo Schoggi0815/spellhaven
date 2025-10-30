@@ -77,9 +77,8 @@ pub fn generate_voxels(
 
             let noise_result = terrain_noise.get(noise_position);
 
-            let steepness = DVec2::from_array(noise_result.derivative)
-                .abs()
-                .max_element();
+            let derivative = DVec2::from_array(noise_result.derivative);
+            let steepness = derivative.length();
 
             let mut noise_height = noise_result.value as f32;
 
@@ -88,7 +87,7 @@ pub fn generate_voxels(
             let is_grass_steep = if is_snow {
                 steepness < 1.2
             } else {
-                steepness < 0.8
+                steepness < 0.2
             };
 
             let (mut path_distance, closest_point_on_path, _, line) =

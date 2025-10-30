@@ -3842,7 +3842,7 @@ checksum = "2bf50223579dc7cdcfb3bfcacf7069ff68243f8c363f62ffa99cf000a6b9c451"
 
 [[package]]
 name = "noise"
-version = "0.9.0"
+version = "0.0.0"
 dependencies = [
  "num-traits",
  "rand",
@@ -5087,6 +5087,7 @@ dependencies = [
  "physics",
  "player",
  "rand",
+ "rand_xorshift",
  "ron 0.11.0",
  "serde",
  "tokio",
