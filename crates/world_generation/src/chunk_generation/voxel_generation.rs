@@ -209,13 +209,11 @@ pub fn generate_voxels(
                         + structure_metadata.grid_offset[0]
                         - structure_offset_x
                             * structure_metadata.generation_size[0])
-                        .abs()
                         - random_x;
                     let structure_z: i32 = (total_z
                         + structure_metadata.grid_offset[1]
                         - structure_offset_z
                             * structure_metadata.generation_size[1])
-                        .abs()
                         - random_z;
 
                     if structure_x < 0

@@ -3,7 +3,6 @@ use rand::{Rng, rngs::StdRng};
 use serde::{Deserialize, Serialize};
 
 use crate::chunk_generation::{
-    VOXEL_SIZE,
     block_type::BlockType,
     noise::terrain_noise::TerrainNoise,
     structures::{
@@ -29,8 +28,6 @@ pub struct OakStructureGenerator {
     pub start_y_angle_noise: NoiseWrapper,
 }
 
-const OAK_VOXEL_SIZE: usize = (27f32 / VOXEL_SIZE) as usize;
-
 impl TreeStructureGenerator for OakStructureGenerator {
     fn new(mut metadata: VoxelStructureMetadata, rng: &mut StdRng) -> Self {
         Self::adjust_metadata(&mut metadata);
@@ -38,31 +35,31 @@ impl TreeStructureGenerator for OakStructureGenerator {
         Self {
             fixed_structure_metadata: metadata,
             min_thickness_noise: NoiseWrapper::new(
-                TerrainNoise::new_basic_simplex(0.5_f64.powi(4), 0.5, 0.7),
+                TerrainNoise::new_basic_simplex(0.5_f64.powi(5), 0.5, 0.7),
                 rng.random(),
             ),
             max_length_noise: NoiseWrapper::new(
-                TerrainNoise::new_basic_simplex(0.5_f64.powi(4), 6.5, 7.5),
+                TerrainNoise::new_basic_simplex(0.5_f64.powi(5), 6.5, 7.5),
                 rng.random(),
             ),
             min_length_noise: NoiseWrapper::new(
-                TerrainNoise::new_basic_simplex(0.5_f64.powi(4), 3.5, 4.5),
+                TerrainNoise::new_basic_simplex(0.5_f64.powi(5), 3.5, 4.5),
                 rng.random(),
             ),
             max_angle_noise: NoiseWrapper::new(
-                TerrainNoise::new_basic_simplex(0.5_f64.powi(4), 45.0, 65.0),
+                TerrainNoise::new_basic_simplex(0.5_f64.powi(5), 45.0, 65.0),
                 rng.random(),
             ),
             start_thickness_noise: NoiseWrapper::new(
-                TerrainNoise::new_basic_simplex(0.5_f64.powi(4), 1.8, 3.0),
+                TerrainNoise::new_basic_simplex(0.5_f64.powi(5), 1.8, 3.0),
                 rng.random(),
             ),
             start_x_angle_noise: NoiseWrapper::new(
-                TerrainNoise::new_basic_simplex(0.5_f64.powi(4), -10.0, 10.0),
+                TerrainNoise::new_basic_simplex(0.5_f64.powi(5), -10.0, 10.0),
                 rng.random(),
             ),
             start_y_angle_noise: NoiseWrapper::new(
-                TerrainNoise::new_basic_simplex(0.5_f64.powi(4), -10.0, 10.0),
+                TerrainNoise::new_basic_simplex(0.5_f64.powi(5), -10.0, 10.0),
                 rng.random(),
             ),
         }
@@ -79,7 +76,7 @@ impl TreeStructureGenerator for OakStructureGenerator {
     ) -> Vec<Vec<Vec<BlockType>>> {
         let noise_pos = structure_position.as_dvec2().to_array();
 
-        OakLSystem::grow_new::<OAK_VOXEL_SIZE, OAK_VOXEL_SIZE, OAK_VOXEL_SIZE>(
+        OakLSystem::grow_new(
             rng,
             &OakOptions {
                 min_thickness: self.min_thickness_noise.get(noise_pos) as f32,
@@ -91,6 +88,8 @@ impl TreeStructureGenerator for OakStructureGenerator {
                 start_x_angle: self.start_x_angle_noise.get(noise_pos) as f32,
                 start_y_angle: self.start_y_angle_noise.get(noise_pos) as f32,
             },
+            IVec3::from_array(self.fixed_structure_metadata.model_size)
+                .as_usizevec3(),
         )
     }
 }

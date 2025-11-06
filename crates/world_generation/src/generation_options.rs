@@ -54,6 +54,7 @@ impl GenerationOptions {
         //         .expect("Failed to load tree model.");
 
         let mut rng = StdRng::seed_from_u64(seed);
+        let oak_seed = rng.random();
 
         Self {
             seed,
@@ -69,7 +70,7 @@ impl GenerationOptions {
                             get_seeded_white_noise(),
                             rng.random(),
                         ),
-                        &mut rng,
+                        &mut StdRng::seed_from_u64(oak_seed),
                     ),
                 ))),
                 Arc::new(Box::new(StructureGenerators::Oak(
@@ -81,7 +82,7 @@ impl GenerationOptions {
                             get_seeded_white_noise(),
                             rng.random(),
                         ),
-                        &mut rng,
+                        &mut StdRng::seed_from_u64(oak_seed),
                     ),
                 ))),
                 Arc::new(Box::new(StructureGenerators::Oak(
@@ -93,7 +94,7 @@ impl GenerationOptions {
                             get_seeded_white_noise(),
                             rng.random(),
                         ),
-                        &mut rng,
+                        &mut StdRng::seed_from_u64(oak_seed),
                     ),
                 ))),
                 // Arc::new(Box::new(FixedStructureGenerator {

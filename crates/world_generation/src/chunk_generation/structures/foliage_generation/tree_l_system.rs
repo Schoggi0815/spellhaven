@@ -2,7 +2,7 @@ use crate::chunk_generation::{
     VOXEL_SIZE, block_type::BlockType,
     structures::foliage_generation::entry_range::EntryRange,
 };
-use bevy::math::Vec3;
+use bevy::math::{USizeVec3, Vec3};
 use rand::{Rng, rngs::StdRng};
 use utils::{
     cartesian_product::cube_cartesian_product,
@@ -20,11 +20,12 @@ pub struct LSystemEntry<EntryEnum> {
 ///
 /// See [L-System](https://en.wikipedia.org/wiki/L-system) for more information.
 pub trait LSystem<EntryEnum: Clone + Copy, GrowOptions> {
-    fn grow_new<const XSIZE: usize, const YSIZE: usize, const ZSIZE: usize>(
+    fn grow_new(
         rng: &mut StdRng,
         grow_options: &GrowOptions,
+        size: USizeVec3,
     ) -> Vec<Vec<Vec<BlockType>>> {
-        let pos = Vec3::new(XSIZE as f32 / 2., 0., ZSIZE as f32 / 2.);
+        let pos = Vec3::new(size.x as f32 / 2., 0., size.z as f32 / 2.);
         let pos_offset = Vec3 {
             x: rng.random(),
             y: 0.,
@@ -37,11 +38,11 @@ pub trait LSystem<EntryEnum: Clone + Copy, GrowOptions> {
 
         let mut voxel_grid = vec![];
 
-        for x in 0..ZSIZE {
+        for x in 0..size.z {
             voxel_grid.push(vec![]);
-            for y in 0..YSIZE {
+            for y in 0..size.y {
                 voxel_grid[x].push(vec![]);
-                for _ in 0..XSIZE {
+                for _ in 0..size.x {
                     voxel_grid[x][y].push(BlockType::Air);
                 }
             }
@@ -60,11 +61,11 @@ pub trait LSystem<EntryEnum: Clone + Copy, GrowOptions> {
                 let current_pos = current_pos_i.as_vec3();
 
                 if current_pos_i.x < 0
-                    || current_pos_i.x >= XSIZE as i32
+                    || current_pos_i.x >= size.x as i32
                     || current_pos_i.y < 0
-                    || current_pos_i.y >= YSIZE as i32
+                    || current_pos_i.y >= size.y as i32
                     || current_pos_i.z < 0
-                    || current_pos_i.z >= ZSIZE as i32
+                    || current_pos_i.z >= size.z as i32
                 {
                     continue;
                 }
