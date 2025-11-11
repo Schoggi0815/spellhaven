@@ -87,10 +87,10 @@ fn setup(
         Player { fly: false },
         Owner::new(PlayerRotation::default()),
         Owner::new(NetworkPhysicsObject::default()),
-        // Mesh3d(meshes.add(Cuboid::new(1., 2., 1.))),
-        // MeshMaterial3d(
-        //     materials.add(StandardMaterial::from_color(Color::WHITE)),
-        // ),
+        Mesh3d(meshes.add(Cuboid::new(1., 2., 1.))),
+        MeshMaterial3d(
+            materials.add(StandardMaterial::from_color(Color::WHITE)),
+        ),
         Name::new("Player"),
     ));
 

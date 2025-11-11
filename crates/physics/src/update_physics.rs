@@ -67,10 +67,7 @@ pub fn update_physics(
             dynamic_velocity.x = 0.;
         }
 
-        if dynamic_object.touching_sides.y < 0 {
-            dynamic_velocity.y =
-                (new_pos.y - dynamic_position.y) / time.delta_secs();
-        } else if dynamic_object.touching_sides.y != 0 {
+        if dynamic_object.touching_sides.y != 0 {
             dynamic_velocity.y = 0.;
         }
 

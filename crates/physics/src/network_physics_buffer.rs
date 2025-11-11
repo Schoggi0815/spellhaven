@@ -3,18 +3,22 @@ use bevy_hookup_core::shared::Shared;
 
 use crate::network_physics_object::NetworkPhysicsObject;
 
-#[derive(Component, Default, Debug)]
+const BUFFER_SIZE: usize = 4;
+
+#[derive(Component, Default, Debug, Reflect)]
 pub struct NetworkPhysicsBuffer {
-    pub buffer: [Vec3; 4],
+    pub buffer: [Vec3; BUFFER_SIZE + 1],
     pub current_network_index: u64,
     pub latest_velocity: Vec3,
 }
 
 impl NetworkPhysicsBuffer {
     fn next(&mut self, next_pos: Vec3) {
-        self.buffer =
-            [self.buffer[1], self.buffer[2], self.buffer[3], next_pos];
-        self.current_network_index += 1;
+        for i in (0..BUFFER_SIZE) {
+            self.buffer[i] = self.buffer[i + 1];
+        }
+
+        self.buffer[BUFFER_SIZE] = next_pos;
     }
 
     fn actual_position(&self, lerp: f32) -> Vec3 {
@@ -31,7 +35,7 @@ pub fn add_buffer(
 ) {
     for (entity, network_object) in shared_physics {
         commands.entity(entity).insert(NetworkPhysicsBuffer {
-            buffer: [network_object.position; 4],
+            buffer: [network_object.position; BUFFER_SIZE + 1],
             current_network_index: network_object.update_index,
             latest_velocity: network_object.velocity,
         });
@@ -46,26 +50,28 @@ pub fn update_network_physics_buffer(
     time: Res<Time>,
 ) {
     for (mut network_buffer, network_object) in smoothings {
-        if network_object.update_index
-            == network_buffer.current_network_index + 1
+        if network_object.is_changed()
+            && network_object.update_index
+                > network_buffer.current_network_index
         {
+            network_buffer.current_network_index = network_object.update_index;
             network_buffer.next(network_object.position);
             network_buffer.latest_velocity = network_object.velocity;
             continue;
         }
 
-        let next_pos = network_buffer.buffer[3]
+        let next_pos = network_buffer.buffer[BUFFER_SIZE]
             + network_buffer.latest_velocity * time.delta_secs();
         network_buffer.next(next_pos);
 
         if network_object.is_changed()
-            && network_buffer.current_network_index >= 3
+            && network_buffer.current_network_index >= BUFFER_SIZE as u64
             && network_object.update_index
-                >= network_buffer.current_network_index - 3
+                >= network_buffer.current_network_index - BUFFER_SIZE as u64
             && network_object.update_index
                 < network_buffer.current_network_index
         {
-            let buffer_index = 3 + network_object.update_index
+            let buffer_index = BUFFER_SIZE as u64 + network_object.update_index
                 - network_buffer.current_network_index;
 
             network_buffer.buffer[buffer_index as usize] =
