@@ -3,11 +3,11 @@ use bevy_hookup_core::receive_component_set::ReceiveComponentSet;
 use bevy_hookup_core::send_component_systems::SendComponentSystems;
 
 use crate::{
-    network_physics_object::{NetworkPhysicsObject, update_network_physics},
-    network_physics_smoothing::{
-        add_smoothing, move_network_physics_smoothed,
-        update_network_physics_smoothing,
+    network_physics_buffer::{
+        add_buffer, move_network_physics_buffered,
+        update_network_physics_buffer,
     },
+    network_physics_object::{NetworkPhysicsObject, update_network_physics},
     physics_position::PhysicsPosition,
     physics_previous_position::PhysicsPreviousPosition,
     physics_systems::PhysicsSystems,
@@ -25,22 +25,22 @@ impl Plugin for PhysicsPlugin {
                 update_network_physics.after(PhysicsSystems).before(
                     SendComponentSystems::<NetworkPhysicsObject>::default(),
                 ),
-                update_network_physics_smoothing
+                update_network_physics_buffer
                     .after(
                         ReceiveComponentSet::<NetworkPhysicsObject>::default(),
                     ),
-                add_smoothing
+                add_buffer
                     .after(
                         ReceiveComponentSet::<NetworkPhysicsObject>::default(),
                     )
-                    .before(update_network_physics_smoothing),
+                    .before(update_network_physics_buffer),
             ),
         )
         .add_systems(
             Update,
             (
                 update_transform_position.in_set(PhysicsSystems),
-                move_network_physics_smoothed,
+                move_network_physics_buffered,
             ),
         );
     }
