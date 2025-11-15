@@ -36,6 +36,7 @@ pub fn update_network_physics_smoothing(
 ) {
     for (mut network_smoothing, network_object) in smoothings {
         if network_object.update_index < network_smoothing.index {
+            warn!("Order of updates backwards!");
             continue;
         }
         let index_difference =
