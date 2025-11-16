@@ -884,9 +884,9 @@ dependencies = [
 
 [[package]]
 name = "bevy_hookup_core"
-version = "4.6.0"
+version = "5.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "890f49800a5acc3ed56ee80b5352ded31b1161e08bdfb7e1d84f3981f5e420fe"
+checksum = "db9a85cb84f3b56111a26b9aa9d256ad551ae3e57222d5062e853383e5b0dc4d"
 dependencies = [
  "bevy",
  "crossbeam",
@@ -906,21 +906,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "bevy_hookup_messenger_self"
-version = "2.2.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5a296b5673e15433135cfdb78d5236eab52d0c994c064c186562f420cc1d2b3b"
-dependencies = [
- "bevy",
- "bevy_hookup_core",
- "crossbeam",
-]
-
-[[package]]
 name = "bevy_hookup_messenger_websocket"
-version = "2.4.0"
+version = "2.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e9840e46fef70a0ad54f8f3550a4e260528c32bb3325101a510c25f6c68bf339"
+checksum = "24e2c0df04260ff156c27a2ec5325a689836a31ad20604142523e99b314c0809"
 dependencies = [
  "bevy",
  "bevy_hookup_core",
@@ -3812,7 +3801,6 @@ dependencies = [
  "bevy",
  "bevy_hookup_core",
  "bevy_hookup_macros",
- "bevy_hookup_messenger_self",
  "bevy_hookup_messenger_websocket",
  "physics",
  "player",
@@ -5069,7 +5057,6 @@ dependencies = [
  "bevy_egui",
  "bevy_hookup_core",
  "bevy_hookup_macros",
- "bevy_hookup_messenger_self",
  "bevy_hookup_messenger_websocket",
  "bevy_panorbit_camera",
  "bitflags 2.9.4",
@@ -5556,7 +5543,6 @@ dependencies = [
  "bevy",
  "bevy-inspector-egui",
  "bevy_hookup_core",
- "bevy_hookup_messenger_self",
  "networking",
  "world_generation",
 ]

@@ -10,7 +10,7 @@ pub enum Sendables {
     #[sendable]
     GenerationOptions(GenerationOptions),
     #[sendable]
-    PlayerPosition(PlayerRotation),
+    PlayerRotation(PlayerRotation),
     #[sendable]
     NetworkPhysicsObject(NetworkPhysicsObject),
 }

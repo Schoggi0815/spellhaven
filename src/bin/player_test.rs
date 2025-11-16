@@ -9,22 +9,22 @@ use bevy::{
 };
 use bevy_egui::EguiPlugin;
 use bevy_hookup_core::{
-    hook_session::SessionMessenger, owner_component::Owner,
-    sync_entity::SyncEntityOwner,
+    from_session::FromSession,
+    receive_component_systems::ReceiveComponentSystems,
 };
-use bevy_hookup_messenger_self::self_session::SelfSession;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_panorbit_camera::{PanOrbitCamera, PanOrbitCameraPlugin};
 use debug_tools::{
     debug_plugin::SpellhavenDebugPlugin, physics_debug::PhysicsDebugResource,
 };
-use networking::{networking_plugin::NetworkingPlugin, sendables::Sendables};
 use physics::{
     collider::Collider,
     network_physics_object::NetworkPhysicsObject,
     physics_object::{DynamicPhysicsObject, StaticPhysicsObject},
     physics_plugin::PhysicsPlugin,
     physics_position::PhysicsPosition,
+    physics_systems::PhysicsSystems,
+    physics_velocity::PhysicsVelocity,
 };
 use player::{
     player_component::{Player, PlayerCamera, PlayerRotation},
@@ -49,11 +49,16 @@ fn main() {
             PlayerPlugin,
             EguiPlugin::default(),
             WorldInspectorPlugin::new(),
-            NetworkingPlugin,
             SpellhavenDebugPlugin,
         ))
         .init_resource::<PhysicsDebugResource>()
         .add_systems(Startup, setup)
+        .add_systems(
+            FixedUpdate,
+            mock_network.after(PhysicsSystems).in_set(
+                ReceiveComponentSystems::<NetworkPhysicsObject>::default(),
+            ),
+        )
         .run();
 }
 
@@ -83,15 +88,19 @@ fn setup(
         PhysicsPosition(spawn_point),
         Transform::from_translation(spawn_point),
         Collider::aabb(Vec3::new(0.8, 1.8, 0.8), Vec3::ZERO),
-        SyncEntityOwner::new(),
         Player { fly: false },
-        Owner::new(PlayerRotation::default()),
-        Owner::new(NetworkPhysicsObject::default()),
+        PlayerRotation::default(),
+        Name::new("Player"),
+    ));
+
+    commands.spawn((
+        NetworkPhysicsObject::default(),
+        FromSession::default(),
+        PlayerRotation::default(),
         Mesh3d(meshes.add(Cuboid::new(1., 2., 1.))),
         MeshMaterial3d(
             materials.add(StandardMaterial::from_color(Color::WHITE)),
         ),
-        Name::new("Player"),
     ));
 
     commands.spawn((
@@ -125,8 +134,6 @@ fn setup(
         Name::new("PlayerCamera"),
     ));
 
-    commands.spawn(SelfSession::<Sendables>::new().to_session());
-
     commands.spawn((
         DirectionalLight {
             shadows_enabled: true,
@@ -152,4 +159,22 @@ fn setup(
         brightness: lux::FULL_DAYLIGHT,
         ..default()
     });
+}
+
+fn mock_network(
+    player: Single<
+        (&PhysicsPosition, &PhysicsVelocity, &PlayerRotation),
+        Without<NetworkPhysicsObject>,
+    >,
+    mut mock: Single<(&mut NetworkPhysicsObject, &mut PlayerRotation)>,
+) {
+    mock.1.0 = player.2.0;
+
+    if mock.0.position == **player.0 && mock.0.velocity == **player.1 {
+        return;
+    }
+
+    mock.0.position = **player.0;
+    mock.0.velocity = **player.1;
+    mock.0.update_index += 1;
 }

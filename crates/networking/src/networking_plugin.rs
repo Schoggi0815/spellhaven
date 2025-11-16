@@ -1,12 +1,11 @@
 use bevy::{ecs::system::NonSendMarker, prelude::*};
 use bevy_hookup_core::{
-    hook_session::SessionMessenger,
     hookup_component_plugin::HookupComponentPlugin,
-    hookup_sendable_plugin::HookupSendablePlugin, owner_component::Owner,
+    hookup_sendable_plugin::HookupSendablePlugin,
     reshare_component_plugin::ReshareComponentPlugin,
-    reshare_entity_plugin::ReshareEntityPlugin, sync_entity::SyncEntityOwner,
+    reshare_entity_plugin::ReshareEntityPlugin,
+    share_component::ShareComponent, sync_entity::SyncEntityOwner,
 };
-use bevy_hookup_messenger_self::self_session::SelfSession;
 use bevy_hookup_messenger_websocket::{
     websocket_client::WebsocketClient,
     websocket_client_plugin::WebsocketClientPlugin,
@@ -39,7 +38,8 @@ impl Plugin for NetworkingPlugin {
             HookupComponentPlugin::<Sendables, PlayerRotation>::default(),
             HookupComponentPlugin::<Sendables, NetworkPhysicsObject>::default(),
             ReshareEntityPlugin::<Sendables>::default(),
-            // ReshareComponentPlugin::<Sendables, PlayerPosition>::default(),
+            ReshareComponentPlugin::<NetworkPhysicsObject>::default(),
+            ReshareComponentPlugin::<PlayerRotation>::default(),
         ))
         .add_systems(Update, client_on_connect)
         .add_observer(start_self_session)
@@ -50,7 +50,6 @@ impl Plugin for NetworkingPlugin {
 }
 
 fn start_self_session(_: On<StartSelfSession>, mut commands: Commands) {
-    commands.spawn(SelfSession::<Sendables>::new().to_session());
     commands.trigger(StartWorldGen);
 }
 
@@ -60,7 +59,6 @@ fn start_websocket_server(
     _: NonSendMarker,
 ) {
     commands.spawn(WebsocketServer::<Sendables>::new_with_port(1324));
-    commands.spawn(SelfSession::<Sendables>::new().to_session());
     commands.trigger(StartWorldGen);
 }
 
@@ -69,7 +67,6 @@ fn start_websocket_client(
     mut commands: Commands,
     _: NonSendMarker,
 ) {
-    commands.spawn(SelfSession::<Sendables>::new().to_session());
     commands.spawn(WebsocketClient::<Sendables>::new_with_host_and_port(
         event.address.clone(),
         1324,
@@ -100,6 +97,7 @@ fn client_on_connect(
 fn create_world(event: On<CreateWorld>, mut commands: Commands) {
     commands.spawn((
         SyncEntityOwner::new(),
-        Owner::new(GenerationOptions::from_seed(event.seed)),
+        GenerationOptions::from_seed(event.seed),
+        ShareComponent::<GenerationOptions>::default(),
     ));
 }

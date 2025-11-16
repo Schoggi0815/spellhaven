@@ -7,7 +7,7 @@ use physics::{
 };
 
 use crate::{
-    player_component::{Player, PlayerCamera},
+    player_component::{Player, PlayerCamera, PlayerRotation},
     player_inputs::PlayerInputs,
 };
 
@@ -17,7 +17,7 @@ pub(super) fn movement(
         &mut Player,
         &mut PhysicsVelocity,
         &mut DynamicPhysicsObject,
-        &mut Transform,
+        &mut PlayerRotation,
     )>,
     player_camera: Query<&PanOrbitCamera, With<PlayerCamera>>,
     time: Res<Time>,
@@ -26,7 +26,7 @@ pub(super) fn movement(
         mut player,
         mut physics_velocity,
         mut physics_object,
-        mut player_transform,
+        mut player_rotation,
     ) in &mut players
     {
         let mut move_direction = Vec3::ZERO;
@@ -76,7 +76,7 @@ pub(super) fn movement(
                 .mul_vec3(move_direction.normalize_or_zero() * movement_speed);
 
             if move_direction.xz() != Vec2::ZERO {
-                player_transform.rotation = Quat::from_rotation_y(
+                player_rotation.0 = Quat::from_rotation_y(
                     -move_direction.xz().to_angle() - PI * 0.5,
                 );
             }

@@ -1,11 +1,12 @@
 use bevy::prelude::*;
-use bevy_hookup_core::shared::Shared;
+use bevy_hookup_core::from_session::FromSession;
 
 use crate::network_physics_object::NetworkPhysicsObject;
 
 const BUFFER_SIZE: usize = 4;
 
 #[derive(Component, Default, Debug, Reflect)]
+#[require(Transform)]
 pub struct NetworkPhysicsBuffer {
     pub buffer: [Vec3; BUFFER_SIZE + 1],
     pub current_network_index: u64,
@@ -14,7 +15,7 @@ pub struct NetworkPhysicsBuffer {
 
 impl NetworkPhysicsBuffer {
     fn next(&mut self, next_pos: Vec3) {
-        for i in (0..BUFFER_SIZE) {
+        for i in 0..BUFFER_SIZE {
             self.buffer[i] = self.buffer[i + 1];
         }
 
@@ -28,8 +29,8 @@ impl NetworkPhysicsBuffer {
 
 pub fn add_buffer(
     shared_physics: Query<
-        (Entity, &Shared<NetworkPhysicsObject>),
-        Without<NetworkPhysicsBuffer>,
+        (Entity, &NetworkPhysicsObject),
+        (Without<NetworkPhysicsBuffer>, With<FromSession>),
     >,
     mut commands: Commands,
 ) {
@@ -43,10 +44,7 @@ pub fn add_buffer(
 }
 
 pub fn update_network_physics_buffer(
-    smoothings: Query<(
-        &mut NetworkPhysicsBuffer,
-        Ref<Shared<NetworkPhysicsObject>>,
-    )>,
+    smoothings: Query<(&mut NetworkPhysicsBuffer, Ref<NetworkPhysicsObject>)>,
     time: Res<Time>,
 ) {
     for (mut network_buffer, network_object) in smoothings {

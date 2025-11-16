@@ -1,21 +1,20 @@
 use bevy::prelude::*;
-use bevy_hookup_core::owner_component::Owner;
 use serde::{Deserialize, Serialize};
 
 use crate::{
     physics_position::PhysicsPosition, physics_velocity::PhysicsVelocity,
 };
 
-#[derive(Clone, Debug, Serialize, Deserialize, Default)]
+#[derive(Clone, Reflect, Debug, Serialize, Deserialize, Default, Component)]
 pub struct NetworkPhysicsObject {
     pub position: Vec3,
     pub velocity: Vec3,
-    pub update_index: u64
+    pub update_index: u64,
 }
 
 pub fn update_network_physics(
     player: Single<(
-        &mut Owner<NetworkPhysicsObject>,
+        &mut NetworkPhysicsObject,
         &PhysicsPosition,
         &PhysicsVelocity,
     )>,

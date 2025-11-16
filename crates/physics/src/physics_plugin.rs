@@ -1,6 +1,8 @@
 use bevy::prelude::*;
-use bevy_hookup_core::receive_component_set::ReceiveComponentSet;
-use bevy_hookup_core::send_component_systems::SendComponentSystems;
+use bevy_hookup_core::{
+    receive_component_systems::ReceiveComponentSystems,
+    send_component_systems::SendComponentSystems,
+};
 
 use crate::{
     network_physics_buffer::{
@@ -27,11 +29,11 @@ impl Plugin for PhysicsPlugin {
                 ),
                 update_network_physics_buffer
                     .after(
-                        ReceiveComponentSet::<NetworkPhysicsObject>::default(),
+                        ReceiveComponentSystems::<NetworkPhysicsObject>::default(),
                     ),
                 add_buffer
                     .after(
-                        ReceiveComponentSet::<NetworkPhysicsObject>::default(),
+                        ReceiveComponentSystems::<NetworkPhysicsObject>::default(),
                     )
                     .before(update_network_physics_buffer),
             ),

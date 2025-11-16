@@ -8,7 +8,7 @@ use bevy::{
 };
 use bevy_egui::PrimaryEguiContext;
 use bevy_hookup_core::{
-    owner_component::Owner, shared::Shared, sync_entity::SyncEntityOwner,
+    share_component::ShareComponent, sync_entity::SyncEntityOwner,
 };
 use bevy_panorbit_camera::PanOrbitCamera;
 use physics::{
@@ -28,7 +28,9 @@ pub struct Player {
     pub fly: bool,
 }
 
-#[derive(Clone, Serialize, Deserialize, Deref, DerefMut, Default)]
+#[derive(
+    Clone, Serialize, Deserialize, Deref, DerefMut, Default, Component,
+)]
 pub struct PlayerRotation(pub Quat);
 
 #[derive(Component)]
@@ -72,11 +74,13 @@ pub(super) fn spawn_player(
         Collider::aabb(Vec3::new(0.8, 1.8, 0.8), Vec3::ZERO),
         SyncEntityOwner::new(),
         Player { fly: false },
-        Owner::new(NetworkPhysicsObject {
+        NetworkPhysicsObject {
             position: spawn_point,
             ..default()
-        }),
-        Owner::new(PlayerRotation::default()),
+        },
+        ShareComponent::<NetworkPhysicsObject>::default(),
+        PlayerRotation::default(),
+        ShareComponent::<PlayerRotation>::default(),
         ChunkLoader::default(),
         Name::new("Player"),
     ));
@@ -119,7 +123,7 @@ pub(super) fn spawn_player(
 pub(super) fn spawn_player_body(
     players_without_body: Query<
         Entity,
-        (With<Shared<PlayerRotation>>, Without<PlayerBody>),
+        (With<PlayerRotation>, Without<PlayerBody>),
     >,
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
