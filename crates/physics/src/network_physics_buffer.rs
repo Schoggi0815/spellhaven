@@ -18,7 +18,6 @@ pub struct NetworkPhysicsBuffer {
 impl NetworkPhysicsBuffer {
     fn try_pop(&mut self) {
         let Some(first) = self.buffer[0] else {
-            info!("Skipping one buffer cycle");
             return;
         };
 
@@ -35,10 +34,6 @@ impl NetworkPhysicsBuffer {
 
     fn set_position(&mut self, network_index: u64, position: Vec3) {
         let array_index = (network_index - self.current_network_index) as usize;
-        info!(
-            "network: {}, current_network: {}",
-            network_index, self.current_network_index
-        );
 
         if array_index < BUFFER_SIZE {
             self.buffer[array_index] = Some(position);
@@ -60,7 +55,6 @@ impl NetworkPhysicsBuffer {
 
         let shift = array_index - BUFFER_SIZE + 1;
         let array_index = BUFFER_SIZE - 1;
-        info!("Shifting up buffer by: {}", shift);
 
         let (latest_position, latest_index) = self.get_latest();
         let latest_index = latest_index - shift as i32;
