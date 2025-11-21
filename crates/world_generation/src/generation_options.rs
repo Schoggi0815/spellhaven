@@ -28,7 +28,7 @@ fn get_seeded_white_noise() -> TerrainNoise {
     )
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize, Component)]
 pub struct GenerationOptions {
     pub seed: u64,
     pub structure_generators: Vec<Arc<Box<StructureGenerators>>>,

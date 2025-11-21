@@ -1,4 +1,4 @@
 use bevy::prelude::*;
 
 #[derive(Component, Default, Deref, DerefMut)]
-pub struct PhysicsPosition(pub Vec3);
+pub struct PhysicsVelocity(Vec3);

@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use bevy_hookup_core::{owner_component::Owner, shared::Shared};
 use debug_resource::debug_resource::SpellhavenDebugResource;
 use noise::{Add, Constant, NoiseFn};
 use player::player_component::Player;
@@ -23,9 +22,9 @@ pub fn setup_gizmo_settings(mut config: ResMut<GizmoConfigStore>) {
 
 pub fn draw_path_gizmos(
     mut gizmos: Gizmos,
-    generation_options: Single<&Shared<GenerationOptions>>,
+    generation_options: Single<&GenerationOptions>,
     country_cache: Res<CountryCache>,
-    players: Query<&Transform, With<Owner<Player>>>,
+    players: Query<&Transform, With<Player>>,
     debug_resource: Res<SpellhavenDebugResource>,
 ) {
     if !debug_resource.show_path_debug {

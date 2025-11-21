@@ -8,12 +8,12 @@ use bevy::{
 };
 use bevy_egui::PrimaryEguiContext;
 use bevy_hookup_core::{
-    owner_component::Owner, shared::Shared, sync_entity::SyncEntityOwner,
+    share_component::ShareComponent, sync_entity::SyncEntityOwner,
 };
 use bevy_panorbit_camera::PanOrbitCamera;
 use physics::{
-    collider::Collider, physics_object::DynamicPhysicsObject,
-    physics_position::PhysicsPosition,
+    collider::Collider, network_physics_object::NetworkPhysicsObject,
+    physics_object::DynamicPhysicsObject, physics_position::PhysicsPosition,
 };
 
 use serde::{Deserialize, Serialize};
@@ -23,16 +23,21 @@ use world_generation::{
 
 use crate::player_state::PlayerState;
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Component)]
 pub struct Player {
     pub fly: bool,
 }
+
+#[derive(
+    Clone, Serialize, Deserialize, Deref, DerefMut, Default, Component,
+)]
+pub struct PlayerRotation(pub Quat);
 
 #[derive(Component)]
 pub(super) struct PlayerBody;
 
 #[derive(Component)]
-pub(super) struct PlayerCamera;
+pub struct PlayerCamera;
 
 pub(super) fn spawn_player(
     _: On<WorldReady>,
@@ -64,15 +69,18 @@ pub(super) fn spawn_player(
             step_height: 0.6,
             ..Default::default()
         },
-        PhysicsPosition {
-            position: spawn_point,
-            ..Default::default()
-        },
+        PhysicsPosition(spawn_point),
         Transform::from_translation(spawn_point),
         Collider::aabb(Vec3::new(0.8, 1.8, 0.8), Vec3::ZERO),
         SyncEntityOwner::new(),
-        Owner::new(Player { fly: false }),
-        Owner::new(Transform::from_translation(spawn_point)),
+        Player { fly: false },
+        NetworkPhysicsObject {
+            position: spawn_point,
+            ..default()
+        },
+        ShareComponent::<NetworkPhysicsObject>::default(),
+        PlayerRotation::default(),
+        ShareComponent::<PlayerRotation>::default(),
         ChunkLoader::default(),
         Name::new("Player"),
     ));
@@ -115,7 +123,7 @@ pub(super) fn spawn_player(
 pub(super) fn spawn_player_body(
     players_without_body: Query<
         Entity,
-        (With<Shared<Player>>, Without<PlayerBody>),
+        (With<PlayerRotation>, Without<PlayerBody>),
     >,
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,

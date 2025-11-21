@@ -5,6 +5,15 @@
       <sourceFolder url="file://$MODULE_DIR$/benches" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/debug_resource/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/debug_tools/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/main_menu/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/networking/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/physics/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/player/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/ui/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/utils/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crates/world_generation/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />

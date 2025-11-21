@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use bevy_hookup_core::shared::Shared;
 use itertools::Itertools;
 
 use crate::{
@@ -27,7 +26,7 @@ pub struct ChunkStart {
 pub fn queue_chunk_tasks(
     mut commands: Commands,
     mut country_cache: ResMut<CountryCache>,
-    generation_options: Single<&Shared<GenerationOptions>>,
+    generation_options: Single<&GenerationOptions>,
     chunk_starts: Query<(&ChunkStart, Entity)>,
     chunk_tasks: Query<(), With<ChunkTask>>,
     chunk_task_pool: Res<ChunkTaskPool>,
@@ -64,7 +63,7 @@ pub fn queue_chunk_tasks(
         };
 
         currently_added_tasks += 1;
-        let generation_options = generation_options.inner.clone();
+        let generation_options = generation_options.clone();
         let lod_pos = chunk_start.chunk_lod_pos;
         let tree_pos = chunk_start.chunk_tree_pos;
         let stack_height = chunk_start.chunk_stack_offset;

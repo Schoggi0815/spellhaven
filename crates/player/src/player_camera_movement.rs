@@ -1,15 +1,14 @@
 use bevy::prelude::*;
-use bevy_hookup_core::owner_component::Owner;
 use bevy_panorbit_camera::PanOrbitCamera;
 use debug_resource::debug_resource::SpellhavenDebugResource;
 
 use crate::player_component::{Player, PlayerCamera};
 
 pub(super) fn move_camera(
-    player: Query<&Transform, (With<Owner<Player>>, Without<PlayerCamera>)>,
+    player: Query<&Transform, (With<Player>, Without<PlayerCamera>)>,
     mut camera: Query<
         &mut PanOrbitCamera,
-        (With<PlayerCamera>, Without<Owner<Player>>),
+        (With<PlayerCamera>, Without<Player>),
     >,
     options: Res<SpellhavenDebugResource>,
 ) {

@@ -21,7 +21,7 @@ pub fn render_physics_debug(
     for (collider, position) in colliders_dynamic {
         for aabb in collider.get_aabbs() {
             gizmos.cuboid(
-                Transform::from_translation(position.position + aabb.offset)
+                Transform::from_translation(**position + aabb.offset)
                     .with_scale(aabb.size),
                 Color::hsl(100., 1., 0.5),
             );
@@ -31,10 +31,7 @@ pub fn render_physics_debug(
     for (collider, transform) in colliders_static {
         let min_distance = colliders_dynamic
             .iter()
-            .map(|d| {
-                d.1.position.distance_squared(transform.translation).ceil()
-                    as i32
-            })
+            .map(|d| d.1.distance_squared(transform.translation).ceil() as i32)
             .min();
 
         let Some(min_distance) = min_distance else {
