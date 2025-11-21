@@ -6,3 +6,5 @@ edition = "2024"
 bevy.workspace = true
 itertools.workspace = true
 utils.workspace = true
+bevy_hookup_core.workspace = true
+serde.workspace = true
