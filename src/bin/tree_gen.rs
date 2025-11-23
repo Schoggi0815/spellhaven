@@ -92,6 +92,9 @@ fn setup(
 
     commands.spawn((
         Camera3d::default(),
+        Camera {
+            ..Default::default()
+        },
         ColorGrading {
             global: ColorGradingGlobal {
                 post_saturation: 1.2,
@@ -145,7 +148,10 @@ fn spawn_mesh(
             Name::new("Chunk"),
             Mesh3d(meshes.add(mesh)),
             MeshMaterial3d(materials.add(ExtendedMaterial {
-                base: Color::WHITE.into(),
+                base: StandardMaterial {
+                    perceptual_roughness: 1.,
+                    ..Default::default()
+                },
                 extension: TerrainMaterial {
                     chunk_position: chunk_pos.as_vec3(),
                     lod_multiplier: ChunkLod::Full.multiplier_i32() as u32,

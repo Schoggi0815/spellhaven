@@ -6,6 +6,7 @@ use crate::chunk_generation::{
     },
     structures::{
         oak_structure_generator::OakStructureGenerator,
+        pine_structure_generator::PineStructureGenerator,
         structure_generator::VoxelStructureMetadata,
         structure_generators::StructureGenerators,
         tree_structure_generator::TreeStructureGenerator,
@@ -55,6 +56,7 @@ impl GenerationOptions {
 
         let mut rng = StdRng::seed_from_u64(seed);
         let oak_seed = rng.random();
+        let pine_seed = rng.random();
 
         Self {
             seed,
@@ -95,6 +97,18 @@ impl GenerationOptions {
                             rng.random(),
                         ),
                         &mut StdRng::seed_from_u64(oak_seed),
+                    ),
+                ))),
+                Arc::new(Box::new(StructureGenerators::Pine(
+                    PineStructureGenerator::new(
+                        VoxelStructureMetadata::new(
+                            [27, 48, 27],
+                            [64, 64],
+                            [12, 28],
+                            get_seeded_white_noise(),
+                            rng.random(),
+                        ),
+                        &mut StdRng::seed_from_u64(pine_seed),
                     ),
                 ))),
                 // Arc::new(Box::new(FixedStructureGenerator {

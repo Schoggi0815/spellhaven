@@ -59,12 +59,12 @@ impl BlockType {
         match self {
             BlockType::Air => Color::NONE,
             BlockType::Stone => Color::linear_rgb(0.2, 0.2, 0.2),
-            BlockType::Grass => Color::linear_rgb(0.1, 0.5, 0.05),
+            BlockType::Grass => Color::linear_rgb(0.05, 0.2, 0.025),
             BlockType::Log => Color::linear_rgb(0.3, 0.15, 0.0),
             BlockType::Snow => Color::linear_rgb(0.9, 0.9, 0.9),
             BlockType::Leaf => Color::linear_rgb(0.2, 0.5, 0.2),
             BlockType::Dirt => Color::linear_rgb(0.3, 0.2, 0.0),
-            BlockType::PineLog => Color::linear_rgb(0.005, 0.002, 0.0),
+            BlockType::PineLog => Color::linear_rgb(0.0075, 0.002, 0.0),
             BlockType::PineNeedle => Color::linear_rgb(0.003, 0.015, 0.002),
         }
     }

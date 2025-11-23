@@ -1,6 +1,6 @@
 use std::f32::consts::PI;
 
-use bevy::math::{Quat, Vec3, Vec3Swizzles};
+use bevy::math::{Quat, Vec3};
 use rand::{Rng, rngs::StdRng};
 use utils::rotation::{RotationDirection, rotate_around};
 

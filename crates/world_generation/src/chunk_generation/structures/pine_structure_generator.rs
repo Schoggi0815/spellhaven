@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use rand::rngs::StdRng;
+use serde::{Deserialize, Serialize};
 
 use crate::chunk_generation::{
     block_type::BlockType,
@@ -13,6 +14,7 @@ use crate::chunk_generation::{
     },
 };
 
+#[derive(Clone, Serialize, Deserialize)]
 pub struct PineStructureGenerator {
     pub fixed_structure_metadata: VoxelStructureMetadata,
 }

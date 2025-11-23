@@ -7,6 +7,7 @@ use crate::chunk_generation::{
     chunk_lod::ChunkLod,
     structures::{
         oak_structure_generator::OakStructureGenerator,
+        pine_structure_generator::PineStructureGenerator,
         structure_generator::{StructureGenerator, VoxelStructureMetadata},
     },
 };
@@ -14,12 +15,14 @@ use crate::chunk_generation::{
 #[derive(Clone, Serialize, Deserialize)]
 pub enum StructureGenerators {
     Oak(OakStructureGenerator),
+    Pine(PineStructureGenerator),
 }
 
 impl StructureGenerator for StructureGenerators {
     fn get_structure_metadata(&self) -> &VoxelStructureMetadata {
         match self {
             Self::Oak(sg) => sg.get_structure_metadata(),
+            Self::Pine(sg) => sg.get_structure_metadata(),
         }
     }
 
@@ -30,6 +33,7 @@ impl StructureGenerator for StructureGenerators {
     ) -> Rc<Vec<Vec<Vec<BlockType>>>> {
         match self {
             Self::Oak(sg) => sg.get_structure_model(structure_position, lod),
+            Self::Pine(sg) => sg.get_structure_model(structure_position, lod),
         }
     }
 }
