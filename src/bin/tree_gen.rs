@@ -194,7 +194,7 @@ fn get_tree_voxel_data() -> Vec<(Box<VoxelData>, IVec3)> {
 
     let seed = rng().random();
 
-    let tree_generator = OakStructureGenerator::new(
+    let tree_generator = PineStructureGenerator::new(
         VoxelStructureMetadata::new(
             [45, 45, 45],
             [0, 0],

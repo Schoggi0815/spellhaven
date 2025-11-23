@@ -29,6 +29,8 @@ pub fn generate_mesh(
             BlockType::Stone,
             BlockType::Grass,
             BlockType::Log,
+            BlockType::PineLog,
+            BlockType::PineNeedle,
             BlockType::Snow,
             BlockType::Dirt,
             BlockType::Leaf,

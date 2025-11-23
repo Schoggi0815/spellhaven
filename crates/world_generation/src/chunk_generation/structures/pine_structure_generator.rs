@@ -5,7 +5,8 @@ use crate::chunk_generation::{
     block_type::BlockType,
     structures::{
         foliage_generation::{
-            pine_l_system::PineLSystem, tree_l_system::LSystem,
+            pine_l_system::PineLSystem, pine_options::PineOptions,
+            tree_l_system::LSystem,
         },
         structure_generator::VoxelStructureMetadata,
         tree_structure_generator::TreeStructureGenerator,
@@ -36,7 +37,7 @@ impl TreeStructureGenerator for PineStructureGenerator {
     ) -> Vec<Vec<Vec<BlockType>>> {
         PineLSystem::grow_new(
             rng,
-            &(),
+            &PineOptions {},
             IVec3::from_array(self.fixed_structure_metadata.model_size)
                 .as_usizevec3(),
         )

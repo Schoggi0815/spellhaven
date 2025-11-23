@@ -7,8 +7,10 @@ pub enum BlockType {
     Stone,
     Grass,
     Log,
+    PineLog,
     Snow,
     Leaf,
+    PineNeedle,
     Dirt,
 }
 
@@ -62,6 +64,8 @@ impl BlockType {
             BlockType::Snow => Color::linear_rgb(0.9, 0.9, 0.9),
             BlockType::Leaf => Color::linear_rgb(0.2, 0.5, 0.2),
             BlockType::Dirt => Color::linear_rgb(0.3, 0.2, 0.0),
+            BlockType::PineLog => Color::linear_rgb(0.005, 0.002, 0.0),
+            BlockType::PineNeedle => Color::linear_rgb(0.003, 0.015, 0.002),
         }
     }
 }

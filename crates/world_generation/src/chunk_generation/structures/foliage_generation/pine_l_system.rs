@@ -1,6 +1,6 @@
 use std::f32::consts::PI;
 
-use bevy::math::{Quat, Vec3};
+use bevy::math::{Quat, Vec3, Vec3Swizzles};
 use rand::{Rng, rngs::StdRng};
 use utils::rotation::{RotationDirection, rotate_around};
 
@@ -9,6 +9,7 @@ use crate::chunk_generation::{
     block_type::BlockType,
     structures::foliage_generation::{
         entry_range::EntryRange,
+        pine_options::PineOptions,
         tree_l_system::{LSystem, LSystemEntry},
     },
 };
@@ -34,19 +35,19 @@ pub enum PineEntryType {
     Needle,
 }
 
-impl LSystem<PineEntryType, ()> for PineLSystem {
+impl LSystem<PineEntryType, PineOptions> for PineLSystem {
     fn get_start_state(
         position: Vec3,
         rng: &mut StdRng,
-        _: &(),
+        _: &PineOptions,
     ) -> Vec<LSystemEntry<PineEntryType>> {
         let mut entries = vec![];
 
         let length = (rng.random_range(4.0..6.0) / VOXEL_SIZE) as usize;
         let mut last_length = length;
-        let total_thickness_range: EntryRange = (2.0..0.8).into();
-        let stem_count = 9;
-        let total_branch_thickness_range: EntryRange = (1.0..0.3).into();
+        let total_thickness_range: EntryRange = (3.0..0.8).into();
+        let stem_count = 12;
+        let total_branch_thickness_range: EntryRange = (1.5..0.5).into();
 
         entries.extend(Self::create_straight_piece_dir(
             position,
@@ -79,7 +80,7 @@ impl LSystem<PineEntryType, ()> for PineLSystem {
                 length,
                 PineEntryType::Log,
                 PineEntryType::Stem {
-                    branch_length: 9. - i as f32,
+                    branch_length: stem_count as f32 - i as f32 + 2.,
                     branch_thickness: total_branch_thickness_range
                         .get_sub_range_with_steps(i, stem_count, stem_count),
                 },
@@ -94,15 +95,15 @@ impl LSystem<PineEntryType, ()> for PineLSystem {
     fn process_tree(
         mut start_state: &mut Vec<LSystemEntry<PineEntryType>>,
         rng: &mut StdRng,
-        _: &(),
+        options: &PineOptions,
     ) {
-        while Self::recurse_l_system(&mut start_state, rng, &()) {}
+        while Self::recurse_l_system(&mut start_state, rng, options) {}
     }
 
     fn get_block_from_entry(entry: &LSystemEntry<PineEntryType>) -> BlockType {
         match entry.entry_type {
-            PineEntryType::Needle => BlockType::Grass,
-            _ => BlockType::Log,
+            PineEntryType::Needle => BlockType::PineNeedle,
+            _ => BlockType::PineLog,
         }
     }
 
@@ -110,7 +111,7 @@ impl LSystem<PineEntryType, ()> for PineLSystem {
         entry: &LSystemEntry<PineEntryType>,
         rng: &mut StdRng,
         branches: &mut Vec<LSystemEntry<PineEntryType>>,
-        _: &(),
+        _: &PineOptions,
     ) {
         match entry.entry_type {
             PineEntryType::Stem {
@@ -151,6 +152,8 @@ impl LSystem<PineEntryType, ()> for PineLSystem {
                         &RotationDirection::Y,
                     );
 
+                    let mut branch_start_pos = entry.pos;
+
                     for j in 0..(length / branch_piece_length).ceil() as i32 {
                         let this_pice_length = (length
                             - (branch_piece_length * j as f32))
@@ -162,31 +165,44 @@ impl LSystem<PineEntryType, ()> for PineLSystem {
                             (((j + 1) as f32 * branch_piece_length) / length)
                                 .min(1.0);
 
+                        let mut branch_direction = rotate_around(
+                            &direction,
+                            &Vec3::ZERO,
+                            j as f32 * -20.,
+                            &RotationDirection::Y,
+                        );
+                        branch_direction -= Vec3::Y * j as f32 * -0.1;
+                        branch_direction = branch_direction.normalize();
+
                         branches.extend(Self::create_straight_piece_dir(
-                            entry.pos
-                                + (direction.normalize()
-                                    * branch_piece_length
-                                    * (j as f32))
-                                    / VOXEL_SIZE,
-                            direction,
+                            branch_start_pos,
+                            branch_direction,
                             branch_thickness
                                 .get_sub_range(start_percent, end_percent),
                             (this_pice_length / VOXEL_SIZE) as usize,
-                            PineEntryType::Log,
+                            PineEntryType::SubBranch {
+                                direction: branch_direction,
+                                tip: false,
+                            },
                             PineEntryType::Branch {
-                                direction,
+                                direction: branch_direction,
                                 tip: true,
                                 sub_length: (5. - j as f32) * 2.5,
                             },
                         ));
+
+                        branch_start_pos += (branch_direction.normalize()
+                            * branch_piece_length)
+                            / VOXEL_SIZE;
                     }
                 }
             }
             PineEntryType::Branch { .. } => {}
             PineEntryType::SubBranch { direction, tip } => {
+                let random_angle = rng.random_range(90.0..=91.0);
+                let needle_count = 3;
+
                 let ortho = direction.any_orthonormal_vector();
-                let random_angle = rng.random_range(0.0..0.6);
-                let needle_count = 6;
 
                 for i in 0..needle_count {
                     let rotation = Quat::from_axis_angle(
@@ -203,7 +219,7 @@ impl LSystem<PineEntryType, ()> for PineLSystem {
                         entry.pos + needle_direction,
                         needle_direction,
                         (0.4..0.35).into(),
-                        2,
+                        3,
                         PineEntryType::Needle,
                         PineEntryType::Needle,
                     ));
