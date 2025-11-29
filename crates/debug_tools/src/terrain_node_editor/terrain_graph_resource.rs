@@ -7,12 +7,14 @@ use std::{
 use anyhow::anyhow;
 use bevy::prelude::*;
 use egui::Ui;
-use egui_node_editor::{GraphEditorState, GraphResponse, Node, OutputId};
+use egui_node_editor::{GraphEditorState, Node, NodeResponse, OutputId};
 use ron::ser::PrettyConfig;
+use world_generation::chunk_generation::noise::terrain_noise_group::TerrainNoiseGroup;
 
 use crate::{
     terrain_node_editor::{
         all_terrain_node_templates::AllTerrainNodeTemplates,
+        noise_output_type::NoiseOutputType,
         terrain_data_type::TerrainDataType,
         terrain_node_data::TerrainNodeData,
         terrain_node_template::{TerrainGraph, TerrainNodeTemplate},
@@ -20,7 +22,7 @@ use crate::{
         terrain_value_type::{TerrainValueType, ValueOrIndex},
     },
     world_generation::chunk_generation::noise::{
-        terrain_noise::{TerrainNoise, TERRAIN_NOISE_FILE_PATH},
+        terrain_noise::{TERRAIN_NOISE_FILE_PATH, TerrainNoise},
         terrain_noise_type::TerrainNoiseType,
     },
 };
@@ -66,59 +68,112 @@ impl Default for TerrainGraphResource {
 }
 
 impl TerrainGraphResource {
-    pub fn draw(
-        &mut self,
-        ui: &mut Ui,
-    ) -> GraphResponse<TerrainResponse, TerrainNodeData> {
-        self.state.draw_graph_editor(
+    pub fn draw(&mut self, ui: &mut Ui) {
+        let graph_response = self.state.draw_graph_editor(
             ui,
             AllTerrainNodeTemplates,
             &mut (),
             Vec::default(),
-        )
+        );
+
+        for node_response in graph_response.node_responses {
+            if let NodeResponse::User(user_response) = node_response {
+                match user_response {
+                    TerrainResponse::UpdateOutputType(node_id, output_type) => {
+                        let Some((_, node)) = self
+                            .graph
+                            .nodes
+                            .iter_mut()
+                            .find(|n| n.0 == node_id)
+                        else {
+                            continue;
+                        };
+
+                        match &mut node.user_data.template {
+                            TerrainNodeTemplate::Output(
+                                current_output_type,
+                            ) => *current_output_type = output_type,
+                            _ => {}
+                        }
+                    }
+                }
+            }
+        }
     }
 
     pub fn save(&self) -> Result<(), anyhow::Error> {
-        let output_nodes = self
-            .graph
-            .nodes
-            .iter()
-            .filter(|node| {
-                node.1.user_data.template == TerrainNodeTemplate::Output
-            })
-            .collect::<Vec<_>>();
+        let get_terrain_noise = |output_type: NoiseOutputType| -> Result<TerrainNoise, anyhow::Error> {
+            let output_nodes = self.graph.nodes.iter().find(|node| {
+                node.1.user_data.template
+                    == TerrainNodeTemplate::Output(output_type)
+            });
 
-        if output_nodes.len() != 1 {
-            return Err(anyhow!(
-                "Too many or too little number of output nodes!"
-            ));
-        }
+            let Some(output_node) = output_nodes else {
+                return Err(anyhow!(
+                    "Too many or too little number of output nodes!"
+                ));
+            };
 
-        let output_node = output_nodes.first();
-        let Some(output_node) = output_node else {
-            return Err(anyhow!("No output node found!"));
+            let mut noise_array = Vec::new();
+            let mut cache = HashMap::new();
+
+            let start_index = get_terrain_noise_index(
+                output_node.1,
+                &mut noise_array,
+                &self.graph,
+                &mut cache,
+            );
+
+            Ok(TerrainNoise::new(
+                start_index.get_noise_index(&mut noise_array),
+                noise_array,
+            ))
         };
 
-        let mut noise_array = Vec::new();
-        let mut cache = HashMap::new();
-
-        let start_index = get_terrain_noise_index(
-            output_node.1,
-            &mut noise_array,
-            &self.graph,
-            &mut cache,
-        );
-
-        let terrain_noise = TerrainNoise::new(
-            start_index.get_noise_index(&mut noise_array),
-            noise_array,
-        );
+        let noise_group = TerrainNoiseGroup {
+            terrain_height: get_terrain_noise(NoiseOutputType::TerrainHeight)?,
+            oak_min_thickness: get_terrain_noise(
+                NoiseOutputType::OakMinThickness,
+            )?,
+            oak_max_length: get_terrain_noise(NoiseOutputType::OakMaxLength)?,
+            oak_min_length: get_terrain_noise(NoiseOutputType::OakMinLength)?,
+            oak_max_angle: get_terrain_noise(NoiseOutputType::OakMaxAngle)?,
+            oak_start_thickness: get_terrain_noise(
+                NoiseOutputType::OakStartThickness,
+            )?,
+            oak_start_x_angle: get_terrain_noise(
+                NoiseOutputType::OakStartXAngle,
+            )?,
+            oak_start_y_angle: get_terrain_noise(
+                NoiseOutputType::OakStartYAngle,
+            )?,
+            pine_stem_piece_length: get_terrain_noise(
+                NoiseOutputType::PineStemPieceLength,
+            )?,
+            pine_stem_thickness: get_terrain_noise(
+                NoiseOutputType::PineStemThickness,
+            )?,
+            pine_stem_count: get_terrain_noise(NoiseOutputType::PineStemCount)?,
+            pine_branch_piece_lenght: get_terrain_noise(
+                NoiseOutputType::PineBranchPieceLenght,
+            )?,
+            pine_branch_down_angle: get_terrain_noise(
+                NoiseOutputType::PineBranchDownAngle,
+            )?,
+            pine_branch_spiral: get_terrain_noise(
+                NoiseOutputType::PineBranchSpiral,
+            )?,
+            pine_branch_droop: get_terrain_noise(
+                NoiseOutputType::PineBranchDroop,
+            )?,
+            pine_needle_angle_offset: get_terrain_noise(
+                NoiseOutputType::PineNeedleAngleOffset,
+            )?,
+        };
 
         let mut file = File::create(TERRAIN_NOISE_FILE_PATH)?;
-        let text = ron::ser::to_string_pretty(
-            &terrain_noise,
-            PrettyConfig::default(),
-        )?;
+        let text =
+            ron::ser::to_string_pretty(&noise_group, PrettyConfig::default())?;
         file.write_all(text.as_bytes())?;
         file.flush()?;
 
@@ -158,7 +213,7 @@ fn get_terrain_noise_index(
     };
 
     match node.user_data.template {
-        TerrainNodeTemplate::Output => get_input_value("A"),
+        TerrainNodeTemplate::Output(_) => get_input_value("A"),
         TerrainNodeTemplate::SimplexNoise => {
             let seed_index = get_input_value("seed").get_i64_index(noise_array);
             let noise_index = noise_array.len();
@@ -228,6 +283,29 @@ fn get_terrain_noise_index(
             let b_index = b_input.get_noise_index(noise_array);
             let noise_index = noise_array.len();
             noise_array.push(TerrainNoiseType::Multiply { a_index, b_index });
+            TerrainValueType::NoiseF64x2 {
+                value_or_index: ValueOrIndex::Index(noise_index),
+            }
+        }
+        TerrainNodeTemplate::MapRange => {
+            let base_input = get_input_value("base");
+            let from_min_input = get_input_value("from_min");
+            let from_max_input = get_input_value("from_max");
+            let to_min_input = get_input_value("to_min");
+            let to_max_input = get_input_value("to_max");
+            let base_index = base_input.get_noise_index(noise_array);
+            let from_min_index = from_min_input.get_noise_index(noise_array);
+            let from_max_index = from_max_input.get_noise_index(noise_array);
+            let to_min_index = to_min_input.get_noise_index(noise_array);
+            let to_max_index = to_max_input.get_noise_index(noise_array);
+            let noise_index = noise_array.len();
+            noise_array.push(TerrainNoiseType::MapRange {
+                base_index,
+                from_min_index,
+                from_max_index,
+                to_min_index,
+                to_max_index,
+            });
             TerrainValueType::NoiseF64x2 {
                 value_or_index: ValueOrIndex::Index(noise_index),
             }

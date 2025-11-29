@@ -30,9 +30,7 @@ fn render_terrain_editor(
 ) -> Result {
     let ctx = contexts.ctx_mut()?;
 
-    let _graph_response = egui::CentralPanel::default()
-        .show(ctx, |ui| terrain_graph.draw(ui))
-        .inner;
+    egui::CentralPanel::default().show(ctx, |ui| terrain_graph.draw(ui));
 
     egui::TopBottomPanel::bottom("bottom").show(ctx, |ui| {
         if ui.button("Save").clicked() {

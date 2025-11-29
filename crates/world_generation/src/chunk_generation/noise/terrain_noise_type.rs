@@ -7,8 +7,11 @@ use rand::Rng;
 use serde::{Deserialize, Serialize};
 
 use crate::chunk_generation::{
-    noise::{gradient_fractal_noise::GFT, smooth_step::SmoothStep},
     VOXEL_SIZE,
+    noise::{
+        gradient_fractal_noise::GFT, map_range::MapRange,
+        smooth_step::SmoothStep,
+    },
 };
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -41,6 +44,13 @@ pub enum TerrainNoiseType {
     Multiply {
         a_index: usize,
         b_index: usize,
+    },
+    MapRange {
+        base_index: usize,
+        from_min_index: usize,
+        from_max_index: usize,
+        to_min_index: usize,
+        to_max_index: usize,
     },
     SmoothStep {
         noise_index: usize,
@@ -150,6 +160,19 @@ impl TerrainNoiseType {
                     noise_types[*b_index].to_noise_fn(noise_types, rng),
                 ))
             }
+            TerrainNoiseType::MapRange {
+                base_index,
+                from_min_index,
+                from_max_index,
+                to_min_index,
+                to_max_index,
+            } => Box::new(MapRange::new(
+                noise_types[*base_index].to_noise_fn(noise_types, rng),
+                noise_types[*from_min_index].to_noise_fn(noise_types, rng),
+                noise_types[*from_max_index].to_noise_fn(noise_types, rng),
+                noise_types[*to_min_index].to_noise_fn(noise_types, rng),
+                noise_types[*to_max_index].to_noise_fn(noise_types, rng),
+            )),
             TerrainNoiseType::SmoothStep {
                 noise_index,
                 steps_index,

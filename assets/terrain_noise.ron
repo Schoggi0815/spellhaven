@@ -1,215 +1,1027 @@
 (
-    noise_types: [
-        RandomI64,
-        Simplex(
-            seed_index: 0,
-        ),
-        ConstantValue(
-            value: F64(-2000.0),
-        ),
-        ConstantValue(
-            value: F64(2000.0),
-        ),
-        RandomF64(
-            min_index: 2,
-            max_index: 3,
-        ),
-        ConstantValue(
-            value: F64(-2000.0),
-        ),
-        ConstantValue(
-            value: F64(2000.0),
-        ),
-        RandomF64(
-            min_index: 5,
-            max_index: 6,
-        ),
-        TranslatePoint(
-            noise_index: 1,
-            x_index: 4,
-            y_index: 7,
-        ),
-        ConstantValue(
-            value: F64(0.5),
-        ),
-        ConstantValue(
-            value: F64(15.0),
-        ),
-        Powf64(
-            a_index: 9,
-            b_index: 10,
-        ),
-        ScalePoint(
-            noise_index: 8,
-            scale_index: 11,
-        ),
-        ConstantValue(
-            value: F64(1.0),
-        ),
-        Constant(
-            value_index: 13,
-        ),
-        Add(
-            a_index: 12,
-            b_index: 14,
-        ),
-        ConstantValue(
-            value: F64(0.5),
-        ),
-        Constant(
-            value_index: 16,
-        ),
-        Multiply(
-            a_index: 15,
-            b_index: 17,
-        ),
-        ConstantValue(
-            value: F64(4.0),
-        ),
-        ConstantValue(
-            value: F64(0.5),
-        ),
-        SmoothStep(
-            noise_index: 18,
-            steps_index: 19,
-            smoothness_index: 20,
-        ),
-        RandomI64,
-        Simplex(
-            seed_index: 22,
-        ),
-        ConstantValue(
-            value: F64(-2000.0),
-        ),
-        ConstantValue(
-            value: F64(2000.0),
-        ),
-        RandomF64(
-            min_index: 24,
-            max_index: 25,
-        ),
-        ConstantValue(
-            value: F64(-2000.0),
-        ),
-        ConstantValue(
-            value: F64(2000.0),
-        ),
-        RandomF64(
-            min_index: 27,
-            max_index: 28,
-        ),
-        TranslatePoint(
-            noise_index: 23,
-            x_index: 26,
-            y_index: 29,
-        ),
-        ConstantValue(
-            value: F64(1.0),
-        ),
-        Constant(
-            value_index: 31,
-        ),
-        Add(
-            a_index: 30,
-            b_index: 32,
-        ),
-        ConstantValue(
-            value: F64(0.5),
-        ),
-        Constant(
-            value_index: 34,
-        ),
-        Multiply(
-            a_index: 33,
-            b_index: 35,
-        ),
-        ConstantValue(
-            value: F64(0.0),
-        ),
-        Constant(
-            value_index: 37,
-        ),
-        Max(
-            a_index: 36,
-            b_index: 38,
-        ),
-        ConstantValue(
-            value: F64(0.5),
-        ),
-        ConstantValue(
-            value: F64(13.0),
-        ),
-        Powf64(
-            a_index: 40,
-            b_index: 41,
-        ),
-        ConstantValue(
-            value: I64(11),
-        ),
-        ConstantValue(
-            value: F64(2.0),
-        ),
-        ConstantValue(
-            value: F64(0.5),
-        ),
-        ConstantValue(
-            value: F64(1.0),
-        ),
-        ConstantValue(
-            value: F64(3750.0),
-        ),
-        GFT(
-            noise_index: 39,
-            octaves_index: 43,
-            frequency_index: 42,
-            lacunarity_index: 44,
-            persistence_index: 45,
-            gradient_index: 46,
-            amplitude_index: 47,
-        ),
-        Multiply(
-            a_index: 21,
-            b_index: 48,
-        ),
-        ConstantValue(
-            value: F64(0.0),
-        ),
-        Constant(
-            value_index: 50,
-        ),
-        Add(
-            a_index: 49,
-            b_index: 51,
-        ),
-        VoxelSize,
-        ScalePoint(
-            noise_index: 52,
-            scale_index: 53,
-        ),
-        ConstantValue(
-            value: F64(1.0),
-        ),
-        Dividef64(
-            a_index: 55,
-            b_index: 53,
-        ),
-        Constant(
-            value_index: 56,
-        ),
-        Multiply(
-            a_index: 54,
-            b_index: 57,
-        ),
-        ConstantValue(
-            value: F64(-1.0),
-        ),
-        Constant(
-            value_index: 59,
-        ),
-        Add(
-            a_index: 58,
-            b_index: 60,
-        ),
-    ],
-    start_index: 61,
+    terrain_height: (
+        noise_types: [
+            RandomI64,
+            Simplex(
+                seed_index: 0,
+            ),
+            ConstantValue(
+                value: F64(-2000.0),
+            ),
+            ConstantValue(
+                value: F64(2000.0),
+            ),
+            RandomF64(
+                min_index: 2,
+                max_index: 3,
+            ),
+            ConstantValue(
+                value: F64(-2000.0),
+            ),
+            ConstantValue(
+                value: F64(2000.0),
+            ),
+            RandomF64(
+                min_index: 5,
+                max_index: 6,
+            ),
+            TranslatePoint(
+                noise_index: 1,
+                x_index: 4,
+                y_index: 7,
+            ),
+            ConstantValue(
+                value: F64(0.5),
+            ),
+            ConstantValue(
+                value: F64(15.0),
+            ),
+            Powf64(
+                a_index: 9,
+                b_index: 10,
+            ),
+            ScalePoint(
+                noise_index: 8,
+                scale_index: 11,
+            ),
+            ConstantValue(
+                value: F64(1.0),
+            ),
+            Constant(
+                value_index: 13,
+            ),
+            Add(
+                a_index: 12,
+                b_index: 14,
+            ),
+            ConstantValue(
+                value: F64(0.5),
+            ),
+            Constant(
+                value_index: 16,
+            ),
+            Multiply(
+                a_index: 15,
+                b_index: 17,
+            ),
+            ConstantValue(
+                value: F64(4.0),
+            ),
+            ConstantValue(
+                value: F64(0.5),
+            ),
+            SmoothStep(
+                noise_index: 18,
+                steps_index: 19,
+                smoothness_index: 20,
+            ),
+            RandomI64,
+            Simplex(
+                seed_index: 22,
+            ),
+            ConstantValue(
+                value: F64(-2000.0),
+            ),
+            ConstantValue(
+                value: F64(2000.0),
+            ),
+            RandomF64(
+                min_index: 24,
+                max_index: 25,
+            ),
+            ConstantValue(
+                value: F64(-2000.0),
+            ),
+            ConstantValue(
+                value: F64(2000.0),
+            ),
+            RandomF64(
+                min_index: 27,
+                max_index: 28,
+            ),
+            TranslatePoint(
+                noise_index: 23,
+                x_index: 26,
+                y_index: 29,
+            ),
+            ConstantValue(
+                value: F64(1.0),
+            ),
+            Constant(
+                value_index: 31,
+            ),
+            Add(
+                a_index: 30,
+                b_index: 32,
+            ),
+            ConstantValue(
+                value: F64(0.5),
+            ),
+            Constant(
+                value_index: 34,
+            ),
+            Multiply(
+                a_index: 33,
+                b_index: 35,
+            ),
+            ConstantValue(
+                value: F64(0.0),
+            ),
+            Constant(
+                value_index: 37,
+            ),
+            Max(
+                a_index: 36,
+                b_index: 38,
+            ),
+            ConstantValue(
+                value: F64(0.5),
+            ),
+            ConstantValue(
+                value: F64(13.0),
+            ),
+            Powf64(
+                a_index: 40,
+                b_index: 41,
+            ),
+            ConstantValue(
+                value: I64(11),
+            ),
+            ConstantValue(
+                value: F64(2.0),
+            ),
+            ConstantValue(
+                value: F64(0.5),
+            ),
+            ConstantValue(
+                value: F64(1.0),
+            ),
+            ConstantValue(
+                value: F64(3750.0),
+            ),
+            GFT(
+                noise_index: 39,
+                octaves_index: 43,
+                frequency_index: 42,
+                lacunarity_index: 44,
+                persistence_index: 45,
+                gradient_index: 46,
+                amplitude_index: 47,
+            ),
+            Multiply(
+                a_index: 21,
+                b_index: 48,
+            ),
+            ConstantValue(
+                value: F64(0.0),
+            ),
+            Constant(
+                value_index: 50,
+            ),
+            Add(
+                a_index: 49,
+                b_index: 51,
+            ),
+            VoxelSize,
+            ScalePoint(
+                noise_index: 52,
+                scale_index: 53,
+            ),
+            ConstantValue(
+                value: F64(1.0),
+            ),
+            Dividef64(
+                a_index: 55,
+                b_index: 53,
+            ),
+            Constant(
+                value_index: 56,
+            ),
+            Multiply(
+                a_index: 54,
+                b_index: 57,
+            ),
+            ConstantValue(
+                value: F64(-1.0),
+            ),
+            Constant(
+                value_index: 59,
+            ),
+            Add(
+                a_index: 58,
+                b_index: 60,
+            ),
+        ],
+        start_index: 61,
+    ),
+    oak_min_thickness: (
+        noise_types: [
+            RandomI64,
+            Simplex(
+                seed_index: 0,
+            ),
+            ConstantValue(
+                value: F64(0.5),
+            ),
+            ConstantValue(
+                value: F64(5.0),
+            ),
+            Powf64(
+                a_index: 2,
+                b_index: 3,
+            ),
+            ScalePoint(
+                noise_index: 1,
+                scale_index: 4,
+            ),
+            ConstantValue(
+                value: F64(-1.0),
+            ),
+            Constant(
+                value_index: 6,
+            ),
+            ConstantValue(
+                value: F64(1.0),
+            ),
+            Constant(
+                value_index: 8,
+            ),
+            ConstantValue(
+                value: F64(0.5),
+            ),
+            Constant(
+                value_index: 10,
+            ),
+            ConstantValue(
+                value: F64(0.7),
+            ),
+            Constant(
+                value_index: 12,
+            ),
+            MapRange(
+                base_index: 5,
+                from_min_index: 7,
+                from_max_index: 9,
+                to_min_index: 11,
+                to_max_index: 13,
+            ),
+        ],
+        start_index: 14,
+    ),
+    oak_max_length: (
+        noise_types: [
+            RandomI64,
+            Simplex(
+                seed_index: 0,
+            ),
+            ConstantValue(
+                value: F64(0.5),
+            ),
+            ConstantValue(
+                value: F64(5.0),
+            ),
+            Powf64(
+                a_index: 2,
+                b_index: 3,
+            ),
+            ScalePoint(
+                noise_index: 1,
+                scale_index: 4,
+            ),
+            ConstantValue(
+                value: F64(-1.0),
+            ),
+            Constant(
+                value_index: 6,
+            ),
+            ConstantValue(
+                value: F64(1.0),
+            ),
+            Constant(
+                value_index: 8,
+            ),
+            ConstantValue(
+                value: F64(6.5),
+            ),
+            Constant(
+                value_index: 10,
+            ),
+            ConstantValue(
+                value: F64(7.5),
+            ),
+            Constant(
+                value_index: 12,
+            ),
+            MapRange(
+                base_index: 5,
+                from_min_index: 7,
+                from_max_index: 9,
+                to_min_index: 11,
+                to_max_index: 13,
+            ),
+        ],
+        start_index: 14,
+    ),
+    oak_min_length: (
+        noise_types: [
+            RandomI64,
+            Simplex(
+                seed_index: 0,
+            ),
+            ConstantValue(
+                value: F64(0.5),
+            ),
+            ConstantValue(
+                value: F64(5.0),
+            ),
+            Powf64(
+                a_index: 2,
+                b_index: 3,
+            ),
+            ScalePoint(
+                noise_index: 1,
+                scale_index: 4,
+            ),
+            ConstantValue(
+                value: F64(-1.0),
+            ),
+            Constant(
+                value_index: 6,
+            ),
+            ConstantValue(
+                value: F64(1.0),
+            ),
+            Constant(
+                value_index: 8,
+            ),
+            ConstantValue(
+                value: F64(3.5),
+            ),
+            Constant(
+                value_index: 10,
+            ),
+            ConstantValue(
+                value: F64(4.5),
+            ),
+            Constant(
+                value_index: 12,
+            ),
+            MapRange(
+                base_index: 5,
+                from_min_index: 7,
+                from_max_index: 9,
+                to_min_index: 11,
+                to_max_index: 13,
+            ),
+        ],
+        start_index: 14,
+    ),
+    oak_max_angle: (
+        noise_types: [
+            RandomI64,
+            Simplex(
+                seed_index: 0,
+            ),
+            ConstantValue(
+                value: F64(0.5),
+            ),
+            ConstantValue(
+                value: F64(5.0),
+            ),
+            Powf64(
+                a_index: 2,
+                b_index: 3,
+            ),
+            ScalePoint(
+                noise_index: 1,
+                scale_index: 4,
+            ),
+            ConstantValue(
+                value: F64(-1.0),
+            ),
+            Constant(
+                value_index: 6,
+            ),
+            ConstantValue(
+                value: F64(1.0),
+            ),
+            Constant(
+                value_index: 8,
+            ),
+            ConstantValue(
+                value: F64(45.0),
+            ),
+            Constant(
+                value_index: 10,
+            ),
+            ConstantValue(
+                value: F64(65.0),
+            ),
+            Constant(
+                value_index: 12,
+            ),
+            MapRange(
+                base_index: 5,
+                from_min_index: 7,
+                from_max_index: 9,
+                to_min_index: 11,
+                to_max_index: 13,
+            ),
+        ],
+        start_index: 14,
+    ),
+    oak_start_thickness: (
+        noise_types: [
+            RandomI64,
+            Simplex(
+                seed_index: 0,
+            ),
+            ConstantValue(
+                value: F64(0.5),
+            ),
+            ConstantValue(
+                value: F64(5.0),
+            ),
+            Powf64(
+                a_index: 2,
+                b_index: 3,
+            ),
+            ScalePoint(
+                noise_index: 1,
+                scale_index: 4,
+            ),
+            ConstantValue(
+                value: F64(-1.0),
+            ),
+            Constant(
+                value_index: 6,
+            ),
+            ConstantValue(
+                value: F64(1.0),
+            ),
+            Constant(
+                value_index: 8,
+            ),
+            ConstantValue(
+                value: F64(1.8),
+            ),
+            Constant(
+                value_index: 10,
+            ),
+            ConstantValue(
+                value: F64(3.0),
+            ),
+            Constant(
+                value_index: 12,
+            ),
+            MapRange(
+                base_index: 5,
+                from_min_index: 7,
+                from_max_index: 9,
+                to_min_index: 11,
+                to_max_index: 13,
+            ),
+        ],
+        start_index: 14,
+    ),
+    oak_start_x_angle: (
+        noise_types: [
+            RandomI64,
+            Simplex(
+                seed_index: 0,
+            ),
+            ConstantValue(
+                value: F64(0.5),
+            ),
+            ConstantValue(
+                value: F64(5.0),
+            ),
+            Powf64(
+                a_index: 2,
+                b_index: 3,
+            ),
+            ScalePoint(
+                noise_index: 1,
+                scale_index: 4,
+            ),
+            ConstantValue(
+                value: F64(-1.0),
+            ),
+            Constant(
+                value_index: 6,
+            ),
+            ConstantValue(
+                value: F64(1.0),
+            ),
+            Constant(
+                value_index: 8,
+            ),
+            ConstantValue(
+                value: F64(-10.0),
+            ),
+            Constant(
+                value_index: 10,
+            ),
+            ConstantValue(
+                value: F64(10.0),
+            ),
+            Constant(
+                value_index: 12,
+            ),
+            MapRange(
+                base_index: 5,
+                from_min_index: 7,
+                from_max_index: 9,
+                to_min_index: 11,
+                to_max_index: 13,
+            ),
+        ],
+        start_index: 14,
+    ),
+    oak_start_y_angle: (
+        noise_types: [
+            RandomI64,
+            Simplex(
+                seed_index: 0,
+            ),
+            ConstantValue(
+                value: F64(0.5),
+            ),
+            ConstantValue(
+                value: F64(5.0),
+            ),
+            Powf64(
+                a_index: 2,
+                b_index: 3,
+            ),
+            ScalePoint(
+                noise_index: 1,
+                scale_index: 4,
+            ),
+            ConstantValue(
+                value: F64(-1.0),
+            ),
+            Constant(
+                value_index: 6,
+            ),
+            ConstantValue(
+                value: F64(1.0),
+            ),
+            Constant(
+                value_index: 8,
+            ),
+            ConstantValue(
+                value: F64(-10.0),
+            ),
+            Constant(
+                value_index: 10,
+            ),
+            ConstantValue(
+                value: F64(10.0),
+            ),
+            Constant(
+                value_index: 12,
+            ),
+            MapRange(
+                base_index: 5,
+                from_min_index: 7,
+                from_max_index: 9,
+                to_min_index: 11,
+                to_max_index: 13,
+            ),
+        ],
+        start_index: 14,
+    ),
+    pine_stem_piece_length: (
+        noise_types: [
+            RandomI64,
+            Simplex(
+                seed_index: 0,
+            ),
+            ConstantValue(
+                value: F64(0.5),
+            ),
+            ConstantValue(
+                value: F64(5.0),
+            ),
+            Powf64(
+                a_index: 2,
+                b_index: 3,
+            ),
+            ScalePoint(
+                noise_index: 1,
+                scale_index: 4,
+            ),
+            ConstantValue(
+                value: F64(-1.0),
+            ),
+            Constant(
+                value_index: 6,
+            ),
+            ConstantValue(
+                value: F64(1.0),
+            ),
+            Constant(
+                value_index: 8,
+            ),
+            ConstantValue(
+                value: F64(4.0),
+            ),
+            Constant(
+                value_index: 10,
+            ),
+            ConstantValue(
+                value: F64(6.0),
+            ),
+            Constant(
+                value_index: 12,
+            ),
+            MapRange(
+                base_index: 5,
+                from_min_index: 7,
+                from_max_index: 9,
+                to_min_index: 11,
+                to_max_index: 13,
+            ),
+        ],
+        start_index: 14,
+    ),
+    pine_stem_thickness: (
+        noise_types: [
+            RandomI64,
+            Simplex(
+                seed_index: 0,
+            ),
+            ConstantValue(
+                value: F64(0.5),
+            ),
+            ConstantValue(
+                value: F64(5.0),
+            ),
+            Powf64(
+                a_index: 2,
+                b_index: 3,
+            ),
+            ScalePoint(
+                noise_index: 1,
+                scale_index: 4,
+            ),
+            ConstantValue(
+                value: F64(-1.0),
+            ),
+            Constant(
+                value_index: 6,
+            ),
+            ConstantValue(
+                value: F64(1.0),
+            ),
+            Constant(
+                value_index: 8,
+            ),
+            ConstantValue(
+                value: F64(2.5),
+            ),
+            Constant(
+                value_index: 10,
+            ),
+            ConstantValue(
+                value: F64(3.5),
+            ),
+            Constant(
+                value_index: 12,
+            ),
+            MapRange(
+                base_index: 5,
+                from_min_index: 7,
+                from_max_index: 9,
+                to_min_index: 11,
+                to_max_index: 13,
+            ),
+        ],
+        start_index: 14,
+    ),
+    pine_stem_count: (
+        noise_types: [
+            RandomI64,
+            Simplex(
+                seed_index: 0,
+            ),
+            ConstantValue(
+                value: F64(0.5),
+            ),
+            ConstantValue(
+                value: F64(5.0),
+            ),
+            Powf64(
+                a_index: 2,
+                b_index: 3,
+            ),
+            ScalePoint(
+                noise_index: 1,
+                scale_index: 4,
+            ),
+            ConstantValue(
+                value: F64(-1.0),
+            ),
+            Constant(
+                value_index: 6,
+            ),
+            ConstantValue(
+                value: F64(1.0),
+            ),
+            Constant(
+                value_index: 8,
+            ),
+            ConstantValue(
+                value: F64(10.0),
+            ),
+            Constant(
+                value_index: 10,
+            ),
+            ConstantValue(
+                value: F64(15.0),
+            ),
+            Constant(
+                value_index: 12,
+            ),
+            MapRange(
+                base_index: 5,
+                from_min_index: 7,
+                from_max_index: 9,
+                to_min_index: 11,
+                to_max_index: 13,
+            ),
+        ],
+        start_index: 14,
+    ),
+    pine_branch_piece_lenght: (
+        noise_types: [
+            RandomI64,
+            Simplex(
+                seed_index: 0,
+            ),
+            ConstantValue(
+                value: F64(0.5),
+            ),
+            ConstantValue(
+                value: F64(5.0),
+            ),
+            Powf64(
+                a_index: 2,
+                b_index: 3,
+            ),
+            ScalePoint(
+                noise_index: 1,
+                scale_index: 4,
+            ),
+            ConstantValue(
+                value: F64(-1.0),
+            ),
+            Constant(
+                value_index: 6,
+            ),
+            ConstantValue(
+                value: F64(1.0),
+            ),
+            Constant(
+                value_index: 8,
+            ),
+            ConstantValue(
+                value: F64(2.0),
+            ),
+            Constant(
+                value_index: 10,
+            ),
+            ConstantValue(
+                value: F64(3.0),
+            ),
+            Constant(
+                value_index: 12,
+            ),
+            MapRange(
+                base_index: 5,
+                from_min_index: 7,
+                from_max_index: 9,
+                to_min_index: 11,
+                to_max_index: 13,
+            ),
+        ],
+        start_index: 14,
+    ),
+    pine_branch_down_angle: (
+        noise_types: [
+            RandomI64,
+            Simplex(
+                seed_index: 0,
+            ),
+            ConstantValue(
+                value: F64(0.5),
+            ),
+            ConstantValue(
+                value: F64(5.0),
+            ),
+            Powf64(
+                a_index: 2,
+                b_index: 3,
+            ),
+            ScalePoint(
+                noise_index: 1,
+                scale_index: 4,
+            ),
+            ConstantValue(
+                value: F64(-1.0),
+            ),
+            Constant(
+                value_index: 6,
+            ),
+            ConstantValue(
+                value: F64(1.0),
+            ),
+            Constant(
+                value_index: 8,
+            ),
+            ConstantValue(
+                value: F64(-10.0),
+            ),
+            Constant(
+                value_index: 10,
+            ),
+            ConstantValue(
+                value: F64(10.0),
+            ),
+            Constant(
+                value_index: 12,
+            ),
+            MapRange(
+                base_index: 5,
+                from_min_index: 7,
+                from_max_index: 9,
+                to_min_index: 11,
+                to_max_index: 13,
+            ),
+        ],
+        start_index: 14,
+    ),
+    pine_branch_spiral: (
+        noise_types: [
+            RandomI64,
+            Simplex(
+                seed_index: 0,
+            ),
+            ConstantValue(
+                value: F64(0.5),
+            ),
+            ConstantValue(
+                value: F64(5.0),
+            ),
+            Powf64(
+                a_index: 2,
+                b_index: 3,
+            ),
+            ScalePoint(
+                noise_index: 1,
+                scale_index: 4,
+            ),
+            ConstantValue(
+                value: F64(-1.0),
+            ),
+            Constant(
+                value_index: 6,
+            ),
+            ConstantValue(
+                value: F64(1.0),
+            ),
+            Constant(
+                value_index: 8,
+            ),
+            ConstantValue(
+                value: F64(-45.0),
+            ),
+            Constant(
+                value_index: 10,
+            ),
+            ConstantValue(
+                value: F64(45.0),
+            ),
+            Constant(
+                value_index: 12,
+            ),
+            MapRange(
+                base_index: 5,
+                from_min_index: 7,
+                from_max_index: 9,
+                to_min_index: 11,
+                to_max_index: 13,
+            ),
+        ],
+        start_index: 14,
+    ),
+    pine_branch_droop: (
+        noise_types: [
+            RandomI64,
+            Simplex(
+                seed_index: 0,
+            ),
+            ConstantValue(
+                value: F64(0.5),
+            ),
+            ConstantValue(
+                value: F64(5.0),
+            ),
+            Powf64(
+                a_index: 2,
+                b_index: 3,
+            ),
+            ScalePoint(
+                noise_index: 1,
+                scale_index: 4,
+            ),
+            ConstantValue(
+                value: F64(-1.0),
+            ),
+            Constant(
+                value_index: 6,
+            ),
+            ConstantValue(
+                value: F64(1.0),
+            ),
+            Constant(
+                value_index: 8,
+            ),
+            ConstantValue(
+                value: F64(-0.2),
+            ),
+            Constant(
+                value_index: 10,
+            ),
+            ConstantValue(
+                value: F64(0.2),
+            ),
+            Constant(
+                value_index: 12,
+            ),
+            MapRange(
+                base_index: 5,
+                from_min_index: 7,
+                from_max_index: 9,
+                to_min_index: 11,
+                to_max_index: 13,
+            ),
+        ],
+        start_index: 14,
+    ),
+    pine_needle_angle_offset: (
+        noise_types: [
+            RandomI64,
+            Simplex(
+                seed_index: 0,
+            ),
+            ConstantValue(
+                value: F64(0.5),
+            ),
+            ConstantValue(
+                value: F64(5.0),
+            ),
+            Powf64(
+                a_index: 2,
+                b_index: 3,
+            ),
+            ScalePoint(
+                noise_index: 1,
+                scale_index: 4,
+            ),
+            ConstantValue(
+                value: F64(-1.0),
+            ),
+            Constant(
+                value_index: 6,
+            ),
+            ConstantValue(
+                value: F64(1.0),
+            ),
+            Constant(
+                value_index: 8,
+            ),
+            ConstantValue(
+                value: F64(0.0),
+            ),
+            Constant(
+                value_index: 10,
+            ),
+            ConstantValue(
+                value: F64(1.0),
+            ),
+            Constant(
+                value_index: 12,
+            ),
+            MapRange(
+                base_index: 5,
+                from_min_index: 7,
+                from_max_index: 9,
+                to_min_index: 11,
+                to_max_index: 13,
+            ),
+        ],
+        start_index: 14,
+    ),
 )

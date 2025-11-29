@@ -1,10 +1,10 @@
 use bevy::prelude::*;
-use rand::{Rng, rngs::StdRng};
+use rand::rngs::StdRng;
 use serde::{Deserialize, Serialize};
 
 use crate::chunk_generation::{
     block_type::BlockType,
-    noise::terrain_noise::TerrainNoise,
+    noise::terrain_noise_group::TerrainNoiseGroup,
     structures::{
         foliage_generation::{
             oak_l_system::OakLSystem, oak_options::OakOptions,
@@ -29,38 +29,42 @@ pub struct OakStructureGenerator {
 }
 
 impl TreeStructureGenerator for OakStructureGenerator {
-    fn new(mut metadata: VoxelStructureMetadata, rng: &mut StdRng) -> Self {
+    fn new(
+        mut metadata: VoxelStructureMetadata,
+        noise_group: &TerrainNoiseGroup,
+        world_seed: u64,
+    ) -> Self {
         Self::adjust_metadata(&mut metadata);
 
         Self {
             fixed_structure_metadata: metadata,
             min_thickness_noise: NoiseWrapper::new(
-                TerrainNoise::new_basic_simplex(0.5_f64.powi(5), 0.5, 0.7),
-                rng.random(),
+                noise_group.oak_min_thickness.clone(),
+                world_seed,
             ),
             max_length_noise: NoiseWrapper::new(
-                TerrainNoise::new_basic_simplex(0.5_f64.powi(5), 6.5, 7.5),
-                rng.random(),
+                noise_group.oak_max_length.clone(),
+                world_seed,
             ),
             min_length_noise: NoiseWrapper::new(
-                TerrainNoise::new_basic_simplex(0.5_f64.powi(5), 3.5, 4.5),
-                rng.random(),
+                noise_group.oak_min_length.clone(),
+                world_seed,
             ),
             max_angle_noise: NoiseWrapper::new(
-                TerrainNoise::new_basic_simplex(0.5_f64.powi(5), 45.0, 65.0),
-                rng.random(),
+                noise_group.oak_max_angle.clone(),
+                world_seed,
             ),
             start_thickness_noise: NoiseWrapper::new(
-                TerrainNoise::new_basic_simplex(0.5_f64.powi(5), 1.8, 3.0),
-                rng.random(),
+                noise_group.oak_start_thickness.clone(),
+                world_seed,
             ),
             start_x_angle_noise: NoiseWrapper::new(
-                TerrainNoise::new_basic_simplex(0.5_f64.powi(5), -10.0, 10.0),
-                rng.random(),
+                noise_group.oak_start_x_angle.clone(),
+                world_seed,
             ),
             start_y_angle_noise: NoiseWrapper::new(
-                TerrainNoise::new_basic_simplex(0.5_f64.powi(5), -10.0, 10.0),
-                rng.random(),
+                noise_group.oak_start_y_angle.clone(),
+                world_seed,
             ),
         }
     }

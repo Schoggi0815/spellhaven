@@ -1,4 +1,5 @@
 mod all_terrain_node_templates;
+pub mod noise_output_type;
 mod terrain_data_type;
 pub mod terrain_graph_resource;
 mod terrain_node_data;

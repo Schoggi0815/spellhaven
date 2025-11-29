@@ -39,14 +39,15 @@ impl LSystem<PineEntryType, PineOptions> for PineLSystem {
     fn get_start_state(
         position: Vec3,
         rng: &mut StdRng,
-        _: &PineOptions,
+        options: &PineOptions,
     ) -> Vec<LSystemEntry<PineEntryType>> {
         let mut entries = vec![];
 
-        let length = (rng.random_range(4.0..6.0) / VOXEL_SIZE) as usize;
+        let length = (options.stem_piece_length / VOXEL_SIZE) as usize;
         let mut last_length = length;
-        let total_thickness_range: EntryRange = (3.0..0.8).into();
-        let stem_count = 12;
+        let total_thickness_range: EntryRange =
+            (options.stem_thickness..0.8).into();
+        let stem_count = options.stem_count.round() as i32;
         let total_branch_thickness_range: EntryRange = (1.5..0.5).into();
 
         entries.extend(Self::create_straight_piece_dir(
@@ -60,7 +61,7 @@ impl LSystem<PineEntryType, PineOptions> for PineLSystem {
             length,
             PineEntryType::Log,
             PineEntryType::Stem {
-                branch_length: 10.,
+                branch_length: stem_count as f32,
                 branch_thickness: total_branch_thickness_range
                     .get_sub_range_with_steps(0, stem_count, stem_count),
             },
@@ -111,7 +112,7 @@ impl LSystem<PineEntryType, PineOptions> for PineLSystem {
         entry: &LSystemEntry<PineEntryType>,
         rng: &mut StdRng,
         branches: &mut Vec<LSystemEntry<PineEntryType>>,
-        _: &PineOptions,
+        options: &PineOptions,
     ) {
         match entry.entry_type {
             PineEntryType::Stem {
@@ -123,7 +124,7 @@ impl LSystem<PineEntryType, PineOptions> for PineLSystem {
                 let angle_offset = angle_range.rng(rng);
                 let random_angle_offset_range: EntryRange =
                     (-10.0..10.0).into();
-                let branch_piece_length = 2.5;
+                let branch_piece_length = options.branch_piece_lenght;
 
                 for i in 0..branch_count {
                     let angle_uncap = angle_range
@@ -132,7 +133,6 @@ impl LSystem<PineEntryType, PineOptions> for PineLSystem {
                         + random_angle_offset_range.rng(rng);
                     let angle = angle_uncap % 360.;
 
-                    let down_angle = rng.random_range(-10.0..10.0);
                     let mut direction = Vec3::X;
                     let length_range =
                         (branch_length - 1.)..(branch_length + 1.);
@@ -141,7 +141,7 @@ impl LSystem<PineEntryType, PineOptions> for PineLSystem {
                     direction = rotate_around(
                         &direction,
                         &Vec3::ZERO,
-                        -down_angle,
+                        -options.branch_down_angle,
                         &RotationDirection::Z,
                     );
 
@@ -168,10 +168,11 @@ impl LSystem<PineEntryType, PineOptions> for PineLSystem {
                         let mut branch_direction = rotate_around(
                             &direction,
                             &Vec3::ZERO,
-                            j as f32 * -20.,
+                            j as f32 * options.branch_spiral,
                             &RotationDirection::Y,
                         );
-                        branch_direction -= Vec3::Y * j as f32 * -0.1;
+                        branch_direction -=
+                            Vec3::Y * j as f32 * -options.branch_droop;
                         branch_direction = branch_direction.normalize();
 
                         branches.extend(Self::create_straight_piece_dir(
@@ -199,7 +200,8 @@ impl LSystem<PineEntryType, PineOptions> for PineLSystem {
             }
             PineEntryType::Branch { .. } => {}
             PineEntryType::SubBranch { direction, tip } => {
-                let random_angle = rng.random_range(90.0..=91.0);
+                let random_angle =
+                    rng.random_range(90.0..=90.0 + options.needle_angle_offset);
                 let needle_count = 3;
 
                 let ortho = direction.any_orthonormal_vector();

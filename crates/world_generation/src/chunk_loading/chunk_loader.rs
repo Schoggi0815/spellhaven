@@ -23,8 +23,8 @@ pub struct ChunkLoader {
 impl Default for ChunkLoader {
     fn default() -> Self {
         Self {
-            load_range: 6,
-            unload_range: 8,
+            load_range: 8,
+            unload_range: 9,
             lod_range: [4, 8, 16, 32, 64, 128, 256, 512],
         }
     }
