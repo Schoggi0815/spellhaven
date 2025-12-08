@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{fmt::Debug, sync::Arc};
 
 use bevy::prelude::Deref;
 use noise::NoiseFn;
@@ -17,6 +17,15 @@ pub struct NoiseWrapper {
     pub seed: u64,
     #[deref]
     pub noise: Arc<Box<dyn NoiseFn<f64, 2> + Send + Sync>>,
+}
+
+impl Debug for NoiseWrapper {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("NoiseWrapper")
+            .field("noise_map", &self.noise_map)
+            .field("seed", &self.seed)
+            .finish()
+    }
 }
 
 impl NoiseWrapper {

@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum NoiseOutputType {
     TerrainHeight,
+    GrassHue,
     // Oak
     OakMinThickness,
     OakMaxLength,
@@ -25,6 +26,7 @@ pub enum NoiseOutputType {
 
 pub const ALL_NOISE_OUTPUT_TYPES: &[NoiseOutputType] = &[
     NoiseOutputType::TerrainHeight,
+    NoiseOutputType::GrassHue,
     NoiseOutputType::OakMinThickness,
     NoiseOutputType::OakMaxLength,
     NoiseOutputType::OakMinLength,
@@ -46,6 +48,7 @@ impl NoiseOutputType {
     pub fn get_text(&self) -> &'static str {
         match self {
             NoiseOutputType::TerrainHeight => "Terrain Height",
+            NoiseOutputType::GrassHue => "Grass Hue",
             NoiseOutputType::OakMinThickness => "Oak Min Thickness",
             NoiseOutputType::OakMaxLength => "Oak Max Length",
             NoiseOutputType::OakMinLength => "Oak Min Length",

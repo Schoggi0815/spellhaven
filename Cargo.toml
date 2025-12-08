@@ -38,10 +38,13 @@ anyhow = "1.0.100"
 serde = "1.0.219"
 ron = "0.11.0"
 bevy_egui = "0.37.0"
-bevy_hookup_core = "5.0.0"
+bevy_hookup_core = "5.0.1"
 bevy_hookup_macros = "1.0.0"
-bevy_hookup_messenger_websocket = "2.5.0"
+bevy_hookup_messenger_steamworks = "1.0.0"
 tokio = "1.47.1"
+bevy-steamworks = "0.15.0"
+steamworks = "0.12.2"
+crossbeam = "0.8.4"
 
 [workspace.dependencies]
 debug_resource = { path = "crates/debug_resource" }
@@ -72,10 +75,13 @@ anyhow = "1.0.100"
 serde = "1.0.219"
 ron = "0.11.0"
 bevy_egui = "0.37.0"
-bevy_hookup_core = "5.0.0"
+bevy_hookup_core = "5.0.1"
 bevy_hookup_macros = "1.0.0"
-bevy_hookup_messenger_websocket = "2.5.0"
+bevy_hookup_messenger_steamworks = "1.0.0"
 tokio = "1.47.1"
+bevy-steamworks = "0.15.0"
+steamworks = "0.12.2"
+crossbeam = "0.8.4"
 
 # Enable a small amount of optimization in debug_tools mode
 [profile.dev]

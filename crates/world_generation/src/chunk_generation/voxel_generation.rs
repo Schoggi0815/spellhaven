@@ -34,12 +34,22 @@ pub fn generate_voxels(
     let mut blocks = VoxelData::default();
 
     let terrain_noise = FullCache::new(LodHeightAdjuster::new(
-        generation_options.get_terrain_noise(),
+        generation_options
+            .terrain_noise_group
+            .terrain_height
+            .get_noise_fn(&mut generation_options.get_seeded_rng()),
         chunk_lod,
     ));
     let terrain_steepness = FullCache::new(Steepness::new(FullCache::new(
-        generation_options.get_terrain_noise(),
+        generation_options
+            .terrain_noise_group
+            .terrain_height
+            .get_noise_fn(&mut generation_options.get_seeded_rng()),
     )));
+    let grass_hue_noise = generation_options
+        .terrain_noise_group
+        .grass_hue
+        .get_noise_fn(&mut generation_options.get_seeded_rng());
 
     let chunk_noise_offset =
         DVec2::new(position[0] as f64, position[2] as f64) * CHUNK_SIZE as f64;
@@ -154,7 +164,9 @@ pub fn generate_voxels(
                             if is_snow {
                                 BlockType::Snow
                             } else {
-                                BlockType::Grass
+                                BlockType::Grass(
+                                    grass_hue_noise.get(noise_position) as u8,
+                                )
                             }
                         } else {
                             BlockType::Stone

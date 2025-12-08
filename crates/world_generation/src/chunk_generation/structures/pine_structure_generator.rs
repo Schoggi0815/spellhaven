@@ -16,7 +16,7 @@ use crate::chunk_generation::{
     },
 };
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct PineStructureGenerator {
     pub fixed_structure_metadata: VoxelStructureMetadata,
     pub stem_piece_length_noise: NoiseWrapper,

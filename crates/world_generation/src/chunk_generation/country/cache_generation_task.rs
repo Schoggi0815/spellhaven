@@ -22,7 +22,7 @@ impl Default for CacheTaskPool {
         Self {
             task_pool: TaskPoolBuilder::new()
                 .num_threads(4)
-                .stack_size(1_000_000)
+                .stack_size(2_000_000)
                 .build(),
         }
     }

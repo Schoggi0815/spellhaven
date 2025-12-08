@@ -214,6 +214,70 @@
         ],
         start_index: 61,
     ),
+    grass_hue: (
+        noise_types: [
+            RandomI64,
+            Simplex(
+                seed_index: 0,
+            ),
+            ConstantValue(
+                value: F64(0.5),
+            ),
+            ConstantValue(
+                value: F64(13.0),
+            ),
+            Powf64(
+                a_index: 2,
+                b_index: 3,
+            ),
+            ScalePoint(
+                noise_index: 1,
+                scale_index: 4,
+            ),
+            ConstantValue(
+                value: F64(3.0),
+            ),
+            Constant(
+                value_index: 6,
+            ),
+            Power(
+                a_index: 5,
+                b_index: 7,
+            ),
+            ConstantValue(
+                value: F64(-1.0),
+            ),
+            Constant(
+                value_index: 9,
+            ),
+            ConstantValue(
+                value: F64(1.0),
+            ),
+            Constant(
+                value_index: 11,
+            ),
+            ConstantValue(
+                value: F64(0.0),
+            ),
+            Constant(
+                value_index: 13,
+            ),
+            ConstantValue(
+                value: F64(255.0),
+            ),
+            Constant(
+                value_index: 15,
+            ),
+            MapRange(
+                base_index: 8,
+                from_min_index: 10,
+                from_max_index: 12,
+                to_min_index: 14,
+                to_max_index: 16,
+            ),
+        ],
+        start_index: 17,
+    ),
     oak_min_thickness: (
         noise_types: [
             RandomI64,

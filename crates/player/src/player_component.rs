@@ -29,7 +29,7 @@ pub struct Player {
 }
 
 #[derive(
-    Clone, Serialize, Deserialize, Deref, DerefMut, Default, Component,
+    Clone, Serialize, Deserialize, Deref, DerefMut, Default, Component, Debug,
 )]
 pub struct PlayerRotation(pub Quat);
 

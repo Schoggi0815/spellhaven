@@ -6,7 +6,6 @@ use crate::chunk_generation::{
         terrain_noise_type::TerrainNoiseType,
     },
     structures::{
-        oak_structure_generator::OakStructureGenerator,
         pine_structure_generator::PineStructureGenerator,
         structure_generator::VoxelStructureMetadata,
         structure_generators::StructureGenerators,
@@ -14,7 +13,6 @@ use crate::chunk_generation::{
     },
 };
 use bevy::prelude::*;
-use noise::NoiseFn;
 use rand::prelude::StdRng;
 use rand::{Rng, SeedableRng};
 use serde::{Deserialize, Serialize};
@@ -31,7 +29,7 @@ fn get_seeded_white_noise() -> TerrainNoise {
     )
 }
 
-#[derive(Clone, Serialize, Deserialize, Component)]
+#[derive(Clone, Serialize, Deserialize, Component, Debug)]
 pub struct GenerationOptions {
     pub seed: u64,
     pub structure_generators: Vec<Arc<Box<StructureGenerators>>>,
@@ -160,10 +158,8 @@ impl GenerationOptions {
         }
     }
 
-    pub fn get_terrain_noise(&self) -> impl NoiseFn<f64, 2> {
-        self.terrain_noise_group
-            .terrain_height
-            .get_noise_fn(&mut StdRng::seed_from_u64(self.seed + 1))
+    pub fn get_seeded_rng(&self) -> impl Rng {
+        StdRng::seed_from_u64(self.seed)
     }
 }
 

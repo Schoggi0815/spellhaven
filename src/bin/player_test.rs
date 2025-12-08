@@ -170,11 +170,10 @@ fn mock_network(
 ) {
     mock.1.0 = player.2.0;
 
-    if mock.0.position == **player.0 && mock.0.velocity == **player.1 {
+    if mock.0.position == **player.0 {
         return;
     }
 
     mock.0.position = **player.0;
-    mock.0.velocity = **player.1;
     mock.0.update_index += 1;
 }

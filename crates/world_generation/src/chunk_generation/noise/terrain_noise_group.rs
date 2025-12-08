@@ -2,9 +2,10 @@ use serde::{Deserialize, Serialize};
 
 use crate::chunk_generation::noise::terrain_noise::TerrainNoise;
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct TerrainNoiseGroup {
     pub terrain_height: TerrainNoise,
+    pub grass_hue: TerrainNoise,
     // Oak
     pub oak_min_thickness: TerrainNoise,
     pub oak_max_length: TerrainNoise,

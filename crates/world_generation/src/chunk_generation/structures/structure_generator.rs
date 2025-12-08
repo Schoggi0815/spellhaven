@@ -11,7 +11,7 @@ use crate::chunk_generation::{
     },
 };
 
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Clone, Deserialize, Serialize, Debug)]
 pub struct VoxelStructureMetadata {
     pub model_size: [i32; 3],
     pub generation_size: [i32; 2],

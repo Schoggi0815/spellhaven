@@ -16,7 +16,7 @@ use crate::chunk_generation::{
     },
 };
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct OakStructureGenerator {
     pub fixed_structure_metadata: VoxelStructureMetadata,
     pub min_thickness_noise: NoiseWrapper,

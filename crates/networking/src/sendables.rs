@@ -5,7 +5,7 @@ use player::player_component::PlayerRotation;
 use serde::{Deserialize, Serialize};
 use world_generation::generation_options::GenerationOptions;
 
-#[derive(Clone, Sendable, Serialize, Deserialize)]
+#[derive(Clone, Sendable, Serialize, Deserialize, Debug)]
 pub enum Sendables {
     #[sendable]
     GenerationOptions(GenerationOptions),

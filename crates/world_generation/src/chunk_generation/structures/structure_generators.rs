@@ -12,7 +12,7 @@ use crate::chunk_generation::{
     },
 };
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize, Debug)]
 pub enum StructureGenerators {
     Oak(OakStructureGenerator),
     Pine(PineStructureGenerator),

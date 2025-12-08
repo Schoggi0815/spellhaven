@@ -132,6 +132,7 @@ impl TerrainGraphResource {
 
         let noise_group = TerrainNoiseGroup {
             terrain_height: get_terrain_noise(NoiseOutputType::TerrainHeight)?,
+            grass_hue: get_terrain_noise(NoiseOutputType::GrassHue)?,
             oak_min_thickness: get_terrain_noise(
                 NoiseOutputType::OakMinThickness,
             )?,
