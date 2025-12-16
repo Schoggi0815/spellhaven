@@ -25,7 +25,7 @@ async fn main() {
     App::new()
         .add_plugins(
             (
-                SteamworksPlugin::init_app(480).unwrap(),
+                SteamworksPlugin::init_app(4251410).unwrap(),
                 DefaultPlugins
                     .set(WindowPlugin {
                         primary_window: Some(Window {
