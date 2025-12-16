@@ -1,6 +1,7 @@
+use bevy_hookup_core::utils::buffer_object::BufferObject;
 use bevy_hookup_macros::Sendable;
 
-use physics::network_physics_object::NetworkPhysicsObject;
+use physics::physics_position::PhysicsPosition;
 use player::player_component::PlayerRotation;
 use serde::{Deserialize, Serialize};
 use world_generation::generation_options::GenerationOptions;
@@ -12,5 +13,5 @@ pub enum Sendables {
     #[sendable]
     PlayerRotation(PlayerRotation),
     #[sendable]
-    NetworkPhysicsObject(NetworkPhysicsObject),
+    BufferPhysicsPosition(BufferObject<PhysicsPosition>),
 }

@@ -896,6 +896,17 @@ dependencies = [
 [[package]]
 name = "bevy_hookup_core"
 version = "5.0.1"
+dependencies = [
+ "bevy",
+ "crossbeam",
+ "itertools 0.14.0",
+ "rand 0.9.2",
+ "serde",
+]
+
+[[package]]
+name = "bevy_hookup_core"
+version = "5.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9b1462f0d60c26ca79594dfb1c4086a80da6777814cd54054fb3d56e49837081"
 dependencies = [
@@ -925,7 +936,7 @@ dependencies = [
  "anyhow",
  "bevy",
  "bevy-steamworks",
- "bevy_hookup_core",
+ "bevy_hookup_core 5.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "bincode",
  "crossbeam",
  "futures-util",
@@ -2314,7 +2325,7 @@ dependencies = [
  "anyhow",
  "bevy",
  "bevy-inspector-egui",
- "bevy_hookup_core",
+ "bevy_hookup_core 5.0.1",
  "debug_resource",
  "egui 0.32.0",
  "egui_node_editor 0.8.0",
@@ -3813,7 +3824,7 @@ version = "0.0.0"
 dependencies = [
  "bevy",
  "bevy-steamworks",
- "bevy_hookup_core",
+ "bevy_hookup_core 5.0.1",
  "bevy_hookup_macros",
  "bevy_hookup_messenger_steamworks",
  "crossbeam",
@@ -4373,7 +4384,7 @@ name = "physics"
 version = "0.0.0"
 dependencies = [
  "bevy",
- "bevy_hookup_core",
+ "bevy_hookup_core 5.0.1",
  "itertools 0.14.0",
  "serde",
  "utils",
@@ -4434,7 +4445,7 @@ version = "0.0.0"
 dependencies = [
  "bevy",
  "bevy_egui",
- "bevy_hookup_core",
+ "bevy_hookup_core 5.0.1",
  "bevy_panorbit_camera",
  "debug_resource",
  "physics",
@@ -5072,7 +5083,7 @@ dependencies = [
  "bevy-inspector-egui",
  "bevy-steamworks",
  "bevy_egui",
- "bevy_hookup_core",
+ "bevy_hookup_core 5.0.1",
  "bevy_hookup_macros",
  "bevy_hookup_messenger_steamworks",
  "bevy_panorbit_camera",
@@ -5579,7 +5590,7 @@ version = "0.0.0"
 dependencies = [
  "bevy",
  "bevy-inspector-egui",
- "bevy_hookup_core",
+ "bevy_hookup_core 5.0.1",
  "networking",
  "world_generation",
 ]
@@ -6765,7 +6776,7 @@ name = "world_generation"
 version = "0.0.0"
 dependencies = [
  "bevy",
- "bevy_hookup_core",
+ "bevy_hookup_core 5.0.1",
  "fastnoise-lite",
  "futures-lite",
  "itertools 0.14.0",

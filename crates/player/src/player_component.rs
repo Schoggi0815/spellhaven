@@ -9,11 +9,12 @@ use bevy::{
 use bevy_egui::PrimaryEguiContext;
 use bevy_hookup_core::{
     share_component::ShareComponent, sync_entity::SyncEntityOwner,
+    utils::buffer_object::BufferObject,
 };
 use bevy_panorbit_camera::PanOrbitCamera;
 use physics::{
-    collider::Collider, network_physics_object::NetworkPhysicsObject,
-    physics_object::DynamicPhysicsObject, physics_position::PhysicsPosition,
+    collider::Collider, physics_object::DynamicPhysicsObject,
+    physics_position::PhysicsPosition,
 };
 
 use serde::{Deserialize, Serialize};
@@ -74,11 +75,7 @@ pub(super) fn spawn_player(
         Collider::aabb(Vec3::new(0.8, 1.8, 0.8), Vec3::ZERO),
         SyncEntityOwner::new(),
         Player { fly: false },
-        NetworkPhysicsObject {
-            position: spawn_point,
-            ..default()
-        },
-        ShareComponent::<NetworkPhysicsObject>::default(),
+        ShareComponent::<BufferObject<PhysicsPosition>>::default(),
         PlayerRotation::default(),
         ShareComponent::<PlayerRotation>::default(),
         ChunkLoader::default(),

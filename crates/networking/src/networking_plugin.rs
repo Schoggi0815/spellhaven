@@ -4,7 +4,9 @@ use bevy_hookup_core::{
     hookup_sendable_plugin::HookupSendablePlugin,
     reshare_component_plugin::ReshareComponentPlugin,
     reshare_entity_plugin::ReshareEntityPlugin,
-    share_component::ShareComponent, sync_entity::SyncEntityOwner,
+    share_component::ShareComponent,
+    sync_entity::SyncEntityOwner,
+    utils::{buffer_object::BufferObject, buffer_plugin::BufferPlugin},
 };
 use bevy_hookup_messenger_steamworks::{
     steamworks_client::SteamworksClient, steamworks_server::SteamworksServer,
@@ -12,7 +14,7 @@ use bevy_hookup_messenger_steamworks::{
     steamworks_session_handler_plugin::SteamworksSessionHandlerPlugin,
 };
 use bevy_steamworks::{Client, LobbyType, SteamworksEvent};
-use physics::network_physics_object::NetworkPhysicsObject;
+use physics::physics_position::PhysicsPosition;
 use player::player_component::PlayerRotation;
 use steamworks::CallbackResult;
 use world_generation::{
@@ -35,9 +37,9 @@ impl Plugin for NetworkingPlugin {
             HookupSendablePlugin::<Sendables>::default(),
             HookupComponentPlugin::<Sendables, GenerationOptions>::default(),
             HookupComponentPlugin::<Sendables, PlayerRotation>::default(),
-            HookupComponentPlugin::<Sendables, NetworkPhysicsObject>::default(),
+            BufferPlugin::<PhysicsPosition, Sendables, 4>::default(),
             ReshareEntityPlugin::<Sendables>::default(),
-            ReshareComponentPlugin::<NetworkPhysicsObject>::default(),
+            ReshareComponentPlugin::<BufferObject<PhysicsPosition>>::default(),
             ReshareComponentPlugin::<PlayerRotation>::default(),
         ))
         .init_state::<NetworkingState>()
