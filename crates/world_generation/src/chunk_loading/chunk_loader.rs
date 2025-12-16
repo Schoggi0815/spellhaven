@@ -77,6 +77,7 @@ pub fn load_chunks(
 
                 if !chunk_load_cache.tree_map.contains_key(&tree_pos) {
                     let tree_entity = commands.spawn((
+                        Name::new(format!("Chunktree {}", *tree_pos)),
                         ChunkTree { position: tree_pos },
                         Transform::default(),
                         Visibility::Visible,

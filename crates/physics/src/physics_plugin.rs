@@ -44,11 +44,14 @@ pub fn update_transform_position(
 }
 
 fn update_buffered_physics(
-    buffered: Query<(
-        &Buffered<PhysicsPosition>,
-        &PhysicsPreviousPosition,
-        &mut Transform,
-    )>,
+    buffered: Query<
+        (
+            &Buffered<PhysicsPosition>,
+            &PhysicsPreviousPosition,
+            &mut Transform,
+        ),
+        Without<PhysicsPosition>,
+    >,
     fixed_time: Res<Time<Fixed>>,
 ) {
     for (buffered, previous, mut transform) in buffered {
@@ -58,11 +61,14 @@ fn update_buffered_physics(
 }
 
 fn update_buffered_previous(
-    buffered: Query<(
-        Entity,
-        &Buffered<PhysicsPosition>,
-        Option<&mut PhysicsPreviousPosition>,
-    )>,
+    buffered: Query<
+        (
+            Entity,
+            &Buffered<PhysicsPosition>,
+            Option<&mut PhysicsPreviousPosition>,
+        ),
+        Without<PhysicsPosition>,
+    >,
     mut commands: Commands,
 ) {
     for (entity, buffered, previous) in buffered {

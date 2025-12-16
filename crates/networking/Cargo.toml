@@ -7,6 +7,7 @@ bevy.workspace = true
 bevy_hookup_core.workspace = true
 bevy_hookup_macros.workspace = true
 bevy_hookup_messenger_steamworks.workspace = true
+bevy_hookup_messenger_websocket.workspace = true
 bevy-steamworks.workspace = true
 steamworks.workspace = true
 world_generation.workspace = true

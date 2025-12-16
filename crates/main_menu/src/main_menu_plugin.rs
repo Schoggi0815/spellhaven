@@ -4,6 +4,8 @@ use bevy::prelude::*;
 use bevy_egui::{EguiContexts, EguiPrimaryContextPass};
 use networking::{
     create_world::CreateWorld, start_self_session::StartSelfSession,
+    start_steam_server::StartSteamServer,
+    start_websocket_client::StartWebsocketClient,
     start_websocket_server::StartWebsocketServer,
 };
 
@@ -64,7 +66,22 @@ fn render_main_menu(
 
             ui.add_space(10.);
 
-            if ui.button("Host game").clicked() {
+            if ui.button("Host game (Steam)").clicked() {
+                let mut hasher = DefaultHasher::new();
+                menu_data.seed.hash(&mut hasher);
+                let seed = hasher.finish();
+
+                info!("Seed to use: {}", seed);
+
+                commands.trigger(StartSteamServer);
+                commands.trigger(CreateWorld { seed });
+
+                menu_state.set(MainMenuState::LoadingWorldGen);
+            }
+
+            ui.add_space(10.);
+
+            if ui.button("Host game (Server)").clicked() {
                 let mut hasher = DefaultHasher::new();
                 menu_data.seed.hash(&mut hasher);
                 let seed = hasher.finish();
@@ -73,6 +90,18 @@ fn render_main_menu(
 
                 commands.trigger(StartWebsocketServer);
                 commands.trigger(CreateWorld { seed });
+
+                menu_state.set(MainMenuState::LoadingWorldGen);
+            }
+
+            ui.add_space(20.);
+
+            ui.text_edit_singleline(&mut menu_data.server_ip)
+                .on_hover_text("Server Ip");
+            if ui.button("Join game").clicked() {
+                commands.trigger(StartWebsocketClient {
+                    address: menu_data.server_ip.clone(),
+                });
 
                 menu_state.set(MainMenuState::LoadingWorldGen);
             }

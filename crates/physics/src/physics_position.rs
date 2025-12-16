@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(
     Component,
+    Reflect,
     Serialize,
     Deserialize,
     Default,
@@ -12,6 +13,7 @@ use serde::{Deserialize, Serialize};
     Clone,
     Copy,
     Debug,
+    PartialEq,
 )]
 pub struct PhysicsPosition(pub Vec3);
 

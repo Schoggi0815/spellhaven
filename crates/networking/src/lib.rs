@@ -3,4 +3,6 @@ pub mod networking_plugin;
 mod networking_state;
 pub mod sendables;
 pub mod start_self_session;
+pub mod start_steam_server;
+pub mod start_websocket_client;
 pub mod start_websocket_server;
