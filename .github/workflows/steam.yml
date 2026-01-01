@@ -1,0 +1,49 @@
+name: Steam Deploy
+
+on:
+  push:
+    branches: [ "main" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    # Build game for linux
+    - name: Build Linux
+      run: cargo build --release --verbose --bin game
+    # Collect the game files in the build/linux directory
+    - name: Collect linux build
+      run: mkdir -p build/linux
+    - run: cp target/release/game build/linux
+    - run: cp target/release/build/steamworks-sys-****************/out/libsteam_api.so build/linux
+    - run: cp -r assets build/linux
+    # Build game for Windows
+    - name: Build Windows
+      run: cargo build --release --bin game --target x86_64-pc-windows-gnu
+    # Collect the game files in the build/windows directory
+    - name: Collect windows build
+      run: mkdir -p build/windows
+    - run: cp target/x86_64-pc-windows-gnu/release/game.exe build/windows
+    - run: cp target/x86_64-pc-windows-gnu/release/build/steamworks-sys-****************/out/steam_api64.*** build/windows
+    - run: cp -r assets build/windows
+    # Deploy to steam main branch
+    - name: Steam - Deploy
+      # You may pin to the exact commit or the version.
+      # uses: game-ci/steam-deploy@8bd9baca6407f9abd210bd1eef3c45f56e12d8d9
+      uses: game-ci/steam-deploy@v3.2.0
+      with:
+        username: ${{ secrets.STEAM_USERNAME }}
+        configVdf: ${{ secrets.STEAM_CONFIG_VDF }}
+        appId: 4251410
+        buildDescription: Action: ${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}
+        rootPath: build
+        depot1Path: windows
+        depot2Path: linux
+        releaseBranch: main
+          
