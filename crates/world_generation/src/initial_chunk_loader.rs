@@ -14,7 +14,8 @@ pub fn spawn_initial_chunk_loader(
     commands.spawn((
         InitialChunkLoader,
         ChunkLoader {
-            load_range: 4,
+            load_range: 2,
+            lod_range: [2, 4, 8, 16, 32, 64, 128, 256],
             ..Default::default()
         },
         Transform::default(),

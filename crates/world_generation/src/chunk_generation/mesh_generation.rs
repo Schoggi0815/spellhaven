@@ -7,10 +7,8 @@ use physics::collider::Collider;
 use utils::cartesian_product::cube_cartesian_product;
 
 use crate::chunk_generation::{
-    CHUNK_SIZE, VOXEL_SIZE,
-    ambient_occlusion::AmbiantOcclusion,
-    block_type::{BlockFace, BlockType},
-    chunk_lod::ChunkLod,
+    CHUNK_SIZE, VOXEL_SIZE, ambient_occlusion::AmbiantOcclusion,
+    block_type::BlockFace, chunk_lod::ChunkLod, mesh_type::MeshType,
     voxel_data::VoxelData,
 };
 
@@ -24,34 +22,14 @@ pub fn generate_mesh(
     voxel_data: &VoxelData,
     chunk_lod: ChunkLod,
 ) -> MeshResult {
-    let opaque_mesh = get_mesh_for_blocks(
-        &[
-            BlockType::Stone,
-            BlockType::Grass,
-            BlockType::Log,
-            BlockType::Snow,
-            BlockType::Dirt,
-        ],
-        voxel_data,
-        chunk_lod,
-        true,
-    );
+    let opaque_mesh =
+        get_mesh_for_mesh_type(MeshType::Opaque, voxel_data, chunk_lod, true);
 
-    let transparent_mesh =
-        get_mesh_for_blocks(&[BlockType::Leaf], voxel_data, chunk_lod, true);
+    let transparent_mesh = None;
+    // get_mesh_for_blocks(&[BlockType::Leaf], voxel_data, chunk_lod, true);
 
     let collider = if chunk_lod == ChunkLod::Full {
-        get_compound_collider(
-            &[
-                BlockType::Stone,
-                BlockType::Grass,
-                BlockType::Log,
-                BlockType::Snow,
-                BlockType::Dirt,
-                BlockType::Leaf,
-            ],
-            voxel_data,
-        )
+        get_compound_collider(voxel_data)
     } else {
         None
     };
@@ -63,8 +41,8 @@ pub fn generate_mesh(
     }
 }
 
-fn get_mesh_for_blocks(
-    blocks: &[BlockType],
+fn get_mesh_for_mesh_type(
+    mesh_type: MeshType,
     voxel_data: &VoxelData,
     chunk_lod: ChunkLod,
     ambiant_occlusion: bool,
@@ -107,7 +85,7 @@ fn get_mesh_for_blocks(
                     let [face_x, face_y] =
                         [width_pos as usize - 1, height_pos as usize - 1];
                     if done_faces[face_x][face_y]
-                        || !blocks.contains(&current_block)
+                        || mesh_type != current_block.get_mesh_type()
                         || voxel_data
                             .get_block(current_pos + direction)
                             .is_covering_for(&current_block)
@@ -324,10 +302,7 @@ pub fn rotate_into_direction<T: Vec3Swizzles>(
     }
 }
 
-fn get_compound_collider(
-    blocks: &[BlockType],
-    voxel_data: &VoxelData,
-) -> Option<Collider> {
+fn get_compound_collider(voxel_data: &VoxelData) -> Option<Collider> {
     let mut colliders: Vec<(Vec3, Vec3)> = Vec::new();
     let mut done_blocks =
         [[[false; CHUNK_SIZE + 2]; CHUNK_SIZE + 2]; CHUNK_SIZE + 2];
@@ -337,7 +312,7 @@ fn get_compound_collider(
         let current_block = voxel_data.get_block(current_pos);
 
         if done_blocks[x][y][z]
-            || !blocks.contains(&current_block)
+            || !current_block.is_colliding()
             || !voxel_data.is_next_to_air(current_pos)
         {
             continue;
@@ -349,10 +324,9 @@ fn get_compound_collider(
 
         while x + x_length <= CHUNK_SIZE
             && !done_blocks[x + x_length][y][z]
-            && blocks.contains(
-                &voxel_data
-                    .get_block(current_pos + (IVec3::X * x_length as i32)),
-            )
+            && voxel_data
+                .get_block(current_pos + (IVec3::X * x_length as i32))
+                .is_colliding()
             && voxel_data
                 .is_next_to_air(current_pos + (IVec3::X * x_length as i32))
         {
@@ -362,10 +336,12 @@ fn get_compound_collider(
         while y + y_length <= CHUNK_SIZE
             && (x..x_length + x).all(|x| {
                 !done_blocks[x][y + y_length][z]
-                    && blocks.contains(&voxel_data.get_block(
-                        current_pos.with_x(x as i32)
-                            + (IVec3::Y * y_length as i32),
-                    ))
+                    && voxel_data
+                        .get_block(
+                            current_pos.with_x(x as i32)
+                                + (IVec3::Y * y_length as i32),
+                        )
+                        .is_colliding()
                     && voxel_data.is_next_to_air(
                         current_pos.with_x(x as i32)
                             + (IVec3::Y * y_length as i32),
@@ -379,10 +355,12 @@ fn get_compound_collider(
             && (x..x_length + x).all(|x| {
                 (y..y_length + y).all(|y| {
                     !done_blocks[x][y][z + z_length]
-                        && blocks.contains(&voxel_data.get_block(
-                            current_pos.with_x(x as i32).with_y(y as i32)
-                                + (IVec3::Z * z_length as i32),
-                        ))
+                        && voxel_data
+                            .get_block(
+                                current_pos.with_x(x as i32).with_y(y as i32)
+                                    + (IVec3::Z * z_length as i32),
+                            )
+                            .is_colliding()
                         && voxel_data.is_next_to_air(
                             current_pos.with_x(x as i32).with_y(y as i32)
                                 + (IVec3::Z * z_length as i32),

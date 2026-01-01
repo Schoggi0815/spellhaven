@@ -9,6 +9,7 @@ pub mod chunk_task;
 pub mod chunk_triangles;
 pub mod country;
 pub mod mesh_generation;
+pub mod mesh_type;
 pub mod noise;
 pub mod structures;
 pub mod voxel_data;

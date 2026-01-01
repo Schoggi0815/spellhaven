@@ -2,19 +2,19 @@ use crate::chunk_generation::{
     block_type::BlockType,
     noise::{
         terrain_noise::{TERRAIN_NOISE_FILE_PATH, TerrainNoise},
-        terrain_noise_type::{ConstantValue, TerrainNoiseType},
+        terrain_noise_group::TerrainNoiseGroup,
+        terrain_noise_type::TerrainNoiseType,
     },
     structures::{
-        oak_structure_generator::OakStructureGenerator,
+        pine_structure_generator::PineStructureGenerator,
         structure_generator::VoxelStructureMetadata,
         structure_generators::StructureGenerators,
         tree_structure_generator::TreeStructureGenerator,
     },
 };
 use bevy::prelude::*;
-use noise::NoiseFn;
-use rand::SeedableRng;
 use rand::prelude::StdRng;
+use rand::{Rng, SeedableRng};
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use utils::file_utils::read_ron_from_file;
@@ -22,19 +22,20 @@ use utils::file_utils::read_ron_from_file;
 fn get_seeded_white_noise() -> TerrainNoise {
     TerrainNoise::new(
         0,
-        vec![TerrainNoiseType::ConstantValue {
-            value: ConstantValue::F64(1.0),
-        }],
+        vec![
+            TerrainNoiseType::Simplex { seed_index: 1 },
+            TerrainNoiseType::RandomI64,
+        ],
     )
 }
 
-#[derive(Clone, Serialize, Deserialize, Component)]
+#[derive(Clone, Serialize, Deserialize, Component, Debug)]
 pub struct GenerationOptions {
     pub seed: u64,
     pub structure_generators: Vec<Arc<Box<StructureGenerators>>>,
     pub structure_assets: Vec<StructureAsset>,
     pub generate_paths: bool,
-    pub terrain_noise: TerrainNoise,
+    pub terrain_noise_group: TerrainNoiseGroup,
 }
 
 impl GenerationOptions {
@@ -44,7 +45,7 @@ impl GenerationOptions {
         // );
         // let box_structure =
         //     vox_data_to_structure_data(&from_file("assets/box.vox").unwrap());
-        let terrain_noise: TerrainNoise =
+        let terrain_noise_group: TerrainNoiseGroup =
             read_ron_from_file(TERRAIN_NOISE_FILE_PATH)
                 .expect("Failed loading terrain noise config.");
 
@@ -52,34 +53,89 @@ impl GenerationOptions {
         //     read_ron_from_file("assets/tree_test.ron")
         //         .expect("Failed to load tree model.");
 
+        let mut rng = StdRng::seed_from_u64(seed);
+
         Self {
             seed,
-            terrain_noise,
             generate_paths: false,
             structure_generators: vec![
-                Arc::new(Box::new(StructureGenerators::Oak(
-                    OakStructureGenerator::new(VoxelStructureMetadata::new(
-                        [27, 27, 27],
-                        [64, 64],
-                        [24, 16],
-                        get_seeded_white_noise(),
-                    )),
+                // Arc::new(Box::new(StructureGenerators::Oak(
+                //     OakStructureGenerator::new(
+                //         VoxelStructureMetadata::new(
+                //             [27, 27, 27],
+                //             [64, 64],
+                //             [24, 16],
+                //             get_seeded_white_noise(),
+                //             rng.random(),
+                //         ),
+                //         &terrain_noise_group,
+                //         seed,
+                //     ),
+                // ))),
+                // Arc::new(Box::new(StructureGenerators::Oak(
+                //     OakStructureGenerator::new(
+                //         VoxelStructureMetadata::new(
+                //             [27, 27, 27],
+                //             [64, 64],
+                //             [43, 52],
+                //             get_seeded_white_noise(),
+                //             rng.random(),
+                //         ),
+                //         &terrain_noise_group,
+                //         seed,
+                //     ),
+                // ))),
+                // Arc::new(Box::new(StructureGenerators::Oak(
+                //     OakStructureGenerator::new(
+                //         VoxelStructureMetadata::new(
+                //             [27, 27, 27],
+                //             [64, 64],
+                //             [10, 4],
+                //             get_seeded_white_noise(),
+                //             rng.random(),
+                //         ),
+                //         &terrain_noise_group,
+                //         seed,
+                //     ),
+                // ))),
+                Arc::new(Box::new(StructureGenerators::Pine(
+                    PineStructureGenerator::new(
+                        VoxelStructureMetadata::new(
+                            [27, 48, 27],
+                            [64, 64],
+                            [12, 28],
+                            get_seeded_white_noise(),
+                            rng.random(),
+                        ),
+                        &terrain_noise_group,
+                        seed,
+                    ),
                 ))),
-                Arc::new(Box::new(StructureGenerators::Oak(
-                    OakStructureGenerator::new(VoxelStructureMetadata::new(
-                        [27, 27, 27],
-                        [64, 64],
-                        [43, 52],
-                        get_seeded_white_noise(),
-                    )),
+                Arc::new(Box::new(StructureGenerators::Pine(
+                    PineStructureGenerator::new(
+                        VoxelStructureMetadata::new(
+                            [27, 48, 27],
+                            [64, 64],
+                            [0, 0],
+                            get_seeded_white_noise(),
+                            rng.random(),
+                        ),
+                        &terrain_noise_group,
+                        seed,
+                    ),
                 ))),
-                Arc::new(Box::new(StructureGenerators::Oak(
-                    OakStructureGenerator::new(VoxelStructureMetadata::new(
-                        [27, 27, 27],
-                        [64, 64],
-                        [10, 4],
-                        get_seeded_white_noise(),
-                    )),
+                Arc::new(Box::new(StructureGenerators::Pine(
+                    PineStructureGenerator::new(
+                        VoxelStructureMetadata::new(
+                            [27, 48, 27],
+                            [64, 64],
+                            [28, 12],
+                            get_seeded_white_noise(),
+                            rng.random(),
+                        ),
+                        &terrain_noise_group,
+                        seed,
+                    ),
                 ))),
                 // Arc::new(Box::new(FixedStructureGenerator {
                 //     fixed_structure_model: Arc::new(tree_model.blocks),
@@ -98,12 +154,12 @@ impl GenerationOptions {
                 //     _blocks: (*box_structure.0).clone(),
                 // }
             ],
+            terrain_noise_group,
         }
     }
 
-    pub fn get_terrain_noise(&self) -> impl NoiseFn<f64, 2> {
-        self.terrain_noise
-            .get_noise_fn(&mut StdRng::seed_from_u64(self.seed + 1))
+    pub fn get_seeded_rng(&self) -> impl Rng {
+        StdRng::seed_from_u64(self.seed)
     }
 }
 

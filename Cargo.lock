@@ -414,6 +414,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "bevy-steamworks"
+version = "0.15.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "337bd586c459365734d261253adf0b6f526cc932464c2c9c8465b66f7801bb5e"
+dependencies = [
+ "bevy_app",
+ "bevy_ecs",
+ "steamworks",
+]
+
+[[package]]
 name = "bevy_a11y"
 version = "0.17.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -884,12 +895,13 @@ dependencies = [
 
 [[package]]
 name = "bevy_hookup_core"
-version = "5.0.0"
+version = "5.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "db9a85cb84f3b56111a26b9aa9d256ad551ae3e57222d5062e853383e5b0dc4d"
+checksum = "c1d323f6a5525062cefb016294d31e67dbbac6f532e42540f68a66662adce5e4"
 dependencies = [
  "bevy",
  "crossbeam",
+ "itertools 0.14.0",
  "rand 0.9.2",
  "serde",
 ]
@@ -906,10 +918,28 @@ dependencies = [
 ]
 
 [[package]]
-name = "bevy_hookup_messenger_websocket"
-version = "2.5.0"
+name = "bevy_hookup_messenger_steamworks"
+version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "24e2c0df04260ff156c27a2ec5325a689836a31ad20604142523e99b314c0809"
+checksum = "63f2e9f5e73b2ed197d66345f7cf38b35d882bfa613409042659610e1d184884"
+dependencies = [
+ "anyhow",
+ "bevy",
+ "bevy-steamworks",
+ "bevy_hookup_core",
+ "bincode",
+ "crossbeam",
+ "futures-util",
+ "serde",
+ "tokio",
+ "tokio-tungstenite",
+]
+
+[[package]]
+name = "bevy_hookup_messenger_websocket"
+version = "2.5.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f62a398ad002e343f851f2f5a56b47cfa6b05948bbdb2adaddd4ffbd5d487b35"
 dependencies = [
  "bevy",
  "bevy_hookup_core",
@@ -3799,12 +3829,16 @@ name = "networking"
 version = "0.0.0"
 dependencies = [
  "bevy",
+ "bevy-steamworks",
  "bevy_hookup_core",
  "bevy_hookup_macros",
+ "bevy_hookup_messenger_steamworks",
  "bevy_hookup_messenger_websocket",
+ "crossbeam",
  "physics",
  "player",
  "serde",
+ "steamworks",
  "world_generation",
 ]
 
@@ -5054,12 +5088,15 @@ dependencies = [
  "anyhow",
  "bevy",
  "bevy-inspector-egui",
+ "bevy-steamworks",
  "bevy_egui",
  "bevy_hookup_core",
  "bevy_hookup_macros",
+ "bevy_hookup_messenger_steamworks",
  "bevy_hookup_messenger_websocket",
  "bevy_panorbit_camera",
  "bitflags 2.9.4",
+ "crossbeam",
  "debug_resource",
  "debug_tools",
  "egui 0.32.0",
@@ -5078,6 +5115,7 @@ dependencies = [
  "rand 0.9.2",
  "ron 0.11.0",
  "serde",
+ "steamworks",
  "tokio",
  "ui",
  "utils",
@@ -5120,6 +5158,24 @@ name = "static_assertions"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
+
+[[package]]
+name = "steamworks"
+version = "0.12.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "722f54c70818b8debdc25b18618b77a0a69fa280012c29e7904d32f9136299fc"
+dependencies = [
+ "bitflags 2.9.4",
+ "paste",
+ "steamworks-sys",
+ "thiserror 2.0.17",
+]
+
+[[package]]
+name = "steamworks-sys"
+version = "0.12.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "42862065c9e685d08cc3d9f6c609d4b46bd9684ec7e9420688eb979213469582"
 
 [[package]]
 name = "strict-num"

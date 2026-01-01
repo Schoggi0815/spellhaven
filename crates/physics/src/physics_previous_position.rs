@@ -1,4 +1,4 @@
 use bevy::prelude::*;
 
 #[derive(Component, Default, Deref, DerefMut)]
-pub struct PhysicsPreviousPosition(Vec3);
+pub struct PhysicsPreviousPosition(pub Vec3);

@@ -8,6 +8,7 @@ use bevy::{
 };
 use bevy_inspector_egui::{bevy_egui::EguiPlugin, quick::WorldInspectorPlugin};
 use bevy_panorbit_camera::PanOrbitCameraPlugin;
+use bevy_steamworks::SteamworksPlugin;
 use debug_tools::debug_plugin::SpellhavenDebugPlugin;
 use main_menu::main_menu_plugin::MainMenuPlugin;
 use networking::networking_plugin::NetworkingPlugin;
@@ -24,6 +25,7 @@ async fn main() {
     App::new()
         .add_plugins(
             (
+                SteamworksPlugin::init_app(4251410).unwrap(),
                 DefaultPlugins
                     .set(WindowPlugin {
                         primary_window: Some(Window {

@@ -27,7 +27,7 @@ impl Default for ChunkTaskPool {
         Self {
             task_pool: TaskPoolBuilder::new()
                 .num_threads(6)
-                .stack_size(1_000_000)
+                .stack_size(4_000_000)
                 .build(),
         }
     }

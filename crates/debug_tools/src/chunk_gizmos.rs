@@ -31,8 +31,13 @@ pub fn draw_path_gizmos(
         return;
     }
 
-    let terrain_noise =
-        Add::new(generation_options.get_terrain_noise(), Constant::new(5.));
+    let terrain_noise = Add::new(
+        generation_options
+            .terrain_noise_group
+            .terrain_height
+            .get_noise_fn(&mut generation_options.get_seeded_rng()),
+        Constant::new(5.),
+    );
 
     for player in &players {
         let player_chunk_pos =
