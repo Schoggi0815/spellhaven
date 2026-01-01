@@ -27,7 +27,7 @@ jobs:
     - run: cp -r assets build/linux
     # Build game for Windows
     - name: Build Windows
-      run: cargo build --release --bin game --target x86_64-pc-windows-gnu
+      run: rustup target add x86_64-pc-windows-gnu && cargo build --release --bin game --target x86_64-pc-windows-gnu
     # Collect the game files in the build/windows directory
     - name: Collect windows build
       run: mkdir -p build/windows
