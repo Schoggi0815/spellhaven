@@ -689,7 +689,7 @@
                 value_index: 8,
             ),
             ConstantValue(
-                value: F64(4.0),
+                value: F64(2.0),
             ),
             Constant(
                 value_index: 10,
@@ -743,7 +743,7 @@
                 value_index: 8,
             ),
             ConstantValue(
-                value: F64(2.5),
+                value: F64(1.5),
             ),
             Constant(
                 value_index: 10,
@@ -797,7 +797,7 @@
                 value_index: 8,
             ),
             ConstantValue(
-                value: F64(10.0),
+                value: F64(5.0),
             ),
             Constant(
                 value_index: 10,
@@ -851,7 +851,7 @@
                 value_index: 8,
             ),
             ConstantValue(
-                value: F64(2.0),
+                value: F64(1.0),
             ),
             Constant(
                 value_index: 10,

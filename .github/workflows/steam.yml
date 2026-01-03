@@ -43,7 +43,7 @@ jobs:
         username: ${{ secrets.STEAM_USERNAME }}
         configVdf: ${{ secrets.STEAM_CONFIG_VDF }}
         appId: 4251410
-        buildDescription: "Action: ${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}"
+        buildDescription: "Action: ${{ github.run_number }}.${{ github.run_attempt }}"
         rootPath: build
         depot1Path: windows
         depot2Path: linux

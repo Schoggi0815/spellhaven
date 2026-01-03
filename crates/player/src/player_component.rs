@@ -19,7 +19,10 @@ use physics::{
 
 use serde::{Deserialize, Serialize};
 use world_generation::{
-    chunk_loading::chunk_loader::ChunkLoader, world_ready::WorldReady,
+    chunk_loading::{
+        chunk_loader::ChunkLoader, visual_chunk_loader::VisualChunkLoader,
+    },
+    world_ready::WorldReady,
 };
 
 use crate::player_state::PlayerState;
@@ -87,6 +90,7 @@ pub(super) fn spawn_player(
         Camera {
             ..Default::default()
         },
+        VisualChunkLoader,
         PrimaryEguiContext,
         ColorGrading {
             global: ColorGradingGlobal {

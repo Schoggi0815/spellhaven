@@ -7,3 +7,4 @@ pub mod chunk_pos;
 pub mod chunk_tree;
 pub mod lod_position;
 pub mod node_state;
+pub mod visual_chunk_loader;

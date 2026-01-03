@@ -85,4 +85,32 @@ impl LodPosition {
             loader_chunk_pos.min(max_chunk_pos).max(min_chunk_pos),
         )
     }
+
+    pub fn get_corners(
+        &self,
+        tree_pos: ChunkTreePos,
+    ) -> impl Iterator<Item = AbsoluteChunkPos> {
+        [
+            self.get_absolute_chunk_pos(tree_pos),
+            LodPosition::new(
+                self.lod,
+                self.relative_position.x + 1,
+                self.relative_position.y,
+            )
+            .get_absolute_chunk_pos(tree_pos),
+            LodPosition::new(
+                self.lod,
+                self.relative_position.x,
+                self.relative_position.y + 1,
+            )
+            .get_absolute_chunk_pos(tree_pos),
+            LodPosition::new(
+                self.lod,
+                self.relative_position.x + 1,
+                self.relative_position.y + 1,
+            )
+            .get_absolute_chunk_pos(tree_pos),
+        ]
+        .into_iter()
+    }
 }

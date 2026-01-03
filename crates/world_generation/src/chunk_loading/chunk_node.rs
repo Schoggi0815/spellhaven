@@ -9,8 +9,9 @@ use crate::{
     chunk_loading::{
         chunk_loader::ChunkLoader, chunk_node_children::ChunkNodeChildren,
         chunk_tree::ChunkTreePos, lod_position::LodPosition,
-        node_state::NodeState,
+        node_state::NodeState, visual_chunk_loader::VisualChunkLoader,
     },
+    generation_options::GenerationOptions,
 };
 
 /// The Chunk Node component represents a branch in the Quad-Tree.
@@ -155,9 +156,21 @@ pub fn check_for_task_spawning(
 
 pub fn check_for_division(
     mut commands: Commands,
+    generation_options: Single<&GenerationOptions>,
     chunk_nodes: Query<(&mut ChunkNode, Entity)>,
     chunk_loaders: Query<(&ChunkLoader, &Transform, Option<&PhysicsVelocity>)>,
+    visual_chunk_loaders: Query<(
+        &VisualChunkLoader,
+        &Projection,
+        &Camera,
+        &GlobalTransform,
+    )>,
 ) {
+    let terrain_noise = generation_options
+        .terrain_noise_group
+        .terrain_height
+        .get_noise_fn(&mut generation_options.get_seeded_rng());
+
     for (mut chunk_node, chunk_node_entity) in chunk_nodes
         .into_iter()
         .filter(|node| node.0.state.is_leaf() && !node.0.is_dead)
@@ -186,6 +199,18 @@ pub fn check_for_division(
                     min_lod
                 }
             })
+            .chain(visual_chunk_loaders.iter().map(
+                |(loader, projection, camera, transform)| {
+                    loader.get_min_lod(
+                        &terrain_noise,
+                        chunk_node.position,
+                        chunk_node.tree_pos,
+                        projection,
+                        transform,
+                        camera,
+                    )
+                },
+            ))
             .min();
 
         let Some(min_lod) = min_lod else {
@@ -206,9 +231,21 @@ pub fn check_for_division(
 
 pub fn check_for_merging(
     mut chunk_nodes: Query<(&mut ChunkNode, Entity)>,
+    generation_options: Single<&GenerationOptions>,
     chunk_loaders: Query<(&ChunkLoader, &Transform)>,
+    visual_chunk_loaders: Query<(
+        &VisualChunkLoader,
+        &Projection,
+        &Camera,
+        &GlobalTransform,
+    )>,
 ) {
     let mut children_to_die = Vec::new();
+
+    let terrain_noise = generation_options
+        .terrain_noise_group
+        .terrain_height
+        .get_noise_fn(&mut generation_options.get_seeded_rng());
 
     for (mut chunk_node, _) in chunk_nodes
         .iter_mut()
@@ -224,6 +261,18 @@ pub fn check_for_merging(
                     chunk_node.tree_pos,
                 )
             })
+            .chain(visual_chunk_loaders.iter().map(
+                |(loader, projection, camera, transform)| {
+                    loader.get_min_lod(
+                        &terrain_noise,
+                        chunk_node.position,
+                        chunk_node.tree_pos,
+                        projection,
+                        transform,
+                        camera,
+                    )
+                },
+            ))
             .min();
 
         let Some(min_lod) = min_lod else {
