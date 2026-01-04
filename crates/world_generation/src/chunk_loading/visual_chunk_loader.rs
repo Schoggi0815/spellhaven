@@ -30,39 +30,30 @@ impl VisualChunkLoader {
 
         let vertical_fov = perspective.fov / PI * 2.;
 
-        let min_lod = lod_pos
-            .get_corners(tree_pos)
-            .map(|corner| {
-                let corner_center = corner.get_pos_center();
-                let corner_height = terrain_noise
-                    .get((corner_center / VOXEL_SIZE).as_dvec2().to_array())
-                    as f32
-                    * VOXEL_SIZE;
+        let center = lod_pos.get_center(tree_pos);
 
-                let corner_pos =
-                    Vec3::new(corner_center.x, corner_height, corner_center.y);
+        let corner_height = terrain_noise
+            .get((center / VOXEL_SIZE).as_dvec2().to_array())
+            as f32
+            * VOXEL_SIZE;
 
-                let ndc = camera.world_to_ndc(camera_transform, corner_pos);
+        let corner_pos = Vec3::new(center.x, corner_height, center.y);
 
-                let Some(ndc) = ndc else {
-                    return MAX_LOD;
-                };
+        let ndc = camera.world_to_ndc(camera_transform, corner_pos);
 
-                let leeway = lod_pos.lod.multiplier_f32() / 1024.;
+        let Some(ndc) = ndc else {
+            return MAX_LOD;
+        };
 
-                if ndc.x.abs() > 1. + leeway
-                    || ndc.y.abs() > 1. + leeway
-                    || ndc.z < 0.
-                {
-                    return MAX_LOD;
-                }
+        let leeway = lod_pos.lod.multiplier_f32() / 256.;
 
-                let ratio = ndc.z * 1_500. / vertical_fov;
+        if ndc.x.abs() > 1. + leeway || ndc.y.abs() > 1. + leeway || ndc.z < 0.
+        {
+            return MAX_LOD;
+        }
 
-                ChunkLod::from_fraction(ratio).min(MAX_LOD)
-            })
-            .min();
+        let ratio = ndc.z * 1_500. / vertical_fov;
 
-        return min_lod.unwrap_or(MAX_LOD);
+        ChunkLod::from_fraction(ratio).min(MAX_LOD)
     }
 }
