@@ -6,7 +6,7 @@ use std::{
 
 use anyhow::anyhow;
 use bevy::prelude::*;
-use egui::Ui;
+use egui::{Context, Ui};
 use egui_node_editor::{GraphEditorState, Node, NodeResponse, OutputId};
 use ron::ser::PrettyConfig;
 use world_generation::chunk_generation::noise::terrain_noise_group::TerrainNoiseGroup;
@@ -19,6 +19,7 @@ use crate::{
         terrain_node_data::TerrainNodeData,
         terrain_node_template::{TerrainGraph, TerrainNodeTemplate},
         terrain_response::TerrainResponse,
+        terrain_user_state::TerrainUserState,
         terrain_value_type::{TerrainValueType, ValueOrIndex},
     },
     world_generation::chunk_generation::noise::{
@@ -32,12 +33,13 @@ type TerrainGraphState = GraphEditorState<
     TerrainDataType,
     TerrainValueType,
     TerrainNodeTemplate,
-    (),
+    TerrainUserState,
 >;
 
-#[derive(Resource, Deref, DerefMut)]
+#[derive(Resource)]
 pub struct TerrainGraphResource {
     state: TerrainGraphState,
+    user_state: TerrainUserState,
 }
 
 const TERRAIN_NOISE_GRAPH_FILE_PATH: &'static str =
@@ -49,6 +51,7 @@ impl Default for TerrainGraphResource {
         let Ok(mut file) = file else {
             return Self {
                 state: Default::default(),
+                user_state: Default::default(),
             };
         };
 
@@ -57,22 +60,26 @@ impl Default for TerrainGraphResource {
         if read_result.is_err() {
             return Self {
                 state: Default::default(),
+                user_state: Default::default(),
             };
         }
 
         let state: TerrainGraphState =
             ron::from_str(&output_string).expect("cannot read terrain data");
 
-        Self { state }
+        Self {
+            state,
+            ..Default::default()
+        }
     }
 }
 
 impl TerrainGraphResource {
-    pub fn draw(&mut self, ui: &mut Ui) {
+    pub fn draw(&mut self, ui: &mut Ui, context: &Context) {
         let graph_response = self.state.draw_graph_editor(
             ui,
-            AllTerrainNodeTemplates,
-            &mut (),
+            AllTerrainNodeTemplates(context),
+            &mut self.user_state,
             Vec::default(),
         );
 
@@ -81,6 +88,7 @@ impl TerrainGraphResource {
                 match user_response {
                     TerrainResponse::UpdateOutputType(node_id, output_type) => {
                         let Some((_, node)) = self
+                            .state
                             .graph
                             .nodes
                             .iter_mut()
@@ -103,7 +111,7 @@ impl TerrainGraphResource {
 
     pub fn save(&self) -> Result<(), anyhow::Error> {
         let get_terrain_noise = |output_type: NoiseOutputType| -> Result<TerrainNoise, anyhow::Error> {
-            let output_nodes = self.graph.nodes.iter().find(|node| {
+            let output_nodes = self.state.graph.nodes.iter().find(|node| {
                 node.1.user_data.template
                     == TerrainNodeTemplate::Output(output_type)
             });
@@ -120,7 +128,7 @@ impl TerrainGraphResource {
             let start_index = get_terrain_noise_index(
                 output_node.1,
                 &mut noise_array,
-                &self.graph,
+                &self.state.graph,
                 &mut cache,
             );
 
@@ -215,6 +223,7 @@ fn get_terrain_noise_index(
 
     match node.user_data.template {
         TerrainNodeTemplate::Output(_) => get_input_value("A"),
+        TerrainNodeTemplate::Preview(_) => get_input_value("A"),
         TerrainNodeTemplate::SimplexNoise => {
             let seed_index = get_input_value("seed").get_i64_index(noise_array);
             let noise_index = noise_array.len();

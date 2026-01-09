@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     terrain_node_editor::{
         terrain_node_data::TerrainNodeData, terrain_response::TerrainResponse,
+        terrain_user_state::TerrainUserState,
     },
     world_generation::chunk_generation::noise::terrain_noise_type::{
         ConstantValue, TerrainNoiseType,
@@ -130,14 +131,14 @@ impl Default for TerrainValueType {
 
 impl WidgetValueTrait for TerrainValueType {
     type Response = TerrainResponse;
-    type UserState = ();
+    type UserState = TerrainUserState;
     type NodeData = TerrainNodeData;
     fn value_widget(
         &mut self,
         param_name: &str,
         _node_id: NodeId,
         ui: &mut egui::Ui,
-        _user_state: &mut (),
+        _user_state: &mut TerrainUserState,
         _node_data: &TerrainNodeData,
     ) -> Vec<Self::Response> {
         match self {
