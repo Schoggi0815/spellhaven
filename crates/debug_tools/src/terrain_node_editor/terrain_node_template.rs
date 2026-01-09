@@ -1,5 +1,6 @@
 use std::borrow::Cow;
 
+use egui::{TextureHandle, TextureId};
 use egui_node_editor::{Graph, InputParamKind, NodeTemplateTrait};
 use serde::{Deserialize, Serialize};
 
@@ -8,6 +9,7 @@ use crate::{
         noise_output_type::NoiseOutputType,
         terrain_data_type::TerrainDataType,
         terrain_node_data::TerrainNodeData,
+        terrain_user_state::TerrainUserState,
         terrain_value_type::{NoiseValue, TerrainValueType, ValueOrIndex},
     },
     world_generation::chunk_generation::noise::gradient_fractal_noise::{
@@ -37,6 +39,7 @@ pub enum TerrainNodeTemplate {
     RandomI64,
     RandomF64,
     DivideF64,
+    Preview(TextureId),
 }
 
 pub type TerrainGraph =
@@ -49,7 +52,7 @@ impl NodeTemplateTrait for TerrainNodeTemplate {
 
     type ValueType = TerrainValueType;
 
-    type UserState = ();
+    type UserState = TerrainUserState;
 
     type CategoryType = &'static str;
 
@@ -77,6 +80,7 @@ impl NodeTemplateTrait for TerrainNodeTemplate {
             TerrainNodeTemplate::RandomF64 => "Random Float",
             TerrainNodeTemplate::DivideF64 => "Divide",
             TerrainNodeTemplate::NoiseSub => "Noise Sub",
+            TerrainNodeTemplate::Preview(_) => "Preview",
         })
     }
 
@@ -85,7 +89,10 @@ impl NodeTemplateTrait for TerrainNodeTemplate {
         _user_state: &mut Self::UserState,
     ) -> Vec<&'static str> {
         match self {
-            TerrainNodeTemplate::Output(_) => vec![],
+            TerrainNodeTemplate::Output(_)
+            | TerrainNodeTemplate::Preview(_) => {
+                vec![]
+            }
             TerrainNodeTemplate::SimplexNoise => vec!["Noise Functions"],
             TerrainNodeTemplate::NoiseAdd
             | TerrainNodeTemplate::NoiseSub
@@ -202,6 +209,9 @@ impl NodeTemplateTrait for TerrainNodeTemplate {
 
         match self {
             TerrainNodeTemplate::Output(_) => {
+                input_noise(graph, "A");
+            }
+            TerrainNodeTemplate::Preview(_) => {
                 input_noise(graph, "A");
             }
             TerrainNodeTemplate::SimplexNoise => {

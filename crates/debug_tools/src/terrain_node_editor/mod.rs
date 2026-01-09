@@ -5,4 +5,5 @@ pub mod terrain_graph_resource;
 mod terrain_node_data;
 mod terrain_node_template;
 mod terrain_response;
+mod terrain_user_state;
 mod terrain_value_type;

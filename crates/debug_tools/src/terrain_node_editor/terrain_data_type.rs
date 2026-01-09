@@ -4,6 +4,8 @@ use bevy_inspector_egui::egui::Color32;
 use egui_node_editor::DataTypeTrait;
 use serde::{Deserialize, Serialize};
 
+use crate::terrain_node_editor::terrain_user_state::TerrainUserState;
+
 #[derive(PartialEq, Eq, Serialize, Deserialize)]
 pub enum TerrainDataType {
     NoiseF64x2,
@@ -11,8 +13,8 @@ pub enum TerrainDataType {
     I64,
 }
 
-impl DataTypeTrait<()> for TerrainDataType {
-    fn data_type_color(&self, _: &mut ()) -> Color32 {
+impl DataTypeTrait<TerrainUserState> for TerrainDataType {
+    fn data_type_color(&self, _: &mut TerrainUserState) -> Color32 {
         match self {
             TerrainDataType::NoiseF64x2 => Color32::YELLOW,
             TerrainDataType::F64 => Color32::BLUE,
