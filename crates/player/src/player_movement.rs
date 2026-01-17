@@ -1,13 +1,13 @@
 use std::f32::consts::PI;
 
 use bevy::prelude::*;
-use bevy_panorbit_camera::PanOrbitCamera;
 use physics::{
     physics_object::DynamicPhysicsObject, physics_velocity::PhysicsVelocity,
 };
 
 use crate::{
-    player_component::{Player, PlayerCamera, PlayerRotation},
+    camera::player_camera::PlayerCamera,
+    player_component::{Player, PlayerRotation},
     player_inputs::PlayerInputs,
 };
 
@@ -19,7 +19,7 @@ pub(super) fn movement(
         &mut DynamicPhysicsObject,
         &mut PlayerRotation,
     )>,
-    player_camera: Query<&PanOrbitCamera, With<PlayerCamera>>,
+    player_camera: Query<&PlayerCamera>,
     time: Res<Time>,
 ) {
     for (
@@ -70,8 +70,7 @@ pub(super) fn movement(
 
         if let Ok(player_camera) = player_camera.single() {
             // Rotate vector to camera
-            let rotation =
-                Quat::from_rotation_y(player_camera.yaw.unwrap_or(0.));
+            let rotation = Quat::from_rotation_y(player_camera.yaw);
             move_direction = rotation
                 .mul_vec3(move_direction.normalize_or_zero() * movement_speed);
 

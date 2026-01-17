@@ -5,7 +5,6 @@ use physics::physics_systems::PhysicsSystems;
 
 use crate::{
     camera::player_camera_plugin::PlayerCameraPlugin,
-    player_camera_movement::move_camera,
     player_component::{
         PlayerBody, PlayerRotation, spawn_player, spawn_player_body,
     },
@@ -21,7 +20,7 @@ impl Plugin for PlayerPlugin {
         app.add_plugins(PlayerCameraPlugin)
             .init_state::<PlayerState>()
             .init_resource::<PlayerInputs>()
-            .add_systems(Update, (move_camera, spawn_player_body))
+            .add_systems(Update, spawn_player_body)
             .add_systems(PreUpdate, update_player_inputs)
             .add_systems(FixedUpdate, movement.before(PhysicsSystems))
             .add_systems(Update, (rotate_body_smoothed, zoom))

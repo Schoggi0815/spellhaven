@@ -4453,10 +4453,10 @@ dependencies = [
  "bevy",
  "bevy_egui",
  "bevy_hookup_core",
- "bevy_panorbit_camera",
  "debug_resource",
  "physics",
  "serde",
+ "utils",
  "world_generation",
 ]
 

@@ -11,7 +11,6 @@ use bevy_hookup_core::{
     share_component::ShareComponent, sync_entity::SyncEntityOwner,
     utils::buffer_object::BufferObject,
 };
-use bevy_panorbit_camera::PanOrbitCamera;
 use physics::{
     collider::Collider, physics_object::DynamicPhysicsObject,
     physics_position::PhysicsPosition,
@@ -25,7 +24,12 @@ use world_generation::{
     world_ready::WorldReady,
 };
 
-use crate::player_state::PlayerState;
+use crate::{
+    camera::{
+        player_camera::PlayerCamera, player_camera_target::PlayerCameraTarget,
+    },
+    player_state::PlayerState,
+};
 
 #[derive(Component)]
 pub struct Player {
@@ -39,9 +43,6 @@ pub struct PlayerRotation(pub Quat);
 
 #[derive(Component)]
 pub(super) struct PlayerBody;
-
-#[derive(Component)]
-pub struct PlayerCamera;
 
 pub(super) fn spawn_player(
     _: On<WorldReady>,
@@ -82,6 +83,7 @@ pub(super) fn spawn_player(
         PlayerRotation::default(),
         ShareComponent::<PlayerRotation>::default(),
         ChunkLoader::default(),
+        PlayerCameraTarget,
         Name::new("Player"),
     ));
 
@@ -112,9 +114,12 @@ pub(super) fn spawn_player(
         Exposure::SUNLIGHT,
         Tonemapping::TonyMcMapface,
         Bloom::NATURAL,
-        PanOrbitCamera::default(),
         Atmosphere::EARTH,
-        PlayerCamera,
+        PlayerCamera {
+            target_pos: spawn_point,
+            target_offset: Vec3::Y,
+            ..Default::default()
+        },
         Name::new("PlayerCamera"),
     ));
 

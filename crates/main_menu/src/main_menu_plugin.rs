@@ -1,6 +1,9 @@
 use std::hash::{DefaultHasher, Hash, Hasher};
 
-use bevy::prelude::*;
+use bevy::{
+    prelude::*,
+    window::{CursorGrabMode, CursorOptions},
+};
 use bevy_egui::{EguiContexts, EguiPrimaryContextPass};
 use networking::{
     create_world::CreateWorld, start_self_session::StartSelfSession,
@@ -21,6 +24,7 @@ impl Plugin for MainMenuPlugin {
     fn build(&self, app: &mut App) {
         app.init_state::<MainMenuState>()
             .add_systems(OnEnter(MainMenuState::Shown), add_menu_cam)
+            .add_systems(OnEnter(MainMenuState::Hidden), hide_cursor)
             .add_systems(
                 EguiPrimaryContextPass,
                 (
@@ -38,6 +42,11 @@ pub struct MenuCamera;
 
 fn add_menu_cam(mut commands: Commands) {
     commands.spawn((Camera2d, MenuCamera));
+}
+
+fn hide_cursor(mut cursor_options: Single<&mut CursorOptions, With<Window>>) {
+    cursor_options.visible = false;
+    cursor_options.grab_mode = CursorGrabMode::Locked;
 }
 
 fn render_main_menu(
