@@ -52,7 +52,7 @@ impl VisualChunkLoader {
             return MAX_LOD;
         }
 
-        let ratio = ndc.z * 1_500. / vertical_fov;
+        let ratio = ndc.z * 1_000. / vertical_fov;
 
         ChunkLod::from_fraction(ratio).min(MAX_LOD)
     }

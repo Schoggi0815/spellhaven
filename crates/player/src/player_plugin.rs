@@ -4,7 +4,7 @@ use bevy::prelude::*;
 use physics::physics_systems::PhysicsSystems;
 
 use crate::{
-    player_camera_movement::move_camera,
+    camera::player_camera_plugin::PlayerCameraPlugin,
     player_component::{
         PlayerBody, PlayerRotation, spawn_player, spawn_player_body,
     },
@@ -17,9 +17,10 @@ pub struct PlayerPlugin;
 
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
-        app.init_state::<PlayerState>()
+        app.add_plugins(PlayerCameraPlugin)
+            .init_state::<PlayerState>()
             .init_resource::<PlayerInputs>()
-            .add_systems(Update, (move_camera, spawn_player_body))
+            .add_systems(Update, spawn_player_body)
             .add_systems(PreUpdate, update_player_inputs)
             .add_systems(FixedUpdate, movement.before(PhysicsSystems))
             .add_systems(Update, (rotate_body_smoothed, zoom))
