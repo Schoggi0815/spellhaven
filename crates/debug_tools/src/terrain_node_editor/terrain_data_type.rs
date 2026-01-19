@@ -1,8 +1,10 @@
 use std::borrow::Cow;
 
-use bevy_inspector_egui::egui::Color32;
+use egui::Color32;
 use egui_node_editor::DataTypeTrait;
 use serde::{Deserialize, Serialize};
+
+use crate::terrain_node_editor::terrain_graph_state::TerrainGraphState;
 
 #[derive(PartialEq, Eq, Serialize, Deserialize)]
 pub enum TerrainDataType {
@@ -11,8 +13,8 @@ pub enum TerrainDataType {
     I64,
 }
 
-impl DataTypeTrait<()> for TerrainDataType {
-    fn data_type_color(&self, _: &mut ()) -> Color32 {
+impl DataTypeTrait<TerrainGraphState> for TerrainDataType {
+    fn data_type_color(&self, _: &mut TerrainGraphState) -> Color32 {
         match self {
             TerrainDataType::NoiseF64x2 => Color32::YELLOW,
             TerrainDataType::F64 => Color32::BLUE,

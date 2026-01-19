@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::terrain_node_editor::{
     noise_output_type::ALL_NOISE_OUTPUT_TYPES,
-    terrain_data_type::TerrainDataType,
+    terrain_data_type::TerrainDataType, terrain_graph_state::TerrainGraphState,
     terrain_node_template::TerrainNodeTemplate,
     terrain_response::TerrainResponse, terrain_value_type::TerrainValueType,
 };
@@ -17,7 +17,7 @@ pub struct TerrainNodeData {
 impl NodeDataTrait for TerrainNodeData {
     type Response = TerrainResponse;
 
-    type UserState = ();
+    type UserState = TerrainGraphState;
 
     type DataType = TerrainDataType;
 
@@ -38,6 +38,21 @@ impl NodeDataTrait for TerrainNodeData {
             return vec![];
         };
 
+        let mut responses = vec![];
+
+        let noise_outputs = node
+            .outputs(graph)
+            .filter(|output| output.typ == TerrainDataType::NoiseF64x2)
+            .collect::<Vec<_>>();
+
+        if noise_outputs.len() == 1 {
+            if ui.button("Preview").clicked() {
+                responses.push(NodeResponse::User(
+                    TerrainResponse::SetPreviewNode(node_id),
+                ));
+            }
+        }
+
         match node.user_data.template {
             TerrainNodeTemplate::Output(output) => {
                 let mut new_value = output.clone();
@@ -52,16 +67,14 @@ impl NodeDataTrait for TerrainNodeData {
                     });
 
                 if new_value != output {
-                    vec![NodeResponse::User(TerrainResponse::UpdateOutputType(
-                        node_id, new_value,
-                    ))]
-                } else {
-                    vec![]
+                    responses.push(NodeResponse::User(
+                        TerrainResponse::UpdateOutputType(node_id, new_value),
+                    ));
                 }
             }
-            _ => {
-                vec![]
-            }
+            _ => {}
         }
+
+        responses
     }
 }

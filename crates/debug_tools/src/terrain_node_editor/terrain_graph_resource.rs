@@ -16,6 +16,7 @@ use crate::{
         all_terrain_node_templates::AllTerrainNodeTemplates,
         noise_output_type::NoiseOutputType,
         terrain_data_type::TerrainDataType,
+        terrain_graph_state::TerrainGraphState,
         terrain_node_data::TerrainNodeData,
         terrain_node_template::{TerrainGraph, TerrainNodeTemplate},
         terrain_response::TerrainResponse,
@@ -27,17 +28,17 @@ use crate::{
     },
 };
 
-type TerrainGraphState = GraphEditorState<
+type TerrainGraphEditorState = GraphEditorState<
     TerrainNodeData,
     TerrainDataType,
     TerrainValueType,
     TerrainNodeTemplate,
-    (),
+    TerrainGraphState,
 >;
 
 #[derive(Resource, Deref, DerefMut)]
 pub struct TerrainGraphResource {
-    state: TerrainGraphState,
+    state: TerrainGraphEditorState,
 }
 
 const TERRAIN_NOISE_GRAPH_FILE_PATH: &'static str =
@@ -60,7 +61,7 @@ impl Default for TerrainGraphResource {
             };
         }
 
-        let state: TerrainGraphState =
+        let state: TerrainGraphEditorState =
             ron::from_str(&output_string).expect("cannot read terrain data");
 
         Self { state }
@@ -68,11 +69,11 @@ impl Default for TerrainGraphResource {
 }
 
 impl TerrainGraphResource {
-    pub fn draw(&mut self, ui: &mut Ui) {
+    pub fn draw(&mut self, ui: &mut Ui, graph_state: &mut TerrainGraphState) {
         let graph_response = self.state.draw_graph_editor(
             ui,
             AllTerrainNodeTemplates,
-            &mut (),
+            graph_state,
             Vec::default(),
         );
 
@@ -96,9 +97,32 @@ impl TerrainGraphResource {
                             _ => {}
                         }
                     }
+                    TerrainResponse::SetPreviewNode(node_id) => {
+                        graph_state.preview_node = Some(node_id)
+                    }
                 }
             }
         }
+    }
+
+    pub fn get_terrain_noise(
+        &self,
+        node: &Node<TerrainNodeData>,
+    ) -> TerrainNoise {
+        let mut noise_array = Vec::new();
+        let mut cache = HashMap::new();
+
+        let start_index = get_terrain_noise_index(
+            node,
+            &mut noise_array,
+            &self.graph,
+            &mut cache,
+        );
+
+        TerrainNoise::new(
+            start_index.get_noise_index(&mut noise_array),
+            noise_array,
+        )
     }
 
     pub fn save(&self) -> Result<(), anyhow::Error> {
@@ -114,20 +138,8 @@ impl TerrainGraphResource {
                 ));
             };
 
-            let mut noise_array = Vec::new();
-            let mut cache = HashMap::new();
-
-            let start_index = get_terrain_noise_index(
-                output_node.1,
-                &mut noise_array,
-                &self.graph,
-                &mut cache,
-            );
-
-            Ok(TerrainNoise::new(
-                start_index.get_noise_index(&mut noise_array),
-                noise_array,
-            ))
+            let terrain_noise = self.get_terrain_noise(output_node.1);
+            Ok(terrain_noise)
         };
 
         let noise_group = TerrainNoiseGroup {

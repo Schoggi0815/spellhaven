@@ -7,6 +7,7 @@ use crate::{
     terrain_node_editor::{
         noise_output_type::NoiseOutputType,
         terrain_data_type::TerrainDataType,
+        terrain_graph_state::TerrainGraphState,
         terrain_node_data::TerrainNodeData,
         terrain_value_type::{NoiseValue, TerrainValueType, ValueOrIndex},
     },
@@ -49,7 +50,7 @@ impl NodeTemplateTrait for TerrainNodeTemplate {
 
     type ValueType = TerrainValueType;
 
-    type UserState = ();
+    type UserState = TerrainGraphState;
 
     type CategoryType = &'static str;
 
