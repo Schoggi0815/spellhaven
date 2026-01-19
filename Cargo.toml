@@ -46,6 +46,7 @@ tokio = "1.47.1"
 bevy-steamworks = "0.15.0"
 steamworks = "0.12.2"
 crossbeam = "0.8.4"
+rayon = "1.11.0"
 
 [workspace.dependencies]
 debug_resource = { path = "crates/debug_resource" }
@@ -84,6 +85,7 @@ tokio = "1.47.1"
 bevy-steamworks = "0.15.0"
 steamworks = "0.12.2"
 crossbeam = "0.8.4"
+rayon = "1.11.0"
 
 # Enable a small amount of optimization in debug_tools mode
 [profile.dev]

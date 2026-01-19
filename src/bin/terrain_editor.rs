@@ -9,7 +9,9 @@ use egui::{
     load::SizedTexture,
 };
 use egui_node_editor::NodeId;
+use itertools::Itertools;
 use rand::{SeedableRng, rngs::StdRng};
+use rayon::prelude::*;
 
 fn main() {
     App::new()
@@ -88,11 +90,14 @@ fn render_terrain_editor(
 
             let noise_fn = noise.get_noise_fn(&mut StdRng::seed_from_u64(0));
 
-            let mut pixels = Vec::new();
+            let mut colors = Vec::new();
 
-            for x in 0..IMAGE_SIZE {
-                for y in 0..IMAGE_SIZE {
-                    pixels.push(Color32::from_gray(
+            (0..IMAGE_SIZE)
+                .cartesian_product(0..IMAGE_SIZE)
+                .collect_vec()
+                .into_par_iter()
+                .map(|(x, y)| {
+                    Color32::from_gray(
                         (noise_fn.get([
                             (x as f64 + preview_texture.x_offset)
                                 * preview_texture.zoom,
@@ -101,11 +106,11 @@ fn render_terrain_editor(
                         ]) * 255.
                             / preview_texture.amplitude)
                             as u8,
-                    ));
-                }
-            }
+                    )
+                })
+                .collect_into_vec(&mut colors);
 
-            let image = ColorImage::new([IMAGE_SIZE, IMAGE_SIZE], pixels);
+            let image = ColorImage::new([IMAGE_SIZE, IMAGE_SIZE], colors);
 
             preview_texture_handle.set(image, TextureOptions::NEAREST);
         }
