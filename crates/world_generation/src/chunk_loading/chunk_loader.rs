@@ -23,9 +23,10 @@ pub struct ChunkLoader {
 impl Default for ChunkLoader {
     fn default() -> Self {
         Self {
-            load_range: 4,
-            unload_range: 6,
+            load_range: 8,
+            unload_range: 9,
             lod_range: [2, 4, 8, 16, 32, 64, 128, 256],
+            // lod_range: [2, 4, 8, 16, 32, 64, 128, 256],
         }
     }
 }
@@ -77,6 +78,7 @@ pub fn load_chunks(
 
                 if !chunk_load_cache.tree_map.contains_key(&tree_pos) {
                     let tree_entity = commands.spawn((
+                        Name::new(format!("Chunktree {}", *tree_pos)),
                         ChunkTree { position: tree_pos },
                         Transform::default(),
                         Visibility::Visible,

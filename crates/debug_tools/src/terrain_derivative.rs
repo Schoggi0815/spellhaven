@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use bevy_hookup_core::{owner_component::Owner, shared::Shared};
 use debug_resource::debug_resource::SpellhavenDebugResource;
 use player::player_component::Player;
 use world_generation::{
@@ -9,8 +8,8 @@ use world_generation::{
 
 pub fn draw_terrain_derivative(
     mut gizmos: Gizmos,
-    generation_options: Single<&Shared<GenerationOptions>>,
-    player: Single<&Transform, With<Owner<Player>>>,
+    generation_options: Single<&GenerationOptions>,
+    player: Single<&Transform, With<Player>>,
     debug_resource: Res<SpellhavenDebugResource>,
 ) {
     if !debug_resource.show_derivative_debug {

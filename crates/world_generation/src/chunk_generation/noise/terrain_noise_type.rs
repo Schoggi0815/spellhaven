@@ -6,8 +6,8 @@ use crate::chunk_generation::{
     VOXEL_SIZE,
     noise::{
         abs::Abs, add::Add, constant::Constant, gradient_fractal_noise::GFT,
-        max::Max, multiply::Multiply, negate::Negate,
-        noise_function::NoiseFunction, noise_result::NoiseResult,
+        map_range::MapRange, max::Max, multiply::Multiply, negate::Negate,
+        noise_function::NoiseFunction, noise_result::NoiseResult, power::Power,
         scale_point::ScalePoint, simplex::Simplex, smooth_step::SmoothStep,
         translate_point::TranslatePoint,
     },
@@ -29,6 +29,10 @@ pub enum TerrainNoiseType {
         a_index: usize,
         b_index: usize,
     },
+    Power {
+        a_index: usize,
+        b_index: usize,
+    },
     Max {
         a_index: usize,
         b_index: usize,
@@ -39,6 +43,13 @@ pub enum TerrainNoiseType {
     Multiply {
         a_index: usize,
         b_index: usize,
+    },
+    MapRange {
+        base_index: usize,
+        from_min_index: usize,
+        from_max_index: usize,
+        to_min_index: usize,
+        to_max_index: usize,
     },
     SmoothStep {
         noise_index: usize,
@@ -124,6 +135,12 @@ impl TerrainNoiseType {
                     noise_types[*b_index].to_noise_fn(noise_types, rng),
                 ),
             )),
+            TerrainNoiseType::Power { a_index, b_index } => {
+                Box::new(Power::new(
+                    noise_types[*a_index].to_noise_fn(noise_types, rng),
+                    noise_types[*b_index].to_f64_value(noise_types, rng),
+                ))
+            }
             TerrainNoiseType::Constant { value_index } => {
                 Box::new(Constant::new(
                     noise_types[*value_index].to_f64_value(noise_types, rng),
@@ -142,6 +159,19 @@ impl TerrainNoiseType {
                     noise_types[*b_index].to_noise_fn(noise_types, rng),
                 ))
             }
+            TerrainNoiseType::MapRange {
+                base_index,
+                from_min_index,
+                from_max_index,
+                to_min_index,
+                to_max_index,
+            } => Box::new(MapRange::new(
+                noise_types[*base_index].to_noise_fn(noise_types, rng),
+                noise_types[*from_min_index].to_f64_value(noise_types, rng),
+                noise_types[*from_max_index].to_f64_value(noise_types, rng),
+                noise_types[*to_min_index].to_f64_value(noise_types, rng),
+                noise_types[*to_max_index].to_f64_value(noise_types, rng),
+            )),
             TerrainNoiseType::SmoothStep {
                 noise_index,
                 steps_index,

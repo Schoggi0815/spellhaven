@@ -7,6 +7,7 @@ use crate::chunk_generation::{
     VOXEL_SIZE,
     block_type::BlockType,
     chunk_lod::ChunkLod,
+    noise::terrain_noise_group::TerrainNoiseGroup,
     structures::structure_generator::{
         StructureGenerator, VoxelStructureMetadata,
     },
@@ -35,9 +36,17 @@ pub trait TreeStructureGenerator {
         metadata.grid_offset = grid_offset;
     }
 
-    fn new(metadata: VoxelStructureMetadata) -> Self;
+    fn new(
+        metadata: VoxelStructureMetadata,
+        noise_group: &TerrainNoiseGroup,
+        world_seed: u64,
+    ) -> Self;
     fn get_structure_metadata(&self) -> &VoxelStructureMetadata;
-    fn grow(&self, rng: &mut StdRng) -> Vec<Vec<Vec<BlockType>>>;
+    fn grow(
+        &self,
+        rng: &mut StdRng,
+        structure_position: IVec2,
+    ) -> Vec<Vec<Vec<BlockType>>>;
 }
 
 impl<T: TreeStructureGenerator> StructureGenerator for T {
@@ -59,7 +68,7 @@ impl<T: TreeStructureGenerator> StructureGenerator for T {
         let mut rng =
             StdRng::seed_from_u64((noise_value.value.abs() * 10000.) as u64);
 
-        let voxel_grid = Self::grow(&self, &mut rng);
+        let voxel_grid = Self::grow(&self, &mut rng, structure_position);
 
         Rc::new(voxel_grid)
     }

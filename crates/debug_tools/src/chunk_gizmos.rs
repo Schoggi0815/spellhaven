@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use bevy_hookup_core::{owner_component::Owner, shared::Shared};
 use debug_resource::debug_resource::SpellhavenDebugResource;
 use player::player_component::Player;
 use world_generation::{
@@ -23,17 +22,22 @@ pub fn setup_gizmo_settings(mut config: ResMut<GizmoConfigStore>) {
 
 pub fn draw_path_gizmos(
     mut gizmos: Gizmos,
-    generation_options: Single<&Shared<GenerationOptions>>,
+    generation_options: Single<&GenerationOptions>,
     country_cache: Res<CountryCache>,
-    players: Query<&Transform, With<Owner<Player>>>,
+    players: Query<&Transform, With<Player>>,
     debug_resource: Res<SpellhavenDebugResource>,
 ) {
     if !debug_resource.show_path_debug {
         return;
     }
 
-    let terrain_noise =
-        Add::new(generation_options.get_terrain_noise(), Constant::new(5.));
+    let terrain_noise = Add::new(
+        generation_options
+            .terrain_noise_group
+            .terrain_height
+            .get_noise_fn(&mut generation_options.get_seeded_rng()),
+        Constant::new(5.),
+    );
 
     for player in &players {
         let player_chunk_pos =

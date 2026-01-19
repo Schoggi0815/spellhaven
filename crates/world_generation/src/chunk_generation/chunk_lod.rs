@@ -64,4 +64,28 @@ impl ChunkLod {
             _ => None,
         }
     }
+
+    pub fn from_fraction(fraction: f32) -> Self {
+        if fraction >= 1. {
+            return Self::Full;
+        } else if fraction >= 1. / 2. {
+            return Self::Half;
+        } else if fraction >= 1. / 4. {
+            return Self::Quarter;
+        } else if fraction >= 1. / 8. {
+            return Self::Eighth;
+        } else if fraction >= 1. / 16. {
+            return Self::Sixteenth;
+        } else if fraction >= 1. / 32. {
+            return Self::Thirtytwoth;
+        } else if fraction >= 1. / 64. {
+            return Self::Sixtyfourth;
+        } else if fraction >= 1. / 128. {
+            return Self::OneTwentyEight;
+        } else if fraction >= 1. / 256. {
+            return Self::TwoFiftySix;
+        }
+
+        Self::FiveTwelve
+    }
 }

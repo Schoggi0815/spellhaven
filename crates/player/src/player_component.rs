@@ -8,9 +8,9 @@ use bevy::{
 };
 use bevy_egui::PrimaryEguiContext;
 use bevy_hookup_core::{
-    owner_component::Owner, shared::Shared, sync_entity::SyncEntityOwner,
+    share_component::ShareComponent, sync_entity::SyncEntityOwner,
+    utils::buffer_object::BufferObject,
 };
-use bevy_panorbit_camera::PanOrbitCamera;
 use physics::{
     collider::Collider, physics_object::DynamicPhysicsObject,
     physics_position::PhysicsPosition,
@@ -18,21 +18,31 @@ use physics::{
 
 use serde::{Deserialize, Serialize};
 use world_generation::{
-    chunk_loading::chunk_loader::ChunkLoader, world_ready::WorldReady,
+    chunk_loading::{
+        chunk_loader::ChunkLoader, visual_chunk_loader::VisualChunkLoader,
+    },
+    world_ready::WorldReady,
 };
 
-use crate::player_state::PlayerState;
+use crate::{
+    camera::{
+        player_camera::PlayerCamera, player_camera_target::PlayerCameraTarget,
+    },
+    player_state::PlayerState,
+};
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Component)]
 pub struct Player {
     pub fly: bool,
 }
 
-#[derive(Component)]
-pub(super) struct PlayerBody;
+#[derive(
+    Clone, Serialize, Deserialize, Deref, DerefMut, Default, Component, Debug,
+)]
+pub struct PlayerRotation(pub Quat);
 
 #[derive(Component)]
-pub(super) struct PlayerCamera;
+pub(super) struct PlayerBody;
 
 pub(super) fn spawn_player(
     _: On<WorldReady>,
@@ -64,16 +74,16 @@ pub(super) fn spawn_player(
             step_height: 0.6,
             ..Default::default()
         },
-        PhysicsPosition {
-            position: spawn_point,
-            ..Default::default()
-        },
+        PhysicsPosition(spawn_point),
         Transform::from_translation(spawn_point),
         Collider::aabb(Vec3::new(0.8, 1.8, 0.8), Vec3::ZERO),
         SyncEntityOwner::new(),
-        Owner::new(Player { fly: false }),
-        Owner::new(Transform::from_translation(spawn_point)),
+        Player { fly: false },
+        ShareComponent::<BufferObject<PhysicsPosition>>::default(),
+        PlayerRotation::default(),
+        ShareComponent::<PlayerRotation>::default(),
         ChunkLoader::default(),
+        PlayerCameraTarget,
         Name::new("Player"),
     ));
 
@@ -82,6 +92,7 @@ pub(super) fn spawn_player(
         Camera {
             ..Default::default()
         },
+        VisualChunkLoader,
         PrimaryEguiContext,
         ColorGrading {
             global: ColorGradingGlobal {
@@ -103,9 +114,12 @@ pub(super) fn spawn_player(
         Exposure::SUNLIGHT,
         Tonemapping::TonyMcMapface,
         Bloom::NATURAL,
-        PanOrbitCamera::default(),
         Atmosphere::EARTH,
-        PlayerCamera,
+        PlayerCamera {
+            target_pos: spawn_point,
+            target_offset: Vec3::Y,
+            ..Default::default()
+        },
         Name::new("PlayerCamera"),
     ));
 
@@ -115,7 +129,7 @@ pub(super) fn spawn_player(
 pub(super) fn spawn_player_body(
     players_without_body: Query<
         Entity,
-        (With<Shared<Player>>, Without<PlayerBody>),
+        (With<PlayerRotation>, Without<PlayerBody>),
     >,
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,

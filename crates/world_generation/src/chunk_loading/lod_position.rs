@@ -1,7 +1,10 @@
 use bevy::math::{IVec2, Vec2};
 
 use crate::{
-    chunk_generation::{CHUNK_SIZE, VOXEL_SIZE, chunk_lod::ChunkLod},
+    chunk_generation::{
+        CHUNK_SIZE, VOXEL_SIZE,
+        chunk_lod::{ChunkLod, MAX_LOD},
+    },
     chunk_loading::{
         chunk_pos::{AbsoluteChunkPos, RelativeChunkPos},
         chunk_tree::ChunkTreePos,
@@ -84,5 +87,13 @@ impl LodPosition {
         AbsoluteChunkPos::new(
             loader_chunk_pos.min(max_chunk_pos).max(min_chunk_pos),
         )
+    }
+
+    pub fn get_center(&self, tree_pos: ChunkTreePos) -> Vec2 {
+        let relative = (self.relative_position.as_vec2() + Vec2::new(0.5, 0.5))
+            * self.lod.multiplier_f32();
+        let absoulte =
+            relative + (tree_pos.as_vec2() * MAX_LOD.multiplier_f32());
+        absoulte * CHUNK_SIZE as f32 * VOXEL_SIZE
     }
 }

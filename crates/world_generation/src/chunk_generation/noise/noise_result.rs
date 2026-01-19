@@ -32,6 +32,21 @@ impl ops::Add<NoiseResult> for NoiseResult {
     }
 }
 
+impl ops::Sub<NoiseResult> for NoiseResult {
+    type Output = NoiseResult;
+
+    #[inline]
+    fn sub(self, rhs: NoiseResult) -> Self::Output {
+        NoiseResult {
+            value: self.value - rhs.value,
+            derivative: [
+                self.derivative[0] - rhs.derivative[0],
+                self.derivative[1] - rhs.derivative[1],
+            ],
+        }
+    }
+}
+
 impl ops::Mul<NoiseResult> for NoiseResult {
     type Output = NoiseResult;
 
@@ -58,6 +73,18 @@ impl ops::Add<f64> for NoiseResult {
     fn add(self, rhs: f64) -> Self::Output {
         NoiseResult {
             value: self.value + rhs,
+            derivative: self.derivative,
+        }
+    }
+}
+
+impl ops::Sub<f64> for NoiseResult {
+    type Output = NoiseResult;
+
+    #[inline]
+    fn sub(self, rhs: f64) -> Self::Output {
+        NoiseResult {
+            value: self.value - rhs,
             derivative: self.derivative,
         }
     }

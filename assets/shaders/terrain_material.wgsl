@@ -46,8 +46,9 @@ fn fragment(
     var random3 = pcg(random2);
 
     var rand_block_color = vec3<f32>(f32(random1)/ 2147483647.5f - 1f, f32(random2)/ 2147483647.5f - 1f, f32(random3)/ 2147483647.5f - 1f);
+    var max_color = max(max(pbr_input.material.base_color.x, pbr_input.material.base_color.y), pbr_input.material.base_color.z);
 
-    pbr_input.material.base_color += vec4<f32>(rand_block_color * 0.02 - 0.01, 1);
+    pbr_input.material.base_color += vec4<f32>((rand_block_color * 0.08 - 0.04) * max_color, 1);
 
     // alpha discard
     pbr_input.material.base_color = alpha_discard(pbr_input.material, pbr_input.material.base_color);

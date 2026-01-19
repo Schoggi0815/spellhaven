@@ -1,16 +1,17 @@
-use bevy::transform::components::Transform;
+use bevy_hookup_core::utils::buffer_object::BufferObject;
 use bevy_hookup_macros::Sendable;
 
-use player::player_component::Player;
+use physics::physics_position::PhysicsPosition;
+use player::player_component::PlayerRotation;
 use serde::{Deserialize, Serialize};
 use world_generation::generation_options::GenerationOptions;
 
-#[derive(Clone, Sendable, Serialize, Deserialize)]
+#[derive(Clone, Sendable, Serialize, Deserialize, Debug)]
 pub enum Sendables {
     #[sendable]
     GenerationOptions(GenerationOptions),
     #[sendable]
-    Player(Player),
+    PlayerRotation(PlayerRotation),
     #[sendable]
-    Transform(Transform),
+    BufferPhysicsPosition(BufferObject<PhysicsPosition>),
 }

@@ -5,7 +5,9 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     terrain_node_editor::{
+        noise_output_type::NoiseOutputType,
         terrain_data_type::TerrainDataType,
+        terrain_graph_state::TerrainGraphState,
         terrain_node_data::TerrainNodeData,
         terrain_value_type::{NoiseValue, TerrainValueType, ValueOrIndex},
     },
@@ -17,12 +19,14 @@ use crate::{
 
 #[derive(Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum TerrainNodeTemplate {
-    Output,
+    Output(NoiseOutputType),
     SimplexNoise,
     NoiseAdd,
     NoiseSub,
+    NoisePower,
     Constant,
     Multiply,
+    MapRange,
     SmoothStep,
     ScalePoint,
     GFT,
@@ -46,7 +50,7 @@ impl NodeTemplateTrait for TerrainNodeTemplate {
 
     type ValueType = TerrainValueType;
 
-    type UserState = ();
+    type UserState = TerrainGraphState;
 
     type CategoryType = &'static str;
 
@@ -55,12 +59,13 @@ impl NodeTemplateTrait for TerrainNodeTemplate {
         _: &mut Self::UserState,
     ) -> std::borrow::Cow<'_, str> {
         Cow::Borrowed(match self {
-            TerrainNodeTemplate::Output => "Output",
+            TerrainNodeTemplate::Output(_) => "Output",
             TerrainNodeTemplate::SimplexNoise => "Simplex Noise",
             TerrainNodeTemplate::NoiseAdd => "Noise Add",
             TerrainNodeTemplate::PowF64 => "Power F64",
             TerrainNodeTemplate::Constant => "Constant Noise",
             TerrainNodeTemplate::Multiply => "Multiply Noise",
+            TerrainNodeTemplate::MapRange => "Map Noise Range",
             TerrainNodeTemplate::SmoothStep => "Smooth Step",
             TerrainNodeTemplate::ScalePoint => "Scale Point",
             TerrainNodeTemplate::GFT => "Gradient Fractal Noise",
@@ -72,6 +77,7 @@ impl NodeTemplateTrait for TerrainNodeTemplate {
             TerrainNodeTemplate::RandomF64 => "Random Float",
             TerrainNodeTemplate::DivideF64 => "Divide",
             TerrainNodeTemplate::NoiseSub => "Noise Sub",
+            TerrainNodeTemplate::NoisePower => "Noise Power",
         })
     }
 
@@ -80,12 +86,14 @@ impl NodeTemplateTrait for TerrainNodeTemplate {
         _user_state: &mut Self::UserState,
     ) -> Vec<&'static str> {
         match self {
-            TerrainNodeTemplate::Output => vec![],
+            TerrainNodeTemplate::Output(_) => vec![],
             TerrainNodeTemplate::SimplexNoise => vec!["Noise Functions"],
             TerrainNodeTemplate::NoiseAdd
             | TerrainNodeTemplate::NoiseSub
+            | TerrainNodeTemplate::NoisePower
             | TerrainNodeTemplate::Constant
             | TerrainNodeTemplate::Multiply
+            | TerrainNodeTemplate::MapRange
             | TerrainNodeTemplate::SmoothStep
             | TerrainNodeTemplate::ScalePoint
             | TerrainNodeTemplate::GFT
@@ -122,17 +130,21 @@ impl NodeTemplateTrait for TerrainNodeTemplate {
         _user_state: &mut Self::UserState,
         node_id: egui_node_editor::NodeId,
     ) {
+        let input_noise_with_default =
+            |graph: &mut TerrainGraph, name: &str, default: NoiseValue| {
+                graph.add_input_param(
+                    node_id,
+                    name.to_string(),
+                    TerrainDataType::NoiseF64x2,
+                    TerrainValueType::NoiseF64x2 {
+                        value_or_index: ValueOrIndex::Value(default),
+                    },
+                    InputParamKind::ConnectionOrConstant,
+                    true,
+                );
+            };
         let input_noise = |graph: &mut TerrainGraph, name: &str| {
-            graph.add_input_param(
-                node_id,
-                name.to_string(),
-                TerrainDataType::NoiseF64x2,
-                TerrainValueType::NoiseF64x2 {
-                    value_or_index: ValueOrIndex::Value(NoiseValue(0.)),
-                },
-                InputParamKind::ConnectionOrConstant,
-                true,
-            );
+            input_noise_with_default(graph, name, NoiseValue(0.))
         };
         let input_f64_with_default =
             |graph: &mut TerrainGraph, name: &str, default: f64| {
@@ -190,7 +202,7 @@ impl NodeTemplateTrait for TerrainNodeTemplate {
         };
 
         match self {
-            TerrainNodeTemplate::Output => {
+            TerrainNodeTemplate::Output(_) => {
                 input_noise(graph, "A");
             }
             TerrainNodeTemplate::SimplexNoise => {
@@ -207,6 +219,11 @@ impl NodeTemplateTrait for TerrainNodeTemplate {
                 input_noise(graph, "B");
                 output_noise(graph, "out");
             }
+            TerrainNodeTemplate::NoisePower => {
+                input_noise(graph, "A");
+                input_f64(graph, "B");
+                output_noise(graph, "out");
+            }
             TerrainNodeTemplate::PowF64 => {
                 input_f64(graph, "A");
                 input_f64(graph, "B");
@@ -219,6 +236,14 @@ impl NodeTemplateTrait for TerrainNodeTemplate {
             TerrainNodeTemplate::Multiply => {
                 input_noise(graph, "A");
                 input_noise(graph, "B");
+                output_noise(graph, "out");
+            }
+            TerrainNodeTemplate::MapRange => {
+                input_noise(graph, "base");
+                input_f64_with_default(graph, "from_min", -1.);
+                input_f64_with_default(graph, "from_max", 1.);
+                input_f64(graph, "to_min");
+                input_f64(graph, "to_max");
                 output_noise(graph, "out");
             }
             TerrainNodeTemplate::Max => {

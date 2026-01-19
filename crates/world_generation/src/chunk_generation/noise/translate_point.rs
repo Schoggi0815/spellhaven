@@ -24,6 +24,6 @@ where
 {
     fn get(&self, input: [f64; 2]) -> NoiseResult {
         self.source
-            .get([input[0] * self.x_translation, input[1] * self.y_translation])
+            .get([input[0] + self.x_translation, input[1] + self.y_translation])
     }
 }

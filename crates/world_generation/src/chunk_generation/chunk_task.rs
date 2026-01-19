@@ -9,7 +9,7 @@ use physics::physics_object::StaticPhysicsObject;
 use crate::{
     chunk_generation::{
         chunk::Chunk, chunk_generation_result::ChunkGenerationResult,
-        chunk_triangles::ChunkTriangles,
+        chunk_triangles::ChunkTriangles, terrain_mesh::TerrainMesh,
     },
     terrain_material::TerrainMaterial,
 };
@@ -27,7 +27,7 @@ impl Default for ChunkTaskPool {
         Self {
             task_pool: TaskPoolBuilder::new()
                 .num_threads(6)
-                .stack_size(1_000_000)
+                .stack_size(4_000_000)
                 .build(),
         }
     }
@@ -96,6 +96,7 @@ pub fn set_generated_chunks(
         current_entity.with_children(|child_spawner| {
             if let Some(mesh) = opaque_mesh {
                 child_spawner.spawn((
+                    TerrainMesh,
                     Mesh3d(meshes.add(mesh)),
                     MeshMaterial3d(materials.add(ExtendedMaterial {
                         base: StandardMaterial {
@@ -109,6 +110,7 @@ pub fn set_generated_chunks(
 
             if let Some(mesh) = transparent_mesh {
                 child_spawner.spawn((
+                    TerrainMesh,
                     Mesh3d(meshes.add(mesh)),
                     MeshMaterial3d(materials.add(ExtendedMaterial {
                         base: StandardMaterial {

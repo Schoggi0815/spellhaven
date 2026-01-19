@@ -122,7 +122,7 @@ where
                 + noise_value.derivative[1].powi(2))
             .sqrt();
 
-            total_flatness += 1. / magnitude;
+            total_flatness += magnitude;
 
             let gradience = self.get_gradient_influence(total_flatness);
 

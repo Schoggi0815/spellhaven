@@ -36,6 +36,10 @@ pub fn generate_voxels(
         generation_options.get_terrain_noise(),
         chunk_lod,
     ));
+    let grass_hue_noise = generation_options
+        .terrain_noise_group
+        .grass_hue
+        .get_noise_fn(&mut generation_options.get_seeded_rng());
 
     let chunk_noise_offset =
         DVec2::new(position[0] as f64, position[2] as f64) * CHUNK_SIZE as f64;
@@ -87,7 +91,7 @@ pub fn generate_voxels(
             let is_grass_steep = if is_snow {
                 steepness < 1.2
             } else {
-                steepness < 0.2
+                steepness < 1.
             };
 
             let (mut path_distance, closest_point_on_path, _, line) =
@@ -153,7 +157,10 @@ pub fn generate_voxels(
                             if is_snow {
                                 BlockType::Snow
                             } else {
-                                BlockType::Grass
+                                BlockType::Grass(
+                                    grass_hue_noise.get(noise_position).value
+                                        as u8,
+                                )
                             }
                         } else {
                             BlockType::Stone
@@ -208,13 +215,11 @@ pub fn generate_voxels(
                         + structure_metadata.grid_offset[0]
                         - structure_offset_x
                             * structure_metadata.generation_size[0])
-                        .abs()
                         - random_x;
                     let structure_z: i32 = (total_z
                         + structure_metadata.grid_offset[1]
                         - structure_offset_z
                             * structure_metadata.generation_size[1])
-                        .abs()
                         - random_z;
 
                     if structure_x < 0

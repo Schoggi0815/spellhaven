@@ -284,7 +284,10 @@ impl PathData {
         end_pos /= path_finding_lod.multiplier_i32();
 
         let terrain_noise = FullCache::new(LodHeightAdjuster::new(
-            generation_options.get_terrain_noise(),
+            generation_options
+                .terrain_noise_group
+                .terrain_height
+                .get_noise_fn(&mut generation_options.get_seeded_rng()),
             path_finding_lod,
         ));
 
