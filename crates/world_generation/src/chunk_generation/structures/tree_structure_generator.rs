@@ -66,7 +66,7 @@ impl<T: TreeStructureGenerator> StructureGenerator for T {
             * 0.5
             + 0.5;
         let mut rng =
-            StdRng::seed_from_u64((noise_value.abs() * 10000.) as u64);
+            StdRng::seed_from_u64((noise_value.value.abs() * 10000.) as u64);
 
         let voxel_grid = Self::grow(&self, &mut rng, structure_position);
 

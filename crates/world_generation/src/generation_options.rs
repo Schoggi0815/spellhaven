@@ -1,6 +1,8 @@
 use crate::chunk_generation::{
     block_type::BlockType,
     noise::{
+        noise_function::NoiseFunction,
+        noise_result::NoiseResult,
         terrain_noise::{TERRAIN_NOISE_FILE_PATH, TerrainNoise},
         terrain_noise_group::TerrainNoiseGroup,
         terrain_noise_type::TerrainNoiseType,
@@ -160,6 +162,14 @@ impl GenerationOptions {
 
     pub fn get_seeded_rng(&self) -> impl Rng {
         StdRng::seed_from_u64(self.seed)
+    }
+
+    pub fn get_terrain_noise(
+        &self,
+    ) -> impl NoiseFunction<NoiseResult, [f64; 2]> {
+        self.terrain_noise_group
+            .terrain_height
+            .get_noise_fn(&mut self.get_seeded_rng())
     }
 }
 

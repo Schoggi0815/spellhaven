@@ -1,12 +1,12 @@
 use std::f32::consts::PI;
 
 use bevy::prelude::*;
-use noise::NoiseFn;
 
 use crate::{
     chunk_generation::{
         VOXEL_SIZE,
         chunk_lod::{ChunkLod, MAX_LOD},
+        noise::{noise_function::NoiseFunction, noise_result::NoiseResult},
     },
     chunk_loading::{chunk_tree::ChunkTreePos, lod_position::LodPosition},
 };
@@ -17,7 +17,9 @@ pub struct VisualChunkLoader;
 impl VisualChunkLoader {
     pub fn get_min_lod(
         &self,
-        terrain_noise: &Box<dyn NoiseFn<f64, 2> + Send + Sync>,
+        terrain_noise: &Box<
+            dyn NoiseFunction<NoiseResult, [f64; 2]> + Send + Sync,
+        >,
         lod_pos: LodPosition,
         tree_pos: ChunkTreePos,
         projection: &Projection,
@@ -34,7 +36,7 @@ impl VisualChunkLoader {
 
         let corner_height = terrain_noise
             .get((center / VOXEL_SIZE).as_dvec2().to_array())
-            as f32
+            .value as f32
             * VOXEL_SIZE;
 
         let corner_pos = Vec3::new(center.x, corner_height, center.y);

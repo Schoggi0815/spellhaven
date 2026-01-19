@@ -1,0 +1,8 @@
+[package]
+name = "noise"
+edition = "2024"
+
+[dependencies]
+num-traits.workspace = true
+rand.workspace = true
+rand_xorshift.workspace = true

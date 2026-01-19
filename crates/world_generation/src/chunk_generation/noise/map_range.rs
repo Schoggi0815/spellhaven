@@ -1,28 +1,22 @@
-use noise::NoiseFn;
+use crate::chunk_generation::noise::{
+    noise_function::NoiseFunction, noise_result::NoiseResult,
+};
 
-pub struct MapRange<
-    TBaseNoise,
-    TFromMinNoise,
-    TFromMaxNoise,
-    TToMinNoise,
-    TToMaxNoise,
-> {
+pub struct MapRange<TBaseNoise> {
     noise: TBaseNoise,
-    from_min: TFromMinNoise,
-    from_max: TFromMaxNoise,
-    to_min: TToMinNoise,
-    to_max: TToMaxNoise,
+    from_min: f64,
+    from_max: f64,
+    to_min: f64,
+    to_max: f64,
 }
 
-impl<TBaseNoise, TFromMinNoise, TFromMaxNoise, TToMinNoise, TToMaxNoise>
-    MapRange<TBaseNoise, TFromMinNoise, TFromMaxNoise, TToMinNoise, TToMaxNoise>
-{
+impl<TBaseNoise> MapRange<TBaseNoise> {
     pub fn new(
         noise: TBaseNoise,
-        from_min: TFromMinNoise,
-        from_max: TFromMaxNoise,
-        to_min: TToMinNoise,
-        to_max: TToMaxNoise,
+        from_min: f64,
+        from_max: f64,
+        to_min: f64,
+        to_max: f64,
     ) -> Self {
         Self {
             noise,
@@ -34,41 +28,20 @@ impl<TBaseNoise, TFromMinNoise, TFromMaxNoise, TToMinNoise, TToMaxNoise>
     }
 }
 
-impl<
-    TBaseNoise,
-    TFromMinNoise,
-    TFromMaxNoise,
-    TToMinNoise,
-    TToMaxNoise,
-    const D: usize,
-> NoiseFn<f64, D>
-    for MapRange<
-        TBaseNoise,
-        TFromMinNoise,
-        TFromMaxNoise,
-        TToMinNoise,
-        TToMaxNoise,
-    >
+impl<TBaseNoise, TInput> NoiseFunction<NoiseResult, TInput>
+    for MapRange<TBaseNoise>
 where
-    TBaseNoise: NoiseFn<f64, D>,
-    TFromMinNoise: NoiseFn<f64, D>,
-    TFromMaxNoise: NoiseFn<f64, D>,
-    TToMinNoise: NoiseFn<f64, D>,
-    TToMaxNoise: NoiseFn<f64, D>,
+    TBaseNoise: NoiseFunction<NoiseResult, TInput>,
 {
-    fn get(&self, point: [f64; D]) -> f64 {
-        let from_min = self.from_min.get(point);
-        let from_max = self.from_max.get(point);
-        let to_min = self.to_min.get(point);
-        let to_max = self.to_max.get(point);
+    fn get(&self, input: TInput) -> NoiseResult {
+        let mut value = self.noise.get(input);
 
-        let mut value = self.noise.get(point);
+        value = value - self.from_min;
 
-        value -= from_min;
-
-        let scale = (to_max - to_min) / (from_max - from_min);
-        value *= scale;
-        value += to_min;
+        let scale =
+            (self.to_max - self.to_min) / (self.from_max - self.from_min);
+        value = value * scale;
+        value = value + self.to_min;
         value
     }
 }

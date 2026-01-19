@@ -1,6 +1,8 @@
 use std::f64::consts::E;
 
-use noise::{MultiFractal, NoiseFn, Seedable, math::vectors::Vector2};
+use crate::chunk_generation::noise::{
+    noise_function::NoiseFunction, noise_result::NoiseResult,
+};
 
 pub struct GFT<T> {
     pub octaves: usize,
@@ -21,11 +23,10 @@ pub const DEFAULT_LACUNARITY: f64 = 2.0;
 pub const DEFAULT_PERSISTENCE: f64 = 0.5;
 pub const DEFAULT_GRADIENT: f64 = 1.;
 pub const DEFAULT_AMPLITUDE: f64 = 1.;
-pub const DEFAULT_SEED: u32 = 0;
 
 impl<T> GFT<T>
 where
-    T: NoiseFn<f64, 2>,
+    T: NoiseFunction<NoiseResult, [f64; 2]>,
 {
     pub fn new_with_source(source: T) -> Self {
         Self {
@@ -36,64 +37,10 @@ where
             gradient: DEFAULT_GRADIENT,
             amplitude: DEFAULT_AMPLITUDE,
             source: source,
-            scale_factor: Self::calc_scale_factor(DEFAULT_PERSISTENCE, DEFAULT_OCTAVE_COUNT),
-        }
-    }
-
-    fn calc_scale_factor(persistence: f64, octaves: usize) -> f64 {
-        let denom = (1..=octaves).fold(0.0, |acc, x| acc + persistence.powi(x as i32));
-
-        1.0 / denom
-    }
-}
-
-impl<T> GFT<T>
-where
-    T: NoiseFn<f64, 2> + Default + Seedable,
-{
-    pub fn new(seed: u32) -> Self {
-        Self::new_with_source(T::default().set_seed(seed))
-    }
-}
-
-impl<T> Default for GFT<T>
-where
-    T: Default + NoiseFn<f64, 2> + Seedable,
-{
-    fn default() -> Self {
-        Self::new(DEFAULT_SEED)
-    }
-}
-
-impl<T> MultiFractal for GFT<T>
-where
-    T: NoiseFn<f64, 2>,
-{
-    fn set_octaves(self, octaves: usize) -> Self {
-        if self.octaves == octaves {
-            return self;
-        }
-
-        Self {
-            octaves,
-            scale_factor: Self::calc_scale_factor(self.persistence, octaves),
-            ..self
-        }
-    }
-
-    fn set_frequency(self, frequency: f64) -> Self {
-        Self { frequency, ..self }
-    }
-
-    fn set_lacunarity(self, lacunarity: f64) -> Self {
-        Self { lacunarity, ..self }
-    }
-
-    fn set_persistence(self, persistence: f64) -> Self {
-        Self {
-            persistence,
-            scale_factor: Self::calc_scale_factor(persistence, self.octaves),
-            ..self
+            scale_factor: Self::calc_scale_factor(
+                DEFAULT_PERSISTENCE,
+                DEFAULT_OCTAVE_COUNT,
+            ),
         }
     }
 }
@@ -111,21 +58,50 @@ impl<T> GFT<T> {
         //1. / (1. + (flatness * self.gradient))
         (E * 0.375).powf(-(flatness * self.gradient).powi(2))
     }
+
+    pub fn set_octaves(self, octaves: usize) -> Self {
+        if self.octaves == octaves {
+            return self;
+        }
+
+        Self {
+            octaves,
+            scale_factor: Self::calc_scale_factor(self.persistence, octaves),
+            ..self
+        }
+    }
+
+    pub fn set_frequency(self, frequency: f64) -> Self {
+        Self { frequency, ..self }
+    }
+
+    pub fn set_lacunarity(self, lacunarity: f64) -> Self {
+        Self { lacunarity, ..self }
+    }
+
+    pub fn set_persistence(self, persistence: f64) -> Self {
+        Self {
+            persistence,
+            scale_factor: Self::calc_scale_factor(persistence, self.octaves),
+            ..self
+        }
+    }
+
+    fn calc_scale_factor(persistence: f64, octaves: usize) -> f64 {
+        let denom =
+            (1..=octaves).fold(0.0, |acc, x| acc + persistence.powi(x as i32));
+
+        1.0 / denom
+    }
 }
 
 /// 2-dimensional Fbm noise
-impl<T> NoiseFn<f64, 2> for GFT<T>
+impl<T> NoiseFunction<NoiseResult, [f64; 2]> for GFT<T>
 where
-    T: NoiseFn<f64, 2>,
+    T: NoiseFunction<NoiseResult, [f64; 2]>,
 {
-    fn get(&self, point: [f64; 2]) -> f64 {
-        let point = Vector2::from(point);
-        let derivative_offset = 0.001;
-        let offset_x_point = Vector2::new(derivative_offset, 0.);
-        let offset_y_point = Vector2::new(0., derivative_offset);
-
-        let mut result = 0.0;
-
+    fn get(&self, point: [f64; 2]) -> NoiseResult {
+        let mut result = NoiseResult::new_constant(0.);
         let mut total_flatness = 0.;
 
         for x in 0..self.octaves as i32 {
@@ -133,24 +109,25 @@ where
             let amplitude = self.amplitude * self.persistence.powi(x);
 
             // Get the signal.
-            let noise_value = self.source.get((point * frequency).into_array());
-            let noise_value_offset_x = self
+            let mut noise_value = self
                 .source
-                .get((point * frequency + offset_x_point).into_array());
-            let noise_value_offset_y = self
-                .source
-                .get((point * frequency + offset_y_point).into_array());
+                .get([point[0] * frequency, point[1] * frequency]);
 
-            let derivative = Vector2::new(
-                (noise_value_offset_x - noise_value) / derivative_offset,
-                (noise_value_offset_y - noise_value) / derivative_offset,
-            );
-            total_flatness += derivative.magnitude() * (1. / (x + 1) as f64);
+            noise_value.derivative = [
+                noise_value.derivative[0] * frequency,
+                noise_value.derivative[1] * frequency,
+            ];
+
+            let magnitude = (noise_value.derivative[0].powi(2)
+                + noise_value.derivative[1].powi(2))
+            .sqrt();
+
+            total_flatness += magnitude;
 
             let gradience = self.get_gradient_influence(total_flatness);
 
             // Add the signal to the result.
-            result += noise_value * gradience * amplitude;
+            result = result + noise_value * (gradience * amplitude);
         }
 
         // Scale the result into the [-1,1] range

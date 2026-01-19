@@ -5,6 +5,7 @@ use bevy::prelude::*;
 pub struct SpellhavenDebugResource {
     pub unlock_camera: bool,
     pub show_path_debug: bool,
+    pub show_derivative_debug: bool,
     pub path_circle_radius: f32,
     pub path_show_range: i32,
 }
@@ -14,6 +15,7 @@ impl Default for SpellhavenDebugResource {
         Self {
             unlock_camera: false,
             show_path_debug: false,
+            show_derivative_debug: false,
             path_circle_radius: 1.,
             path_show_range: 500,
         }

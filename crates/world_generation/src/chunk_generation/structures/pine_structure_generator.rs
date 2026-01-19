@@ -88,20 +88,29 @@ impl TreeStructureGenerator for PineStructureGenerator {
         PineLSystem::grow_new(
             rng,
             &PineOptions {
-                stem_piece_length: self.stem_piece_length_noise.get(noise_pos)
+                stem_piece_length: self
+                    .stem_piece_length_noise
+                    .get(noise_pos)
+                    .value as f32,
+                stem_thickness: self.stem_thickness_noise.get(noise_pos).value
                     as f32,
-                stem_thickness: self.stem_thickness_noise.get(noise_pos) as f32,
-                stem_count: self.stem_count_noise.get(noise_pos) as f32,
+                stem_count: self.stem_count_noise.get(noise_pos).value as f32,
                 branch_piece_lenght: self
                     .branch_piece_lenght_noise
-                    .get(noise_pos) as f32,
-                branch_down_angle: self.branch_down_angle_noise.get(noise_pos)
+                    .get(noise_pos)
+                    .value as f32,
+                branch_down_angle: self
+                    .branch_down_angle_noise
+                    .get(noise_pos)
+                    .value as f32,
+                branch_spiral: self.branch_spiral_noise.get(noise_pos).value
                     as f32,
-                branch_spiral: self.branch_spiral_noise.get(noise_pos) as f32,
-                branch_droop: self.branch_droop_noise.get(noise_pos) as f32,
+                branch_droop: self.branch_droop_noise.get(noise_pos).value
+                    as f32,
                 needle_angle_offset: self
                     .needle_angle_offset_noise
-                    .get(noise_pos) as f32,
+                    .get(noise_pos)
+                    .value as f32,
             },
             IVec3::from_array(self.fixed_structure_metadata.model_size)
                 .as_usizevec3(),

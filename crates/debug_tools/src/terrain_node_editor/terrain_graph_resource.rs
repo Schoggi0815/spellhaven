@@ -261,7 +261,7 @@ fn get_terrain_noise_index(
             let a_input = get_input_value("A");
             let b_input = get_input_value("B");
             let a_index = a_input.get_noise_index(noise_array);
-            let b_index = b_input.get_noise_index(noise_array);
+            let b_index = b_input.get_f64_index(noise_array);
             let noise_index = noise_array.len();
             noise_array.push(TerrainNoiseType::Power { a_index, b_index });
             TerrainValueType::NoiseF64x2 {
@@ -307,10 +307,10 @@ fn get_terrain_noise_index(
             let to_min_input = get_input_value("to_min");
             let to_max_input = get_input_value("to_max");
             let base_index = base_input.get_noise_index(noise_array);
-            let from_min_index = from_min_input.get_noise_index(noise_array);
-            let from_max_index = from_max_input.get_noise_index(noise_array);
-            let to_min_index = to_min_input.get_noise_index(noise_array);
-            let to_max_index = to_max_input.get_noise_index(noise_array);
+            let from_min_index = from_min_input.get_f64_index(noise_array);
+            let from_max_index = from_max_input.get_f64_index(noise_array);
+            let to_min_index = to_min_input.get_f64_index(noise_array);
+            let to_max_index = to_max_input.get_f64_index(noise_array);
             let noise_index = noise_array.len();
             noise_array.push(TerrainNoiseType::MapRange {
                 base_index,

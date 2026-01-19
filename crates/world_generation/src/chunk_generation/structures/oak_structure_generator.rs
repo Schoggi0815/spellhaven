@@ -83,14 +83,17 @@ impl TreeStructureGenerator for OakStructureGenerator {
         OakLSystem::grow_new(
             rng,
             &OakOptions {
-                min_thickness: self.min_thickness_noise.get(noise_pos) as f32,
-                max_length: self.max_length_noise.get(noise_pos) as f32,
-                min_length: self.min_length_noise.get(noise_pos) as f32,
-                max_angle: self.max_angle_noise.get(noise_pos) as f32,
-                start_thickness: self.start_thickness_noise.get(noise_pos)
+                min_thickness: self.min_thickness_noise.get(noise_pos).value
                     as f32,
-                start_x_angle: self.start_x_angle_noise.get(noise_pos) as f32,
-                start_y_angle: self.start_y_angle_noise.get(noise_pos) as f32,
+                max_length: self.max_length_noise.get(noise_pos).value as f32,
+                min_length: self.min_length_noise.get(noise_pos).value as f32,
+                max_angle: self.max_angle_noise.get(noise_pos).value as f32,
+                start_thickness: self.start_thickness_noise.get(noise_pos).value
+                    as f32,
+                start_x_angle: self.start_x_angle_noise.get(noise_pos).value
+                    as f32,
+                start_y_angle: self.start_y_angle_noise.get(noise_pos).value
+                    as f32,
             },
             IVec3::from_array(self.fixed_structure_metadata.model_size)
                 .as_usizevec3(),

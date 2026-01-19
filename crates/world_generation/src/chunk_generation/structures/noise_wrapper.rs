@@ -1,7 +1,6 @@
 use std::{fmt::Debug, sync::Arc};
 
 use bevy::prelude::Deref;
-use noise::NoiseFn;
 use rand::{SeedableRng, rngs::StdRng};
 use serde::{
     Deserialize, Deserializer, Serialize,
@@ -9,14 +8,17 @@ use serde::{
     ser::SerializeStruct,
 };
 
-use crate::chunk_generation::noise::terrain_noise::TerrainNoise;
+use crate::chunk_generation::noise::{
+    noise_function::NoiseFunction, noise_result::NoiseResult,
+    terrain_noise::TerrainNoise,
+};
 
 #[derive(Clone, Deref)]
 pub struct NoiseWrapper {
     pub noise_map: TerrainNoise,
     pub seed: u64,
     #[deref]
-    pub noise: Arc<Box<dyn NoiseFn<f64, 2> + Send + Sync>>,
+    pub noise: Arc<Box<dyn NoiseFunction<NoiseResult, [f64; 2]> + Send + Sync>>,
 }
 
 impl Debug for NoiseWrapper {

@@ -62,7 +62,6 @@ impl NodeTemplateTrait for TerrainNodeTemplate {
             TerrainNodeTemplate::Output(_) => "Output",
             TerrainNodeTemplate::SimplexNoise => "Simplex Noise",
             TerrainNodeTemplate::NoiseAdd => "Noise Add",
-            TerrainNodeTemplate::NoisePower => "Noise Power",
             TerrainNodeTemplate::PowF64 => "Power F64",
             TerrainNodeTemplate::Constant => "Constant Noise",
             TerrainNodeTemplate::Multiply => "Multiply Noise",
@@ -78,6 +77,7 @@ impl NodeTemplateTrait for TerrainNodeTemplate {
             TerrainNodeTemplate::RandomF64 => "Random Float",
             TerrainNodeTemplate::DivideF64 => "Divide",
             TerrainNodeTemplate::NoiseSub => "Noise Sub",
+            TerrainNodeTemplate::NoisePower => "Noise Power",
         })
     }
 
@@ -221,7 +221,7 @@ impl NodeTemplateTrait for TerrainNodeTemplate {
             }
             TerrainNodeTemplate::NoisePower => {
                 input_noise(graph, "A");
-                input_noise(graph, "B");
+                input_f64(graph, "B");
                 output_noise(graph, "out");
             }
             TerrainNodeTemplate::PowF64 => {
@@ -240,10 +240,10 @@ impl NodeTemplateTrait for TerrainNodeTemplate {
             }
             TerrainNodeTemplate::MapRange => {
                 input_noise(graph, "base");
-                input_noise_with_default(graph, "from_min", NoiseValue(-1.));
-                input_noise_with_default(graph, "from_max", NoiseValue(1.));
-                input_noise(graph, "to_min");
-                input_noise(graph, "to_max");
+                input_f64_with_default(graph, "from_min", -1.);
+                input_f64_with_default(graph, "from_max", 1.);
+                input_f64(graph, "to_min");
+                input_f64(graph, "to_max");
                 output_noise(graph, "out");
             }
             TerrainNodeTemplate::Max => {

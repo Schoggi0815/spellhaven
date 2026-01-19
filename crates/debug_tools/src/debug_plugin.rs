@@ -4,7 +4,8 @@ use debug_resource::debug_resource::SpellhavenDebugResource;
 
 use crate::{
     chunk_gizmos::{draw_path_gizmos, setup_gizmo_settings},
-    physics_debug::{render_physics_debug, PhysicsDebugResource},
+    physics_debug::{PhysicsDebugResource, render_physics_debug},
+    terrain_derivative::draw_terrain_derivative,
 };
 
 pub struct SpellhavenDebugPlugin;
@@ -21,6 +22,7 @@ impl Plugin for SpellhavenDebugPlugin {
                 Update,
                 (
                     draw_path_gizmos,
+                    draw_terrain_derivative,
                     render_physics_debug
                         .run_if(resource_exists::<PhysicsDebugResource>),
                 ),

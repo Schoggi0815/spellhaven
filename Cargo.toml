@@ -14,6 +14,7 @@ debug_resource = { path = "crates/debug_resource" }
 debug_tools = { path = "crates/debug_tools" }
 main_menu = { path = "crates/main_menu" }
 networking = { path = "crates/networking" }
+noise = { path = "crates/noise" }
 physics = { path = "crates/physics" }
 player = { path = "crates/player" }
 ui = { path = "crates/ui" }
@@ -23,7 +24,6 @@ bevy = { version = "0.17.2", features = ["serialize"] }
 bevy_panorbit_camera = { version = "=0.30.0", features = ["bevy_egui"] }
 rand = "0.9.2"
 futures-lite = "2.6.1"
-noise = "0.9"
 fastrand = "2.3.0"
 vox-format = "0.1.0"
 bevy-inspector-egui = "0.35.0"
@@ -47,12 +47,14 @@ bevy-steamworks = "0.15.0"
 steamworks = "0.12.2"
 crossbeam = "0.8.4"
 rayon = "1.11.0"
+rand_xorshift = "0.4.0"
 
 [workspace.dependencies]
 debug_resource = { path = "crates/debug_resource" }
 debug_tools = { path = "crates/debug_tools" }
 main_menu = { path = "crates/main_menu" }
 networking = { path = "crates/networking" }
+noise = { path = "crates/noise" }
 physics = { path = "crates/physics" }
 player = { path = "crates/player" }
 ui = { path = "crates/ui" }
@@ -62,7 +64,6 @@ bevy = { version = "0.17.2", features = ["serialize"] }
 bevy_panorbit_camera = { version = "=0.30.0", features = ["bevy_egui"] }
 rand = "0.9.2"
 futures-lite = "2.6.1"
-noise = "0.9"
 fastrand = "2.3.0"
 vox-format = "0.1.0"
 bevy-inspector-egui = "0.35.0"
@@ -86,6 +87,7 @@ bevy-steamworks = "0.15.0"
 steamworks = "0.12.2"
 crossbeam = "0.8.4"
 rayon = "1.11.0"
+rand_xorshift = "0.4.0"
 
 # Enable a small amount of optimization in debug_tools mode
 [profile.dev]

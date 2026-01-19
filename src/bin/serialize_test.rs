@@ -28,7 +28,7 @@ pub fn main() {
         1234,
     );
 
-    println!("BEFORE: {}", noise.get([0., 0.]));
+    println!("BEFORE: {}", noise.get([0., 0.]).value);
 
     let ron_string =
         ron::ser::to_string_pretty(&noise, PrettyConfig::default()).unwrap();
@@ -37,5 +37,5 @@ pub fn main() {
 
     let noise: NoiseWrapper = ron::from_str(&ron_string).unwrap();
 
-    println!("AFTER: {}", noise.get([0., 0.]));
+    println!("AFTER: {}", noise.get([0., 0.]).value);
 }

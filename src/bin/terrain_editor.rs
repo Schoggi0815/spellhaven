@@ -98,12 +98,15 @@ fn render_terrain_editor(
                 .into_par_iter()
                 .map(|(x, y)| {
                     Color32::from_gray(
-                        (noise_fn.get([
-                            (x as f64 + preview_texture.x_offset)
-                                * preview_texture.zoom,
-                            (y as f64 + preview_texture.y_offset)
-                                * preview_texture.zoom,
-                        ]) * 255.
+                        (noise_fn
+                            .get([
+                                (x as f64 + preview_texture.x_offset)
+                                    * preview_texture.zoom,
+                                (y as f64 + preview_texture.y_offset)
+                                    * preview_texture.zoom,
+                            ])
+                            .value
+                            * 255.
                             / preview_texture.amplitude)
                             as u8,
                     )

@@ -1,16 +1,15 @@
 use bevy::log::warn;
-use noise::{
-    Abs, Add, Constant, Max, MultiFractal, Multiply, Negate, NoiseFn, Power,
-    ScalePoint, Simplex, TranslatePoint,
-};
 use rand::Rng;
 use serde::{Deserialize, Serialize};
 
 use crate::chunk_generation::{
     VOXEL_SIZE,
     noise::{
-        gradient_fractal_noise::GFT, map_range::MapRange,
-        smooth_step::SmoothStep,
+        abs::Abs, add::Add, constant::Constant, gradient_fractal_noise::GFT,
+        map_range::MapRange, max::Max, multiply::Multiply, negate::Negate,
+        noise_function::NoiseFunction, noise_result::NoiseResult, power::Power,
+        scale_point::ScalePoint, simplex::Simplex, smooth_step::SmoothStep,
+        translate_point::TranslatePoint,
     },
 };
 
@@ -121,7 +120,7 @@ impl TerrainNoiseType {
         &self,
         noise_types: &Vec<TerrainNoiseType>,
         rng: &mut impl Rng,
-    ) -> Box<dyn NoiseFn<f64, 2> + Send + Sync> {
+    ) -> Box<dyn NoiseFunction<NoiseResult, [f64; 2]> + Send + Sync> {
         match self {
             TerrainNoiseType::Simplex { seed_index } => Box::new(Simplex::new(
                 noise_types[*seed_index].to_i64_value(noise_types, rng) as u32,
@@ -139,7 +138,7 @@ impl TerrainNoiseType {
             TerrainNoiseType::Power { a_index, b_index } => {
                 Box::new(Power::new(
                     noise_types[*a_index].to_noise_fn(noise_types, rng),
-                    noise_types[*b_index].to_noise_fn(noise_types, rng),
+                    noise_types[*b_index].to_f64_value(noise_types, rng),
                 ))
             }
             TerrainNoiseType::Constant { value_index } => {
@@ -168,10 +167,10 @@ impl TerrainNoiseType {
                 to_max_index,
             } => Box::new(MapRange::new(
                 noise_types[*base_index].to_noise_fn(noise_types, rng),
-                noise_types[*from_min_index].to_noise_fn(noise_types, rng),
-                noise_types[*from_max_index].to_noise_fn(noise_types, rng),
-                noise_types[*to_min_index].to_noise_fn(noise_types, rng),
-                noise_types[*to_max_index].to_noise_fn(noise_types, rng),
+                noise_types[*from_min_index].to_f64_value(noise_types, rng),
+                noise_types[*from_max_index].to_f64_value(noise_types, rng),
+                noise_types[*to_min_index].to_f64_value(noise_types, rng),
+                noise_types[*to_max_index].to_f64_value(noise_types, rng),
             )),
             TerrainNoiseType::SmoothStep {
                 noise_index,
@@ -192,29 +191,19 @@ impl TerrainNoiseType {
             TerrainNoiseType::ScalePoint {
                 noise_index,
                 scale_index,
-            } => Box::new(
-                ScalePoint::new(
-                    noise_types[*noise_index].to_noise_fn(noise_types, rng),
-                )
-                .set_scale(
-                    noise_types[*scale_index].to_f64_value(noise_types, rng),
-                ),
-            ),
+            } => Box::new(ScalePoint::new(
+                noise_types[*noise_index].to_noise_fn(noise_types, rng),
+                noise_types[*scale_index].to_f64_value(noise_types, rng),
+            )),
             TerrainNoiseType::TranslatePoint {
                 noise_index,
                 x_index,
                 y_index,
-            } => Box::new(
-                TranslatePoint::new(
-                    noise_types[*noise_index].to_noise_fn(noise_types, rng),
-                )
-                .set_x_translation(
-                    noise_types[*x_index].to_f64_value(noise_types, rng),
-                )
-                .set_y_translation(
-                    noise_types[*y_index].to_f64_value(noise_types, rng),
-                ),
-            ),
+            } => Box::new(TranslatePoint::new(
+                noise_types[*noise_index].to_noise_fn(noise_types, rng),
+                noise_types[*x_index].to_f64_value(noise_types, rng),
+                noise_types[*y_index].to_f64_value(noise_types, rng),
+            )),
             TerrainNoiseType::GFT {
                 noise_index,
                 octaves_index,
