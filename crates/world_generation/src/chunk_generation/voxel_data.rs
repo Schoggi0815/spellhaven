@@ -29,6 +29,22 @@ impl VoxelData {
         self.array[index]
     }
 
+    pub fn get_block_mesh<T: Into<IVec3>>(&self, position: T) -> BlockType {
+        let position = position.into();
+        let position = if position.y <= CHUNK_SIZE as i32 + 1
+            && (position.x == 0
+                || position.x > CHUNK_SIZE as i32 + 1
+                || position.z == 0
+                || position.z > CHUNK_SIZE as i32 + 1)
+        {
+            position + IVec3::Y
+        } else {
+            position
+        };
+        let index = Self::position_to_indexes(position);
+        self.array[index]
+    }
+
     pub fn set_block<T: Into<IVec3>>(&mut self, position: T, block: BlockType) {
         let index = Self::position_to_indexes(position);
         self.array[index] = block;

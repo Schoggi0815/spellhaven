@@ -80,14 +80,14 @@ fn get_mesh_for_mesh_type(
                     let width_pos = (current_pos * width_dir).max_element();
                     let height_pos = (current_pos * height_dir).max_element();
 
-                    let current_block = voxel_data.get_block(current_pos);
+                    let current_block = voxel_data.get_block_mesh(current_pos);
 
                     let [face_x, face_y] =
                         [width_pos as usize - 1, height_pos as usize - 1];
                     if done_faces[face_x][face_y]
                         || mesh_type != current_block.get_mesh_type()
                         || voxel_data
-                            .get_block(current_pos + direction)
+                            .get_block_mesh(current_pos + direction)
                             .is_covering_for(&current_block)
                     {
                         continue;
@@ -102,10 +102,10 @@ fn get_mesh_for_mesh_type(
                         && !done_faces[width_pos as usize - 1]
                             [height_pos as usize + height as usize - 1]
                         && voxel_data
-                            .get_block(current_pos + (height_dir * height))
+                            .get_block_mesh(current_pos + (height_dir * height))
                             == current_block
                         && !voxel_data
-                            .get_block(
+                            .get_block_mesh(
                                 current_pos + (height_dir * height) + direction,
                             )
                             .is_covering_for(&current_block)
@@ -123,13 +123,13 @@ fn get_mesh_for_mesh_type(
                                 height_pos as usize + height as usize - 1,
                             ];
                             !done_faces[face_x][face_y]
-                                && voxel_data.get_block(
+                                && voxel_data.get_block_mesh(
                                     current_pos
                                         + (width_dir * width as i32)
                                         + (height_dir * height as i32),
                                 ) == current_block
                                 && !voxel_data
-                                    .get_block(
+                                    .get_block_mesh(
                                         current_pos
                                             + (width_dir * width as i32)
                                             + (height_dir * height as i32)
