@@ -1,17 +1,13 @@
-use bevy::log::warn;
+use bevy::{log::warn, math::Vec2};
+use noiz::{
+    NoiseFunction,
+    cells::WithGradient,
+    prelude::common_noise::{Simplex, SimplexWithDerivative},
+};
 use rand::{Rng, RngExt};
 use serde::{Deserialize, Serialize};
 
-use crate::chunk_generation::{
-    VOXEL_SIZE,
-    noise::{
-        abs::Abs, add::Add, constant::Constant, gradient_fractal_noise::GFT,
-        map_range::MapRange, max::Max, multiply::Multiply, negate::Negate,
-        noise_function::NoiseFunction, noise_result::NoiseResult, power::Power,
-        scale_point::ScalePoint, simplex::Simplex, smooth_step::SmoothStep,
-        translate_point::TranslatePoint,
-    },
-};
+use crate::chunk_generation::VOXEL_SIZE;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum TerrainNoiseType {
@@ -120,11 +116,16 @@ impl TerrainNoiseType {
         &self,
         noise_types: &Vec<TerrainNoiseType>,
         rng: &mut impl Rng,
-    ) -> Box<dyn NoiseFunction<NoiseResult, [f64; 2]> + Send + Sync> {
+    ) -> Box<
+        dyn NoiseFunction<Vec2, Output = WithGradient<f32, Vec2>> + Send + Sync,
+    > {
         match self {
-            TerrainNoiseType::Simplex { seed_index } => Box::new(Simplex::new(
-                noise_types[*seed_index].to_i64_value(noise_types, rng) as u32,
-            )),
+            TerrainNoiseType::Simplex { seed_index } => {
+                Box::new(SimplexWithDerivative::default(
+                    noise_types[*seed_index].to_i64_value(noise_types, rng)
+                        as u32,
+                ))
+            }
             TerrainNoiseType::Add { a_index, b_index } => Box::new(Add::new(
                 noise_types[*a_index].to_noise_fn(noise_types, rng),
                 noise_types[*b_index].to_noise_fn(noise_types, rng),

@@ -1,10 +1,9 @@
+use bevy::math::Vec2;
+use noiz::{NoiseFunction, cells::WithGradient};
 use rand::Rng;
 use serde::{Deserialize, Serialize};
 
-use crate::chunk_generation::noise::{
-    noise_function::NoiseFunction, noise_result::NoiseResult,
-    terrain_noise_type::TerrainNoiseType,
-};
+use crate::chunk_generation::noise::terrain_noise_type::TerrainNoiseType;
 
 pub const TERRAIN_NOISE_FILE_PATH: &'static str = "assets/terrain_noise.ron";
 
@@ -25,7 +24,9 @@ impl TerrainNoise {
     pub fn get_noise_fn(
         &self,
         rng: &mut impl Rng,
-    ) -> Box<dyn NoiseFunction<NoiseResult, [f64; 2]> + Send + Sync> {
+    ) -> Box<
+        dyn NoiseFunction<Vec2, Output = WithGradient<f32, Vec2>> + Send + Sync,
+    > {
         self.noise_types[self.start_index].to_noise_fn(&self.noise_types, rng)
     }
 }

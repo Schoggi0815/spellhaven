@@ -13,3 +13,4 @@ bevy_hookup_core.workspace = true
 itertools.workspace = true
 physics.workspace = true
 noise.workspace = true
+noiz.workspace = true
