@@ -1,5 +1,5 @@
 use bevy::math::{FloatExt, Vec3};
-use rand::{Rng, rngs::StdRng};
+use rand::{RngExt, rngs::StdRng};
 
 use crate::chunk_generation::{
     VOXEL_SIZE,

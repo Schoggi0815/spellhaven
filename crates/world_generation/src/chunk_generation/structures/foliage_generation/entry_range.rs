@@ -1,6 +1,6 @@
 use std::ops::Range;
 
-use rand::{rngs::StdRng, Rng};
+use rand::{RngExt, rngs::StdRng};
 
 #[derive(Clone, Copy)]
 pub struct EntryRange {
@@ -25,7 +25,12 @@ impl EntryRange {
         self.get_value(i as f32 / max as f32)
     }
 
-    pub fn get_sub_range_with_steps(&self, i_a: i32, i_b: i32, max: i32) -> Self {
+    pub fn get_sub_range_with_steps(
+        &self,
+        i_a: i32,
+        i_b: i32,
+        max: i32,
+    ) -> Self {
         Self::new(
             self.get_value_with_steps(i_a, max),
             self.get_value_with_steps(i_b, max),

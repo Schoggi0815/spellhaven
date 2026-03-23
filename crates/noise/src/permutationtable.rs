@@ -1,6 +1,6 @@
 use core::fmt;
 use rand::{
-    Rng, SeedableRng,
+    Rng, RngExt, SeedableRng,
     distr::{Distribution, StandardUniform},
     seq::SliceRandom,
 };

@@ -1,7 +1,7 @@
 use std::f32::consts::PI;
 
 use bevy::math::{Quat, Vec3};
-use rand::{Rng, rngs::StdRng};
+use rand::{RngExt, rngs::StdRng};
 use utils::rotation::{RotationDirection, rotate_around};
 
 use crate::chunk_generation::{

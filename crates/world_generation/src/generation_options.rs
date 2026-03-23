@@ -15,8 +15,8 @@ use crate::chunk_generation::{
     },
 };
 use bevy::prelude::*;
-use rand::prelude::StdRng;
 use rand::{Rng, SeedableRng};
+use rand::{RngExt, prelude::StdRng};
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use utils::file_utils::read_ron_from_file;

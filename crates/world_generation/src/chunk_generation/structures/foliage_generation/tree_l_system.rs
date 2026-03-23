@@ -3,7 +3,7 @@ use crate::chunk_generation::{
     structures::foliage_generation::entry_range::EntryRange,
 };
 use bevy::math::{USizeVec3, Vec3};
-use rand::{Rng, rngs::StdRng};
+use rand::{RngExt, rngs::StdRng};
 use utils::{
     cartesian_product::cube_cartesian_product,
     rotation::{RotationDirection, rotate_around},

@@ -20,7 +20,7 @@ pub fn render_physics_debug(
 ) {
     for (collider, position) in colliders_dynamic {
         for aabb in collider.get_aabbs() {
-            gizmos.cuboid(
+            gizmos.cube(
                 Transform::from_translation(**position + aabb.offset)
                     .with_scale(aabb.size),
                 Color::hsl(100., 1., 0.5),
@@ -43,7 +43,7 @@ pub fn render_physics_debug(
         }
 
         for aabb in collider.get_aabbs() {
-            gizmos.cuboid(
+            gizmos.cube(
                 Transform::from_translation(
                     transform.translation + aabb.offset,
                 )

@@ -1,7 +1,7 @@
 use bevy::{
     camera::Exposure,
     core_pipeline::tonemapping::Tonemapping,
-    pbr::Atmosphere,
+    pbr::{Atmosphere, ScatteringMedium},
     post_process::bloom::Bloom,
     prelude::*,
     render::view::{ColorGrading, ColorGradingGlobal},
@@ -49,6 +49,7 @@ pub(super) fn spawn_player(
     mut commands: Commands,
     mut player_state: ResMut<NextState<PlayerState>>,
     mut ray_cast: MeshRayCast,
+    mut scattering_mediums: ResMut<Assets<ScatteringMedium>>,
 ) -> Result {
     player_state.set(PlayerState::Spawend);
 
@@ -114,7 +115,9 @@ pub(super) fn spawn_player(
         Exposure::SUNLIGHT,
         Tonemapping::TonyMcMapface,
         Bloom::NATURAL,
-        Atmosphere::EARTH,
+        Atmosphere::earthlike(
+            scattering_mediums.add(ScatteringMedium::default()),
+        ),
         PlayerCamera {
             target_pos: spawn_point,
             target_offset: Vec3::Y,

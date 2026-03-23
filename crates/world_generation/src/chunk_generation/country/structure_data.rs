@@ -1,11 +1,11 @@
 use std::sync::Arc;
 
 use bevy::prelude::*;
-use rand::{rngs::StdRng, Rng, SeedableRng};
+use rand::{RngExt, SeedableRng, rngs::StdRng};
 
 use crate::{
     chunk_generation::country::{
-        country_cache::{CacheStore, COUNTRY_SIZE},
+        country_cache::{COUNTRY_SIZE, CacheStore},
         country_cache_position::CountryPosition,
         generation_cache::GenerationCacheItem,
     },

@@ -1,5 +1,5 @@
 use bevy::log::warn;
-use rand::Rng;
+use rand::{Rng, RngExt};
 use serde::{Deserialize, Serialize};
 
 use crate::chunk_generation::{

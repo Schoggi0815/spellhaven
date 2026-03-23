@@ -1,5 +1,5 @@
 use bevy::{math::DVec2, prelude::*};
-use rand::{Rng, SeedableRng, rngs::StdRng};
+use rand::{RngExt, SeedableRng, rngs::StdRng};
 use std::usize;
 use utils::div_floor::div_floor;
 
