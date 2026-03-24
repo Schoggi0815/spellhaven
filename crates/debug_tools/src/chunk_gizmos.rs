@@ -8,7 +8,9 @@ use world_generation::{
             country_cache::{CountryCache, GenerationState},
             country_cache_position::CountryPosition,
         },
-        noise::{add::Add, constant::Constant, noise_function::NoiseFunction},
+        noise::{
+            add_n::AddN, constant::Constant, noise_function::NoiseFunction,
+        },
     },
     chunk_loading::chunk_pos::AbsoluteChunkPos,
     generation_options::GenerationOptions,
@@ -31,7 +33,7 @@ pub fn draw_path_gizmos(
         return;
     }
 
-    let terrain_noise = Add::new(
+    let terrain_noise = AddN::new(
         generation_options
             .terrain_noise_group
             .terrain_height

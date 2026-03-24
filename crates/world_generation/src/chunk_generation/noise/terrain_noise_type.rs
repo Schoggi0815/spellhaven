@@ -2,12 +2,13 @@ use bevy::{log::warn, math::Vec2};
 use noiz::{
     NoiseFunction,
     cells::WithGradient,
+    math_noise::Negate,
     prelude::common_noise::{Simplex, SimplexWithDerivative},
 };
 use rand::{Rng, RngExt};
 use serde::{Deserialize, Serialize};
 
-use crate::chunk_generation::VOXEL_SIZE;
+use crate::chunk_generation::{VOXEL_SIZE, noise::add_n::AddN};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum TerrainNoiseType {
@@ -121,19 +122,17 @@ impl TerrainNoiseType {
     > {
         match self {
             TerrainNoiseType::Simplex { seed_index } => {
-                Box::new(SimplexWithDerivative::default(
-                    noise_types[*seed_index].to_i64_value(noise_types, rng)
-                        as u32,
-                ))
+                Box::new(SimplexWithDerivative::default())
             }
-            TerrainNoiseType::Add { a_index, b_index } => Box::new(Add::new(
-                noise_types[*a_index].to_noise_fn(noise_types, rng),
-                noise_types[*b_index].to_noise_fn(noise_types, rng),
+            TerrainNoiseType::Add { a_index, b_index } => Box::new(AddN::new(
+                noise_types[*a_index].to_noise_fn(noise_types, rng).into(),
+                noise_types[*b_index].to_noise_fn(noise_types, rng).into(),
             )),
-            TerrainNoiseType::Sub { a_index, b_index } => Box::new(Add::new(
-                noise_types[*a_index].to_noise_fn(noise_types, rng),
-                Negate::new(
-                    noise_types[*b_index].to_noise_fn(noise_types, rng),
+            TerrainNoiseType::Sub { a_index, b_index } => Box::new(AddN::new(
+                noise_types[*a_index].to_noise_fn(noise_types, rng).into(),
+                (
+                    noise_types[*b_index].to_noise_fn(noise_types, rng).into(),
+                    Negate,
                 ),
             )),
             TerrainNoiseType::Power { a_index, b_index } => {

@@ -1,5 +1,5 @@
 pub mod abs;
-pub mod add;
+pub mod add_n;
 pub mod cellular_noise;
 pub mod constant;
 pub mod full_cache;
