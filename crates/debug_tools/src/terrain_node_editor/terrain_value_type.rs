@@ -58,7 +58,7 @@ impl ValueOrIndex<f64> {
             ValueOrIndex::Value(value) => {
                 let index = noise_array.len();
                 noise_array.push(TerrainNoiseType::ConstantValue {
-                    value: ConstantValue::F64(*value),
+                    value: ConstantValue::F32(*value),
                 });
                 index
             }
@@ -73,7 +73,7 @@ impl ValueOrIndex<NoiseValue> {
             ValueOrIndex::Value(value) => {
                 let index = noise_array.len();
                 noise_array.push(TerrainNoiseType::ConstantValue {
-                    value: ConstantValue::F64(value.0),
+                    value: ConstantValue::F32(value.0),
                 });
                 noise_array
                     .push(TerrainNoiseType::Constant { value_index: index });

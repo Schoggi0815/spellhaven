@@ -2,13 +2,20 @@ use bevy::{log::warn, math::Vec2};
 use noiz::{
     NoiseFunction,
     cells::WithGradient,
-    math_noise::Negate,
-    prelude::common_noise::{Simplex, SimplexWithDerivative},
+    math_noise::{Abs, Negate, PowF},
+    misc_noise::Constant,
+    prelude::{
+        Masked,
+        common_noise::{Simplex, SimplexWithDerivative},
+    },
 };
 use rand::{Rng, RngExt};
 use serde::{Deserialize, Serialize};
 
-use crate::chunk_generation::{VOXEL_SIZE, noise::add_n::AddN};
+use crate::chunk_generation::{
+    VOXEL_SIZE,
+    noise::{add_n::AddN, max::Max, power::Power},
+};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum TerrainNoiseType {
@@ -92,14 +99,14 @@ pub enum TerrainNoiseType {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum ConstantValue {
-    F64(f64),
+    F32(f32),
     I64(i64),
 }
 
 impl ConstantValue {
-    pub fn get_f64(&self) -> f64 {
+    pub fn get_f32(&self) -> f32 {
         match self {
-            ConstantValue::F64(value) => *value,
+            ConstantValue::F32(value) => *value,
             _ => 0.,
         }
     }
@@ -135,28 +142,31 @@ impl TerrainNoiseType {
                     Negate,
                 ),
             )),
-            TerrainNoiseType::Power { a_index, b_index } => {
-                Box::new(Power::new(
-                    noise_types[*a_index].to_noise_fn(noise_types, rng),
-                    noise_types[*b_index].to_f64_value(noise_types, rng),
-                ))
-            }
+            TerrainNoiseType::Power { a_index, b_index } => Box::new((
+                noise_types[*a_index].to_noise_fn(noise_types, rng).into(),
+                PowF(noise_types[*b_index].to_f32_value(noise_types, rng)),
+            )),
             TerrainNoiseType::Constant { value_index } => {
-                Box::new(Constant::new(
-                    noise_types[*value_index].to_f64_value(noise_types, rng),
-                ))
+                Box::new(Constant(WithGradient {
+                    value: noise_types[*value_index]
+                        .to_f32_value(noise_types, rng),
+                    gradient: Vec2::ZERO,
+                }))
             }
             TerrainNoiseType::Max { a_index, b_index } => Box::new(Max::new(
-                noise_types[*a_index].to_noise_fn(noise_types, rng),
-                noise_types[*b_index].to_noise_fn(noise_types, rng),
+                noise_types[*a_index].to_noise_fn(noise_types, rng).into(),
+                noise_types[*b_index].to_noise_fn(noise_types, rng).into(),
             )),
-            TerrainNoiseType::Abs { input_index } => Box::new(Abs::new(
-                noise_types[*input_index].to_noise_fn(noise_types, rng),
+            TerrainNoiseType::Abs { input_index } => Box::new((
+                noise_types[*input_index]
+                    .to_noise_fn(noise_types, rng)
+                    .into(),
+                Abs,
             )),
             TerrainNoiseType::Multiply { a_index, b_index } => {
-                Box::new(Multiply::new(
-                    noise_types[*a_index].to_noise_fn(noise_types, rng),
-                    noise_types[*b_index].to_noise_fn(noise_types, rng),
+                Box::new(Masked(
+                    noise_types[*a_index].to_noise_fn(noise_types, rng).into(),
+                    noise_types[*b_index].to_noise_fn(noise_types, rng).into(),
                 ))
             }
             TerrainNoiseType::MapRange {
@@ -167,10 +177,10 @@ impl TerrainNoiseType {
                 to_max_index,
             } => Box::new(MapRange::new(
                 noise_types[*base_index].to_noise_fn(noise_types, rng),
-                noise_types[*from_min_index].to_f64_value(noise_types, rng),
-                noise_types[*from_max_index].to_f64_value(noise_types, rng),
-                noise_types[*to_min_index].to_f64_value(noise_types, rng),
-                noise_types[*to_max_index].to_f64_value(noise_types, rng),
+                noise_types[*from_min_index].to_f32_value(noise_types, rng),
+                noise_types[*from_max_index].to_f32_value(noise_types, rng),
+                noise_types[*to_min_index].to_f32_value(noise_types, rng),
+                noise_types[*to_max_index].to_f32_value(noise_types, rng),
             )),
             TerrainNoiseType::SmoothStep {
                 noise_index,
@@ -182,10 +192,10 @@ impl TerrainNoiseType {
                 )
                 .set_smoothness(
                     noise_types[*smoothness_index]
-                        .to_f64_value(noise_types, rng),
+                        .to_f32_value(noise_types, rng),
                 )
                 .set_steps(
-                    noise_types[*steps_index].to_f64_value(noise_types, rng),
+                    noise_types[*steps_index].to_f32_value(noise_types, rng),
                 ),
             ),
             TerrainNoiseType::ScalePoint {
@@ -193,7 +203,7 @@ impl TerrainNoiseType {
                 scale_index,
             } => Box::new(ScalePoint::new(
                 noise_types[*noise_index].to_noise_fn(noise_types, rng),
-                noise_types[*scale_index].to_f64_value(noise_types, rng),
+                noise_types[*scale_index].to_f32_value(noise_types, rng),
             )),
             TerrainNoiseType::TranslatePoint {
                 noise_index,
@@ -201,8 +211,8 @@ impl TerrainNoiseType {
                 y_index,
             } => Box::new(TranslatePoint::new(
                 noise_types[*noise_index].to_noise_fn(noise_types, rng),
-                noise_types[*x_index].to_f64_value(noise_types, rng),
-                noise_types[*y_index].to_f64_value(noise_types, rng),
+                noise_types[*x_index].to_f32_value(noise_types, rng),
+                noise_types[*y_index].to_f32_value(noise_types, rng),
             )),
             TerrainNoiseType::GFT {
                 noise_index,
@@ -222,43 +232,43 @@ impl TerrainNoiseType {
                 )
                 .set_frequency(
                     noise_types[*frequency_index]
-                        .to_f64_value(noise_types, rng),
+                        .to_f32_value(noise_types, rng),
                 )
                 .set_lacunarity(
                     noise_types[*lacunarity_index]
-                        .to_f64_value(noise_types, rng),
+                        .to_f32_value(noise_types, rng),
                 )
                 .set_persistence(
                     noise_types[*persistence_index]
-                        .to_f64_value(noise_types, rng),
+                        .to_f32_value(noise_types, rng),
                 )
                 .set_gradient(
-                    noise_types[*gradient_index].to_f64_value(noise_types, rng),
+                    noise_types[*gradient_index].to_f32_value(noise_types, rng),
                 )
                 .set_amplitude(
                     noise_types[*amplitude_index]
-                        .to_f64_value(noise_types, rng),
+                        .to_f32_value(noise_types, rng),
                 ),
             ),
             _ => Box::new(Constant::new(0.)),
         }
     }
 
-    fn to_f64_value(
+    fn to_f32_value(
         &self,
         noise_types: &Vec<TerrainNoiseType>,
         rng: &mut impl Rng,
-    ) -> f64 {
+    ) -> f32 {
         match self {
-            TerrainNoiseType::ConstantValue { value } => value.get_f64(),
+            TerrainNoiseType::ConstantValue { value } => value.get_f32(),
             TerrainNoiseType::Powf64 { a_index, b_index } => {
-                let a = noise_types[*a_index].to_f64_value(noise_types, rng);
-                let b = noise_types[*b_index].to_f64_value(noise_types, rng);
+                let a = noise_types[*a_index].to_f32_value(noise_types, rng);
+                let b = noise_types[*b_index].to_f32_value(noise_types, rng);
                 a.powf(b)
             }
             TerrainNoiseType::Dividef64 { a_index, b_index } => {
-                let a = noise_types[*a_index].to_f64_value(noise_types, rng);
-                let b = noise_types[*b_index].to_f64_value(noise_types, rng);
+                let a = noise_types[*a_index].to_f32_value(noise_types, rng);
+                let b = noise_types[*b_index].to_f32_value(noise_types, rng);
                 a / b
             }
             TerrainNoiseType::VoxelSize => VOXEL_SIZE as f64,
@@ -267,9 +277,9 @@ impl TerrainNoiseType {
                 max_index,
             } => {
                 let min =
-                    noise_types[*min_index].to_f64_value(noise_types, rng);
+                    noise_types[*min_index].to_f32_value(noise_types, rng);
                 let max =
-                    noise_types[*max_index].to_f64_value(noise_types, rng);
+                    noise_types[*max_index].to_f32_value(noise_types, rng);
                 rng.random_range(min..max)
             }
             _ => {

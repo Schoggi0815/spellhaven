@@ -1,6 +1,5 @@
-use crate::chunk_generation::noise::{
-    noise_function::NoiseFunction, noise_result::NoiseResult,
-};
+use bevy::math::Vec2;
+use noiz::{NoiseFunction, cells::WithGradient};
 
 pub struct Max<T1, T2> {
     source_1: T1,
@@ -13,22 +12,18 @@ impl<T1, T2> Max<T1, T2> {
     }
 }
 
-impl<T1, T2, TInput> NoiseFunction<NoiseResult, TInput> for Max<T1, T2>
-where
-    T1: NoiseFunction<NoiseResult, TInput>,
-    T2: NoiseFunction<NoiseResult, TInput>,
-    TInput: Copy,
+impl<T1: NoiseFunction<Vec2, Output = WithGradient<f32, Vec2>>>
+    NoiseFunction<Vec2> for Max<T1, T1>
 {
-    fn get(&self, input: TInput) -> NoiseResult {
-        let value_1 = self.source_1.get(input);
-        let value_2 = self.source_2.get(input);
-        NoiseResult {
-            value: value_1.value.max(value_2.value),
-            derivative: if value_1.value > value_2.value {
-                value_1.derivative
-            } else {
-                value_2.derivative
-            },
-        }
+    type Output = T1::Output;
+
+    fn evaluate(
+        &self,
+        input: Vec2,
+        seeds: &mut noiz::rng::NoiseRng,
+    ) -> Self::Output {
+        let ev1 = self.source_1.evaluate(input, seeds);
+        let ev2 = self.source_2.evaluate(input, seeds);
+        if ev1.value > ev2.value { ev1 } else { ev2 }
     }
 }
